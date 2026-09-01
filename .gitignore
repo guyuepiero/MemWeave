@@ -1,0 +1,38 @@
+# ============================================================
+# AI_OS v1.0 —— GitHub 上传筛选规则
+# 目标：只上传「框架骨架」（规则 / 模板 / 设计说明），排除个人数据与业务产物
+# ============================================================
+
+# ---- 工具自身数据 ----
+.workbuddy/
+
+# ---- 当前状态快照（含进行中任务，属个人进度）----
+CURRENT_CONTEXT.md
+
+# ---- 会话记忆：排除实际会话记录，保留 README 设计说明 ----
+03_MEMORY/SESSION/
+
+# ---- 项目工作区：仅保留 _TEMPLATE 模板 ----
+04_PROJECTS/*
+!04_PROJECTS/_TEMPLATE/
+
+# ---- 技能库：排除具体业务技能（含本地路径 + 爬虫实现）----
+05_SKILLS/COMMON/douyin-video-transcribe/
+
+# ---- 知识库：排除实际数据，保留 README ----
+06_KNOWLEDGE/*
+!06_KNOWLEDGE/README.md
+
+# ---- 输出资产：排除实际产物，保留 README ----
+07_OUTPUTS/*
+!07_OUTPUTS/README.md
+
+# ---- 业务产物 ----
+MG07_*
+
+# ---- 常见忽略 ----
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+*.log
