@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { width: 260px; font-family: "Microsoft YaHei", system-ui, sans-serif; padding: 12px; margin: 0; }
+  h1 { font-size: 14px; color: #185FA5; margin: 0 0 8px; }
+  .status { font-size: 12px; color: #5F5E5A; margin-bottom: 10px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-right: 4px; }
+  .dot.on { background: #1D9E75; }
+  .dot.off { background: #E24B4A; }
+  button { width: 100%; padding: 8px; margin: 4px 0; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  #syncBtn { background: #185FA5; color: #fff; }
+  #batchBtn { background: #0F6E56; color: #fff; }
+  #dashBtn { background: #fff; color: #185FA5; border: 1px solid #185FA5; }
+  .toggle { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #5F5E5A; margin-top: 8px; }
+  .tabinfo { font-size: 11px; color: #5F5E5A; margin: 6px 0; word-break: break-all; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <h1>微文收纳</h1>
+  <div class="status"><span class="dot" id="dot"></span><span id="connText">未连接本地客户端</span></div>
+  <div class="tabinfo" id="tabInfo">正在读取当前标签页…</div>
+
+  <button id="syncBtn">同步当前文章</button>
+  <button id="batchBtn">同步全部微信文章标签页</button>
+  <button id="dashBtn">打开工作台 (localhost:21888)</button>
+
+  <label class="toggle">
+    <span>打开文章页自动同步</span>
+    <input type="checkbox" id="autoSync">
+  </label>
+
+  <script src="popup.js"></script>
+</body>
+</html>

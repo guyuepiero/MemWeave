@@ -12,9 +12,20 @@ CURRENT_CONTEXT.md
 # ---- 会话记忆：排除实际会话记录，保留 README 设计说明 ----
 03_MEMORY/SESSION/
 
-# ---- 项目工作区：仅保留 _TEMPLATE 模板 ----
+# ---- 项目工作区：保留 _TEMPLATE 模板 + 微文收纳运行代码 ----
 04_PROJECTS/*
 !04_PROJECTS/_TEMPLATE/
+!04_PROJECTS/WeChatArticleSync/
+
+# ---- 微文收纳：仅上传运行代码，排除数据/隐私/产物 ----
+04_PROJECTS/WeChatArticleSync/DATA/
+04_PROJECTS/WeChatArticleSync/DOCS/
+04_PROJECTS/WeChatArticleSync/MEMORY.md
+04_PROJECTS/WeChatArticleSync/TASK.md
+04_PROJECTS/WeChatArticleSync/CODE/server/.venv/
+04_PROJECTS/WeChatArticleSync/CODE/server/_chrome_test/
+04_PROJECTS/WeChatArticleSync/CODE/server/_del_progress.txt
+04_PROJECTS/WeChatArticleSync/CODE/server/server.log
 
 # ---- 技能库：排除具体业务技能（含本地路径 + 爬虫实现）----
 05_SKILLS/COMMON/douyin-video-transcribe/

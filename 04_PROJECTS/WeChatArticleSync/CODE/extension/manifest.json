@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "微文收纳 · 公众号文章同步",
+  "version": "0.1.0",
+  "description": "捕获微信文章并以源格式同步到本地「微文收纳」客户端",
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "webRequest", "cookies"],
+  "host_permissions": [
+    "https://mp.weixin.qq.com/*",
+    "http://127.0.0.1:21888/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mp.weixin.qq.com/s/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://mp.weixin.qq.com/mp/profile_ext*",
+        "https://mp.weixin.qq.com/mp/appmsgalbum*"
+      ],
+      "js": ["profile_capture.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "微文收纳",
+    "default_icon": { "128": "icons/icon128.png" }
+  },
+  "icons": { "128": "icons/icon128.png" }
+}
