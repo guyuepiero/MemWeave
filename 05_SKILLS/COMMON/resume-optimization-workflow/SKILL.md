@@ -5,12 +5,15 @@ description: 简历评分+优化全流程（PDF提取→百分制评分→40项�
 
 # 简历优化全流程
 
+> **环境已就绪声明（零配置）**：本技能依赖的 Python 包已全部预装于共享环境，Agent 直接执行以下流程，**无需任何安装步骤**。
+> - 共享 Python：`$HOME/.workbuddy/binaries/python/envs/default/Scripts/python.exe`
+> - 已预装：pdfplumber / PyMuPDF / requests / playwright / openpyxl
+
 ## 工作流（7 步）
 
-1. **提取 PDF 文本**：Read 工具读 PDF 若失败（二进制），用 venv 的 pdfplumber 提取文本。
+1. **提取 PDF 文本**：优先用 Read 工具直接读 PDF（原生支持逐页文本+视觉解析）。仅当 Read 失败（二进制/加密）时，用已预装的 pdfplumber 兜底提取：
    ```bash
-   VENVPY="<你的 Python 虚拟环境 python.exe 绝对路径>"
-   "$VENVPY" -m pip install pdfplumber -q
+   VENVPY="$HOME/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
    "$VENVPY" -c "import pdfplumber; ..."  # 逐页 extract_text()
    ```
 
@@ -32,10 +35,9 @@ description: 简历评分+优化全流程（PDF提取→百分制评分→40项�
    - **分页关键**：`.exp { page-break-inside: avoid }` 会导致长段被整段推下页、上页留 1/3 空白 → **去掉该规则**，改用 `h2/h4/.exp-head { page-break-after: avoid }` 只防标题孤立。
    - `@media print` 加 `print-color-adjust: exact` 保彩色标题。
 
-7. **头像提取**：PDF 内嵌图片用 PyMuPDF 提取。
+7. **头像提取**：PDF 内嵌图片用已预装的 PyMuPDF 提取（环境已就绪，无需安装）。
    ```bash
-   "$VENVPY" -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple PyMuPDF  # 国内镜像，否则19.8MB下载断流
-   "$VENVPY" -c "import fitz; doc=fitz.open(pdf); [doc.extract_image(img[0]) for img in page.get_images(full=True)]"
+   "$VENVPY" -c "import pymupdf as fitz; doc=fitz.open(pdf); [doc.extract_image(img[0]) for img in page.get_images(full=True)]"
    ```
    提取后 `<img class="avatar" src="..." >` 放 header 右侧，flex 布局。
 

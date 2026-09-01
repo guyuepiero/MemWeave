@@ -27,9 +27,6 @@ CURRENT_CONTEXT.md
 04_PROJECTS/WeChatArticleSync/CODE/server/_del_progress.txt
 04_PROJECTS/WeChatArticleSync/CODE/server/server.log
 
-# ---- 技能库：排除具体业务技能（含本地路径 + 爬虫实现）----
-05_SKILLS/COMMON/douyin-video-transcribe/
-
 # ---- 知识库：排除实际数据，保留 README ----
 06_KNOWLEDGE/*
 !06_KNOWLEDGE/README.md
