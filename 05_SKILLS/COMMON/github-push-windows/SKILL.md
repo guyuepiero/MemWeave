@@ -34,12 +34,13 @@ GIT_EXEC_PATH="$PG/mingw64/bin" "$PG/mingw64/bin/git.exe" -c http.proxy=http://1
 
 - 现象：`Empty reply from server` / `CONNECT tunnel failed, response 502`；api.github.com 经同一代理返回 200。
 - 根因：环境变量 `http_proxy=127.0.0.1:50580` 是 WorkBuddy 沙箱代理（sandbox-cli.exe），放行 api.github.com 但拦截 github.com 的 git-receive-pack。
-- 解法：启动 Clash Verge（`C:\Program Files\Clash Verge\clash-verge.exe`，混合端口 7897；端口未监听时先启动 GUI），清沙箱代理环境变量：
+- 解法：启动 Clash Verge（`C:\Program Files\Clash Verge\clash-verge.exe`，混合端口 7897；端口未监听时先启动 GUI），**用 `-c http.proxy` 显式覆盖即可，无需清环境变量**：
 
 ```bash
-env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u all_proxy \
-  git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 push origin main
+git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 push origin main
 ```
+
+> ⚠️ 注意：`env -u http_proxy ...` 清变量方式**单独用可行**，但若与 `GIT_EXEC_PATH` 组合使用会**静默失败**（无输出且远端不更新）。推荐统一用 `-c http.proxy` 显式覆盖。
 
 ### ③ 坑 23：PortableGit 写不了 refs/remotes
 
@@ -56,9 +57,7 @@ mkdir -p .git/refs/remotes/origin && printf '%s\n' "$(git rev-parse HEAD)" > .gi
 ```bash
 cd <repo>
 PG="$HOME/.workbuddy/binaries/PortableGit/versions/1.2.0"
-GIT_EXEC_PATH="$PG/mingw64/bin" env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u all_proxy \
-  "$PG/mingw64/bin/git.exe" -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 \
-  push origin main
+GIT_EXEC_PATH="$PG/mingw64/bin" "$PG/mingw64/bin/git.exe" -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 push origin main
 mkdir -p .git/refs/remotes/origin && printf '%s\n' "$(git rev-parse HEAD)" > .git/refs/remotes/origin/main
 git status | head -3    # 验证 up to date
 git ls-remote origin main  # 验证远端 = 本地
