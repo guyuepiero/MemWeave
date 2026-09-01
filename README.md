@@ -1,7 +1,9 @@
-# AI_OS v1.0 — 可复用的 AI Agent 记忆系统框架
+# MemWeave 织忆 — 跨 Agent、跨平台的本地记忆与协作框架
 
-> 一套**跨 Agent、跨平台**的本地记忆与协作框架。
+> 把散落在不同 Agent 里的记忆，织成一张能接续的网。
 > 让 ChatGPT / Claude / WorkBuddy / Trae / Codex / Qoder / Hermes 等不同工具，读写同一套规则、记忆与技能。
+>
+> **v1.0** · 内部代号 `AI_OS`（本地目录名与历史记忆沿用此名）
 
 ---
 
@@ -9,9 +11,9 @@
 
 AI Agent 的记忆是碎的：换个工具就失忆，换个会话就重来，上下文塞满了还是记不住重点。
 
-AI_OS 的思路不是「把所有信息塞进上下文」，而是建立一套**文件系统即记忆**的结构：
+MemWeave 的思路不是「把所有信息塞进上下文」，而是建立一套**文件系统即记忆**的结构：
 
-| 痛点 | AI_OS 的做法 |
+| 痛点 | MemWeave 的做法 |
 |---|---|
 | 换个 Agent 就失忆 | 规则与记忆存在本地目录，任何 Agent 都能读同一份 |
 | 上下文爆炸、Token 烧不起 | 索引 → 摘要 → 目标文件，按需加载，绝不整库读取 |
@@ -52,6 +54,8 @@ AI_OS 的思路不是「把所有信息塞进上下文」，而是建立一套**
 
 ## 目录结构
 
+> 本地目录沿用内部代号 `AI_OS/`，不影响使用；你也可以直接改成 `MemWeave/`。
+
 ```text
 AI_OS/
 ├── AGENTS.md                 # 工作区入口，Agent 进来的第一份文件
@@ -84,7 +88,7 @@ AI_OS/
 ### 1. 克隆到本地
 
 ```bash
-git clone https://github.com/guyuepiero/AI-OS-Memory.git AI_OS
+git clone https://github.com/guyuepiero/MemWeave.git AI_OS
 cd AI_OS
 ```
 
@@ -161,5 +165,13 @@ cd AI_OS
 | 各目录 README 说明 | 本地工具配置、业务文件 |
 
 `.gitignore` 已预置排除规则，克隆后可以直接往里填自己的内容，不会误提交敏感数据。
+
+---
+
+## 名字
+
+**MemWeave（织忆）**：*Memory* + *Weave*。记忆不该困在单个工具里，而该像织网一样，把不同 Agent、不同会话留下的碎片连成一张能接续的网。
+
+框架内部仍以 `AI_OS` 作为目录名与代号（历史记忆文件均已使用该名），两者指向同一套东西：对外叫 MemWeave，落地在 `AI_OS/`。
 
 欢迎 fork 改造。若你在这个框架上长出更好的结构，欢迎回来提 issue 交流。
