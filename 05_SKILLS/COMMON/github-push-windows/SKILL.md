@@ -56,6 +56,11 @@ git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 pus
 mkdir -p .git/refs/remotes/origin && printf '%s\n' "$(git rev-parse HEAD)" > .git/refs/remotes/origin/main
 ```
 
+> ⚠️ **2026-09-11 补充实测（重要）**：
+> - **`git fetch origin` 绕不过**：本次 fetch 报 `* [new branch]  main  -> origin/main`、EXIT=0，但 `refs/remotes/origin/main` **依然不存在** —— fetch 与 push 一样静默不落地。
+> - **必须分两步、逐步复验**：先建目录（PowerShell：`New-Item -ItemType Directory -Path "$repo\.git\refs\remotes\origin" -Force`），**确认目录存在**后再写文件。父目录不存在时 `[IO.File]::WriteAllText` 会**静默不落地**（不抛错到输出流），只写文件不建目录＝白干。
+> - **见效判据**：`git status -sb` 首行由 `## main...origin/main [gone]` 变为 `## main...origin/main`。
+
 ## 完整命令模板（一次成型）
 
 ```bash
