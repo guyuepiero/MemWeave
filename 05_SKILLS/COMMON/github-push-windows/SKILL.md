@@ -35,6 +35,9 @@ GIT_EXEC_PATH="$PG/mingw64/bin" "$PG/mingw64/bin/git.exe" -c http.proxy=http://1
 > ✅ **2026-09-11 实测修正：坑 25 并不必然出现，不要一上来就启 Clash。**
 > 当日环境变量代理是 `http://127.0.0.1:49282`，**直接 `git push origin main` 就成功**（输出 `60bd02a..c8c9a2a  main -> main`、EXIT=0，非静默）。同日 Clash 未启动、7897 未监听，走 7897 反而报 `Failed to connect to github.com:443 over proxy 127.0.0.1 after 2093 ms`。
 > ⇒ **正确顺序：先直接 push；只有出现下列症状才切 Clash。**
+>
+> ⚠️ **同一会话内 502 会反复出现（19:20 实测）**：同一条命令在 19:1x–19:2x 连推两次均成功（`c8c9a2a`、`f46c114`），约 10 分钟后**同一代理改为稳定返回 `CONNECT tunnel failed, response 502`**（重试 2 次均是 EXIT=128）；改用 `-c http.proxy=` 强制直连则报 `Failed to connect to github.com:443 after 21057 ms`（无梯子时直连必失败）。
+> ⇒ **502 多为暂态：先重试 1–2 次；仍失败再启 Clash Verge（需启动 GUI，混合端口 7897），或稍后重试。** 不要把 502 当成永久故障。
 
 - 现象：`Empty reply from server` / `CONNECT tunnel failed, response 502`；api.github.com 经同一代理返回 200。
 - 根因：环境变量 `http_proxy=127.0.0.1:50580` 是 WorkBuddy 沙箱代理（sandbox-cli.exe），放行 api.github.com 但拦截 github.com 的 git-receive-pack。
