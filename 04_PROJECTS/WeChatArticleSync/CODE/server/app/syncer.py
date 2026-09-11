@@ -2,7 +2,7 @@
 
 能力：
 - getmsg 分页抓取公众号全部历史（替代已下线的 RSS 订阅）
-- 同步范围过滤：all / 1m / 3m / 6m / 1y / custom
+- 同步范围过滤：all / 1m / 3m / 6m / 1y / 2y / custom
 - 增量更新：拉首页命中已存在文章即停 → 持续获得更新
 - 断点续传：key 过期 → 任务暂停，补 key 后从 last_offset 续跑
 - 专辑页 getalbum 双游标抓取
@@ -37,6 +37,7 @@ def scope_to_range(scope: str, start_date: str = "") -> tuple[int | None, int | 
         "3m": now - timedelta(days=90),
         "6m": now - timedelta(days=180),
         "1y": now - timedelta(days=365),
+        "2y": now - timedelta(days=730),
     }.get(scope)
     if start is None and scope == "custom" and start_date:
         try:

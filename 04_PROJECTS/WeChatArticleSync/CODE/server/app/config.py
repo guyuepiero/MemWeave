@@ -37,7 +37,7 @@ UA = (
 
 # 同步范围
 SCOPE_ALL = "all"
-SCOPES = {SCOPE_ALL, "1m", "3m", "6m", "1y", "custom"}
+SCOPES = {SCOPE_ALL, "1m", "3m", "6m", "1y", "2y", "custom"}
 
 for _d in (DB_DIR, ARTICLES_DIR, EXPORT_DIR, STATIC_DIR):
     _d.mkdir(parents=True, exist_ok=True)

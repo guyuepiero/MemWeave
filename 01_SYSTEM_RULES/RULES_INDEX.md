@@ -24,6 +24,7 @@ SYSTEM_RULES > USER_CONTEXT > PROJECT RULES > SESSION HISTORY
 
 - `TOKEN_OPTIMIZATION_POLICY.md`：控制资源、上下文、Token、执行规模和输出规模。
 - `AGENT_COMMON_RULES.md`：定义通用行为、真实性、验证、可恢复性、复用、记忆和安全修改规则。
+- `SKILL_SYNC_RULE.md`（P2）：技能更新即同步——可复用技能须保持 `05_SKILLS/COMMON/` 副本与权威源一致。
 
 任何 Agent 首次阅读规则后默认沿用本系统，本规则自动生效，无需另行确认。
 

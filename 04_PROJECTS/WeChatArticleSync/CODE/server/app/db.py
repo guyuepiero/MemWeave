@@ -318,7 +318,8 @@ def _topic_filter(conn, topic_ids: list[int]) -> tuple[str, list[int]]:
 
 def list_articles(biz: str = "", topic_id: int = 0, q: str = "", limit: int = 500,
                   author: str = "", source: str = "", date_from: int = 0, date_to: int = 0,
-                  offset: int = 0, paid: str = "", album_id: str = "", topic_ids: list[int] | None = None):
+                  offset: int = 0, paid: str = "", album_id: str = "", topic_ids: list[int] | None = None,
+                  years: list[int] | None = None):
     conn = get_conn()
     sql = "SELECT a.*, t.name AS topic_name, t.color AS topic_color, p.name AS topic_parent, " \
           "al.title AS album_name FROM articles a " \
@@ -367,6 +368,13 @@ def list_articles(biz: str = "", topic_id: int = 0, q: str = "", limit: int = 50
     if date_to:
         sql += " AND COALESCE(a.publish_time,0) <= ?"
         args.append(date_to)
+    # 按发布年份多选（OR）：年份按北京时间（UTC+8）判定，与微信后台显示一致
+    if years:
+        yl = [int(y) for y in years if str(y).strip().lstrip("-").isdigit()]
+        if yl:
+            sql += (" AND CAST(strftime('%Y', COALESCE(a.publish_time,0), 'unixepoch', '+8 hours')"
+                    f" AS INTEGER) IN ({','.join('?' * len(yl))})")
+            args += yl
     sql += " ORDER BY COALESCE(a.publish_time,0) DESC LIMIT ? OFFSET ?"
     args += [limit, offset]
     rows = conn.execute(sql, args).fetchall()
@@ -549,6 +557,20 @@ def delete_article(article_id: int) -> dict | None:
     conn.commit()
     conn.close()
     return dict(row)
+
+
+def article_years() -> list[dict]:
+    """按发布年份（北京时间 UTC+8）统计已收录文章数，供批量删除面板的年份多选使用。
+
+    返回 [{"year": 2024, "count": 123}, ...]，按年份倒序；1970（publish_time 缺失）等异常年份剔除。
+    """
+    conn = get_conn()
+    rows = conn.execute(
+        "SELECT CAST(strftime('%Y', COALESCE(publish_time,0), 'unixepoch', '+8 hours') AS INTEGER) AS year,"
+        " COUNT(*) AS count FROM articles GROUP BY year ORDER BY year DESC"
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows if (r["year"] or 0) >= 2000]
 
 
 def count_articles() -> int:

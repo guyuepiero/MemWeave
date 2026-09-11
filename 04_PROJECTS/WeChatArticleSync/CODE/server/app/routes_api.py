@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 import httpx
 
 from . import db, exporters, service, syncer
-from .config import ARTICLES_DIR, EXPORT_DIR
+from .config import ARTICLES_DIR, DATA_DIR, EXPORT_DIR
 
 router = APIRouter(prefix="/api")
 
@@ -49,6 +49,42 @@ def _remove_article_files(row: dict) -> list[str]:
         return [f"{art_dir}（不存在，跳过）"]
     except Exception as e:  # noqa: BLE001
         return [f"文件清理失败（可能被占用）：{e}"]
+
+
+def _backup_articles(rows: list[dict], tag: str = "batch_delete") -> str:
+    """批量删除前把命中的文章（DB 行 + 本地文件目录）打包成 zip，存 DATA/backups/。
+
+    zip 结构：meta.json（被删文章的完整 DB 行 JSON）+ articles/{公众号目录}/{文章目录}/**。
+    返回 zip 绝对路径；出错返回失败说明字符串（以 "备份失败" 开头）。
+    """
+    import datetime
+    import zipfile
+
+    try:
+        bdir = DATA_DIR / "backups"
+        bdir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        zp = bdir / f"{tag}_{ts}.zip"
+        base = ARTICLES_DIR.resolve()
+        with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("meta.json", json.dumps(rows, ensure_ascii=False, indent=1))
+            for r in rows:
+                html = r.get("html_path") or ""
+                if not html:
+                    continue
+                d = Path(html).resolve().parent
+                try:
+                    rel = d.relative_to(base)
+                except ValueError:
+                    continue
+                if not d.exists():
+                    continue
+                for p in d.rglob("*"):
+                    if p.is_file():
+                        z.write(p, arcname=(Path("articles") / rel / p.relative_to(d)).as_posix())
+        return str(zp)
+    except Exception as e:  # noqa: BLE001
+        return f"备份失败：{e}"
 
 
 class SyncArticleIn(BaseModel):
@@ -266,6 +302,12 @@ def sync_article(body: SyncArticleIn):
     if not res.get("ok"):
         raise HTTPException(status_code=400, detail=res.get("error", "同步失败"))
     return res
+
+
+@router.get("/articles/years")
+def article_years():
+    """各年份收录文章数（批量删除面板的年份多选数据源）。注意必须定义在 /articles/{article_id} 之前。"""
+    return db.article_years()
 
 
 @router.get("/articles")
@@ -663,6 +705,89 @@ def batch_remove_topic(body: RemoveTopicIn):
         return {"ok": True, "removed": n, "mode": "remove"}
     n = db.batch_clear_topics(body.ids)
     return {"ok": True, "cleared": n, "mode": "clear"}
+
+
+class BatchDeleteFilter(BaseModel):
+    biz: str = ""
+    topic_ids: list[int] = []
+    q: str = ""
+    author: str = ""
+    source: str = ""
+    album_id: str = ""
+    paid: str = ""
+    date_from: int = 0
+    date_to: int = 0
+    years: list[int] = []  # 按年份多选（OR），如 [2022, 2023, 2024]
+
+
+class BatchDeleteIn(BaseModel):
+    ids: list[int] = []
+    filter: BatchDeleteFilter | None = None
+    backup: bool = True
+    dry_run: bool = False
+    allow_all: bool = False
+
+
+@router.post("/articles/batch-delete")
+def batch_delete_articles(body: BatchDeleteIn):
+    """批量删除文章（DB 记录 + 本地文件，逐篇走路径守卫）。
+
+    - ids 非空 → 只删这些 id；否则用 filter 命中的全部文章
+    - filter 全空（等价整库）必须显式 allow_all=true，防误清库
+    - dry_run=true 只返回命中数量与样本（供前端确认弹窗预览），不执行删除
+    - backup=true 先打包 zip 到 DATA/backups/（meta.json + 文章目录文件）
+    """
+    if body.ids:
+        rows = [r for r in (db.get_article(i) for i in body.ids) if r]
+        scope = f"勾选 {len(body.ids)} 篇"
+    else:
+        f = body.filter or BatchDeleteFilter()
+        has_cond = any([f.biz, f.topic_ids, f.q, f.author, f.source,
+                        f.album_id, f.paid, f.date_from, f.date_to, f.years])
+        if not has_cond and not body.allow_all:
+            raise HTTPException(status_code=400, detail="未指定删除范围：请勾选文章，或至少给出一个筛选条件")
+        rows = db.list_articles(f.biz, 0, f.q, 200000, f.author, f.source,
+                               f.date_from, f.date_to, 0, f.paid, f.album_id,
+                               topic_ids=(f.topic_ids or None), years=(f.years or None))
+        scope = "筛选结果"
+    if not rows:
+        return {"ok": True, "deleted": 0, "count": 0, "message": "没有命中任何文章"}
+    if body.dry_run:
+        return {
+            "ok": True, "dry_run": True, "count": len(rows), "scope": scope,
+            "sample": [
+                {"id": r.get("id"), "title": (r.get("title") or "")[:60],
+                 "source": r.get("source") or "", "date": r.get("publish_time")}
+                for r in rows[:10]
+            ],
+        }
+    backup_path = _backup_articles(rows) if body.backup else ""
+    deleted, skipped, removed = 0, 0, []
+    for r in rows:
+        row = db.delete_article(r.get("id"))
+        if not row:
+            skipped += 1
+            continue
+        removed += _remove_article_files(row)
+        deleted += 1
+    # 清理因批量删除而变空的公众号目录（articles/{公众号名或 biz}）
+    cleaned = []
+    cand_dirs = set()
+    for r in rows:
+        for cand in ((r.get("source") or "").strip(), (r.get("biz") or "").strip()):
+            if cand:
+                cand_dirs.add(re.sub(r"[^A-Za-z0-9_\-\u4e00-\u9fff]", "_", cand))
+    for name in cand_dirs:
+        d = ARTICLES_DIR / name
+        try:
+            if d.is_dir() and not any(d.iterdir()):
+                d.rmdir()
+                cleaned.append(str(d))
+        except Exception:  # noqa: BLE001
+            pass
+    return {"ok": True, "deleted": deleted, "skipped": skipped, "count": len(rows),
+            "scope": scope, "backup": backup_path, "files": removed[:50],
+            "cleaned_dirs": cleaned}
 
 
 @router.delete("/articles/{article_id}")

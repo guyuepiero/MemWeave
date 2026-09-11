@@ -1,0 +1,2270 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="LE8AcgF3Ppw9b1lPZE8Ftb">
+<head data-page-node-id="bAEWj1bR8CifoyPpp9VLf3">
+<meta charset="UTF-8" data-page-node-id="ZVje2hkDKaHISGKFFvZYQC">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-page-node-id="VEtElmfc7AHFDnudQaG5bF">
+<title>亚马逊运营工作台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f5f6f8;--card:#ffffff;--line:#e4e7ec;--line2:#d0d5dd;
+--tx:#1a1d23;--tx2:#5b6472;--tx3:#8b95a3;
+--pri:#7c3aed;--pri-bg:#e6f1fb;--pri-lt:#b5d4f4;
+--green:#3b6d11;--green-bg:#eaf3de;
+--amber:#854f0b;--amber-bg:#faeeda;
+--red:#a32d2d;--red-bg:#fcebeb;
+--teal:#0f6e56;--teal-bg:#e1f5ee;
+--nav:#1e2530;--nav2:#2a323d;--navt:#a9b3c1;--navt2:#7b8798;
+--r:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{display:flex;min-height:100vh}
+
+/* 侧边导航 */
+.nav{width:212px;flex:0 0 212px;background:var(--nav);padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.nav h1{color:#fff;font-size:15px;font-weight:600;padding:6px 10px 2px;letter-spacing:.3px}
+.nav .sub{color:var(--navt2);font-size:11px;padding:0 10px 12px;line-height:1.5}
+.nav .grp{color:#5c6674;font-size:10.5px;padding:12px 10px 5px;letter-spacing:.6px}
+.nav a{display:flex;align-items:center;gap:8px;color:var(--navt);text-decoration:none;padding:9px 10px;border-radius:8px;font-size:13px;margin-bottom:2px;min-height:40px;cursor:pointer}
+.nav a:hover{background:var(--nav2);color:#e4e9f0}
+.nav a.on{background:var(--pri);color:#fff}
+.nav a .n{font-size:11px;color:var(--navt2);width:16px;flex:0 0 16px}
+.nav a.on .n{color:var(--pri-lt)}
+.nav a .tag{margin-left:auto;font-size:10px;color:#6b7583;background:#2a323d;padding:1px 6px;border-radius:20px;white-space:nowrap}
+.nav a.on .tag{background:rgba(255,255,255,.18);color:#dbeafe}
+/* .nav .bot（左栏底部 导入/导出）已于 2026-09-11 移除：功能只服务 09，入口统一到分类树面板头部 .ct-acts */
+
+/* 主区 */
+.main{flex:1;min-width:0;padding:20px 24px 60px;max-width:1460px}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.top .meta{flex:1 1 540px;min-width:0;color:var(--tx2);font-size:13px}
+.top .meta b{color:var(--tx);font-weight:600}
+.top .sp{flex:1}
+/* 全局类目汇总 KPI 卡（2026-09-11）——类名独立，勿与下方 .kpis/.kpi（#k1）混用 */
+.gsum{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.gs{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 15px;min-width:0}
+.gs b{display:block;font-size:23px;font-weight:700;line-height:1.28;color:var(--tx);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs i{display:block;font-style:normal;font-size:11.5px;color:var(--tx3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs.hl{border-color:var(--pri)}
+.gs.hl b{color:var(--pri)}
+.gs.dk{background:var(--nav);border-color:var(--nav)}
+.gs.dk b{color:#fff}
+.gs.dk i{color:rgba(255,255,255,.68)}
+@media(max-width:1240px){.gsum{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.gsum{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.btn{border:1px solid var(--line2);background:var(--card);color:var(--tx2);padding:0 14px;height:38px;border-radius:8px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:hover{border-color:var(--pri);color:var(--pri)}
+
+
+/* 顶部警示条（2026-09-10）：采集中 / 数据集不完整 */
+.alerts{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.alert{border-radius:10px;padding:10px 14px;font-size:12.5px;line-height:1.7;display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid}
+.alert b{font-weight:600}
+.alert.run{background:var(--pri-bg);border-color:var(--pri-lt);color:var(--pri)}
+.alert.warn{background:var(--red-bg);border-color:#f0b4b4;color:var(--red)}
+.alert .btn{height:30px;font-size:12px;padding:0 12px;margin-left:auto;border-color:currentColor;color:inherit;background:transparent}
+.alert .btn:hover{border-color:currentColor;color:inherit;opacity:.8}
+.view{display:none}
+.view.on{display:block}
+
+/* 今日诊断 */
+.diag{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
+.diag .dh{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.diag .dh span{font-size:11px;font-weight:400;color:var(--tx3);background:var(--bg);padding:2px 8px;border-radius:20px}
+.dlist{display:flex;flex-direction:column;gap:9px}
+.ditem{display:flex;gap:11px;padding:10px 12px;border-radius:9px;background:#fafbfc;border-left:3px solid var(--line2)}
+.ditem.red{background:var(--red-bg);border-left-color:var(--red)}
+.ditem.amber{background:var(--amber-bg);border-left-color:var(--amber)}
+.ditem.green{background:var(--green-bg);border-left-color:var(--green)}
+.ditem.blue{background:var(--pri-bg);border-left-color:var(--pri)}
+.ditem .ic{width:18px;height:18px;flex:0 0 18px;margin-top:2px}
+.ditem .tt{font-size:12.5px;font-weight:600;margin-bottom:2px}
+.ditem.red .tt{color:var(--red)}.ditem.amber .tt{color:var(--amber)}
+.ditem.green .tt{color:var(--green)}.ditem.blue .tt{color:var(--pri)}
+.ditem .dd{font-size:12.5px;color:var(--tx2);line-height:1.65}
+.ditem .aa{font-size:11.5px;color:var(--tx3);margin-top:4px}
+
+/* 子视图 tab */
+.subtabs{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0 10px;margin-bottom:6px;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.subtabs a{flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--tx2);text-decoration:none;padding:7px 13px;border-radius:20px;font-size:12.5px;cursor:pointer;white-space:nowrap;min-height:34px;display:inline-flex;align-items:center}
+.subtabs a:hover{border-color:var(--pri);color:var(--pri)}
+.subtabs a .n{color:var(--tx3);font-size:11px;margin-right:4px}
+
+section{scroll-margin-top:60px;margin-bottom:26px}
+.sh{display:flex;align-items:baseline;gap:10px;margin:22px 0 12px}
+.sh h3{font-size:16px;font-weight:600}
+.sh .d{font-size:12px;color:var(--tx3)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.card h4{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h4 .tag{font-size:11px;font-weight:400;color:var(--tx3);background:var(--bg);padding:2px 8px;border-radius:20px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px}
+.kpi .lb{font-size:12px;color:var(--tx2);display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.kpi .vl{font-size:23px;font-weight:600;letter-spacing:-.3px;line-height:1.25;word-break:break-all}
+.kpi .rg{font-size:11.5px;color:var(--tx3);margin-top:5px}
+.kpi .ft{font-size:11px;color:var(--tx3);margin-top:6px}
+.kpi.hl{border-color:var(--pri-lt);background:var(--pri-bg)}
+.kpi.na{background:#fafbfc;border-style:dashed}
+.kpi.na .vl{font-size:15px;color:var(--tx3);font-weight:500}
+.kpi .dot{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:500;color:var(--tx2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfc}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mono{font-variant-numeric:tabular-nums}
+
+.ins{background:var(--pri-bg);border-left:3px solid var(--pri);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12.5px;color:#0c447c;line-height:1.7;margin-top:12px}
+.ins b{font-weight:600}
+
+/* 榜单链接入口 */
+.bsrlinks{display:flex;flex-wrap:wrap;gap:12px}
+.blink{display:flex;align-items:center;gap:10px;flex:1 1 280px;min-width:260px;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;text-decoration:none;color:var(--tx);background:#fafbfc;transition:border-color .15s,background .15s}
+.blink:hover{border-color:var(--pri);background:var(--pri-bg)}
+.blink .bi{width:34px;height:34px;flex:0 0 34px;border-radius:8px;background:var(--pri);display:flex;align-items:center;justify-content:center}
+.blink .bi svg{width:20px;height:20px}
+.blink .bt{font-size:13px;font-weight:600;line-height:1.3}
+.blink .bd{font-size:11.5px;color:var(--tx3);margin-top:2px;word-break:break-all}
+.blink .go{margin-left:auto;color:var(--pri);font-size:12px;font-weight:600;flex:0 0 auto}
+/* 2026-09-09 榜单数据切换器：点击切换 02~09 章节数据源（热销/新品），激活态高亮 */
+#bsrlinks .blink{cursor:pointer}
+#bsrlinks .blink.act{background:#fff;outline:2px solid var(--line2);outline-offset:1px}
+#bsrlinks .blink.act .cur{display:inline-block;font-size:10px;font-weight:700;color:#fff;padding:1px 7px;border-radius:10px;margin-left:7px;vertical-align:1px}
+#bsrlinks .blink.act-b{outline-color:#ea580c;border-color:#ea580c;background:#fff7ed}
+#bsrlinks .blink.act-b .cur{background:#ea580c}
+#bsrlinks .blink.act-n{outline-color:#0e7490;border-color:#0e7490;background:#f5f3ff}
+#bsrlinks .blink.act-n .cur{background:#0e7490}
+#bsrlinks .blink .bt .dashed{color:var(--tx3);font-weight:400}
+#bsrlinks .blink .xl{margin-left:auto;flex:0 0 auto;width:26px;height:26px;border-radius:7px;background:#fff;border:1px solid var(--line2);color:var(--tx3);font-size:13px;font-weight:700;line-height:24px;text-align:center;cursor:pointer;text-decoration:none}
+#bsrlinks .blink .xl:hover{color:var(--pri);border-color:var(--pri);background:var(--pri-bg)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--tx2);margin-top:12px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+.empty{text-align:center;padding:34px 20px;color:var(--tx3);font-size:13px}
+.empty .t{font-size:14px;color:var(--tx2);font-weight:500;margin-bottom:8px}
+.empty .a{font-size:12px;line-height:1.8;max-width:560px;margin:12px auto 0;text-align:left;background:#fafbfc;border:1px dashed var(--line2);border-radius:8px;padding:12px 14px}
+.empty code{background:#eef1f5;padding:1px 5px;border-radius:4px;font-size:11.5px}
+
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.pill.fba{background:var(--pri-bg);color:var(--pri)}
+.pill.fbm{background:var(--amber-bg);color:var(--amber)}
+.pill.amz{background:var(--green-bg);color:var(--green)}
+.hp{display:inline-block;font-size:11px;padding:1px 8px;border-radius:4px;font-weight:700;background:#FFF3E6;color:#D96C00;border:1px solid #FFC98A;letter-spacing:.3px;line-height:1.6}
+table .hp{white-space:nowrap}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin-left:auto}
+.seg button{border:none;background:var(--card);padding:0 14px;height:34px;font-size:12.5px;cursor:pointer;color:var(--tx2);font-family:inherit}
+.seg button.on{background:var(--pri);color:#fff}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* 占位模块 */
+.ph{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:40px 24px;text-align:center}
+.ph .ic{width:44px;height:44px;margin:0 auto 14px;display:block}
+.ph h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.ph .d{font-size:13px;color:var(--tx3);margin-bottom:20px}
+.ph .need{max-width:560px;margin:0 auto;text-align:left;background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.ph .need .t{font-size:12.5px;font-weight:600;margin-bottom:9px;color:var(--tx2)}
+.ph .need ul{list-style:none;font-size:12.5px;color:var(--tx2);line-height:1.9}
+.ph .need li{padding-left:18px;position:relative}
+.ph .need li:before{content:"";position:absolute;left:4px;top:9px;width:5px;height:5px;border-radius:50%;background:var(--line2)}
+.ph .need .x{color:var(--red)}.ph .need .o{color:var(--green)}
+.ph .go{margin-top:18px;font-size:12.5px;color:var(--tx3)}
+.ph .go button{margin-top:10px;background:var(--pri);color:#fff;border:none;padding:0 18px;height:40px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+
+@media(max-width:900px){
+.wrap{flex-direction:column}
+.nav{width:100%;flex:none;height:auto;position:static;padding:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.nav h1{width:100%;padding:0 4px}
+.nav .sub{width:100%;padding:0 4px 4px}
+.nav .grp{width:100%;padding:6px 4px 2px}
+.nav a{flex:1 1 auto;justify-content:center;font-size:12.5px;padding:8px 10px}
+.nav a .tag{margin-left:4px}
+.main{padding:14px 12px 40px}
+.kpis{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.kpi .vl{font-size:19px}
+.two{grid-template-columns:1fr}
+.ph{padding:28px 16px}
+}
+@media(max-width:520px){
+.kpis{grid-template-columns:1fr 1fr;gap:9px}
+.kpi{padding:12px}
+.kpi .vl{font-size:17px}
+}
+/* ---------- 类目选品树 (BTG) ---------- */
+/* ===== 分类树面板（2026-09-11 照主公参考图重做：面板头 + 当前大类行 + 大类卡片网格） ===== */
+.ct-head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;padding:15px 18px;background:#eef2f7;border:1px solid var(--line);border-bottom:0;border-radius:var(--r) var(--r) 0 0}
+.ct-head h3{font-size:16.5px;font-weight:700;color:var(--tx)}
+.ct-head .ct-sub{font-size:11.5px;color:var(--tx3);margin-top:4px}
+.ct-pills{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px}
+.ct-pill{background:#fff;border:1px solid var(--line2);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--tx2);white-space:nowrap}
+.ct-pill b{color:var(--tx);font-weight:700;margin-right:3px;font-variant-numeric:tabular-nums}
+/* 分类树面板头部右侧：统计胶囊 + 数据集操作按钮（2026-09-11 从顶端横条挪入，使面板真正置顶） */
+.ct-right{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}
+.ct-right .ct-pills{margin-left:0}
+.ct-acts{display:flex;gap:8px;flex-wrap:wrap;padding-left:14px;border-left:1px solid var(--line2)}
+.ct-acts .btn{height:30px;font-size:12px;padding:0 12px}
+.ct-cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 18px;background:var(--card);border:1px solid var(--line);border-bottom:0;font-size:12.5px;color:var(--tx2)}
+.ct-cur select{height:30px;padding:0 9px;border:1px solid var(--line2);border-radius:8px;font-size:12.5px;font-family:inherit;color:var(--tx);background:#fff;min-width:180px}
+.ct-cur .lf b{font-size:16px;font-weight:700;color:var(--tx);margin-right:3px;font-variant-numeric:tabular-nums}
+.ct-prog{flex:1 1 140px;min-width:110px;max-width:540px;height:6px;background:#e8ebf0;border-radius:99px;overflow:hidden}
+.ct-prog i{display:block;height:100%;width:0;background:var(--pri);border-radius:99px;transition:width .35s}
+.ct-cur .pc{min-width:36px;text-align:right;color:var(--tx3);font-variant-numeric:tabular-nums}
+.ct-cur .btn{margin-left:auto}
+.ct-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:13px 18px;background:var(--card);border:1px solid var(--line);border-radius:0 0 var(--r) var(--r)}
+.ct-grid.fold{display:none}
+.ct-grid+.card{margin-top:14px}
+.ct-c{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--card);cursor:pointer;min-width:0;transition:border-color .15s,box-shadow .15s}
+.ct-c:hover{border-color:var(--pri-lt)}
+.ct-c.on{border-color:var(--pri);box-shadow:0 0 0 2px rgba(24,95,165,.12)}
+.ct-c .r1{display:flex;align-items:baseline;gap:6px}
+.ct-c .n{flex:1;min-width:0;font-size:12px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct-c b{font-size:13.5px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.ct-c .r2{display:flex;align-items:baseline;gap:6px;margin-top:3px}
+.ct-c .e{flex:1;min-width:0;font-size:10.5px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct-c .m{font-size:10.5px;color:var(--tx3);white-space:nowrap}
+@media(max-width:1240px){.ct-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:900px){.ct-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.btg-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;font-size:12.5px;color:var(--tx2)}
+.btg-bar .btn{height:30px;padding:0 11px;font-size:12px}
+.btg-stat{margin-left:auto;color:var(--tx3);font-size:12px}
+.btg-wrap{display:flex;gap:14px;align-items:flex-start}
+.btg-tree{flex:1;min-width:0;max-height:560px;overflow:auto;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fafbfc}
+.btg-node{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;line-height:1.7}
+.btg-node:hover{background:var(--pri-bg)}
+.btg-node.sel{background:var(--pri);color:#fff}
+.btg-node .tw{width:14px;flex:0 0 14px;color:var(--tx3);font-size:10px;text-align:center}
+.btg-node.sel .tw{color:#dbeafe}
+.btg-node .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btg-node .nm i.zh{font-style:normal;color:var(--tx3);font-size:11px;margin-left:6px;white-space:nowrap}
+.btg-node .nm i.zh::before{content:"["}
+.btg-node .nm i.zh::after{content:"]"}
+.btg-node.sel .nm i.zh{color:rgba(255,255,255,.72)}
+.btg-node .id{color:var(--tx3);font-size:11px;font-variant-numeric:tabular-nums}
+.btg-node.sel .id{color:#cfe3f7}
+.btg-node .q{font-size:10px;color:var(--teal);background:var(--teal-bg);padding:0 5px;border-radius:10px}
+.btg-node.sel .q{background:rgba(255,255,255,.2);color:#fff}
+.btg-kid{margin-left:16px;border-left:1px dashed var(--line2);padding-left:6px}
+.dt{font-size:9.5px;color:#fff;background:var(--green);padding:0 4px;border-radius:3px;flex:0 0 auto;line-height:15px}
+.mk{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--line2)}
+.mk.follow{background:var(--pri)}.mk.focus{background:var(--amber)}.mk.skip{background:var(--tx3)}
+.btg-side{width:330px;flex:0 0 330px;border:1px solid var(--line);border-radius:9px;padding:12px 14px;background:var(--card);font-size:12.5px}
+.btg-side h5{font-size:13px;margin-bottom:8px}
+.btg-side .kv{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.btg-side .kv b{color:var(--tx3);font-weight:400;width:52px;flex:0 0 52px}
+.btg-side .kv span{flex:1;min-width:0;word-break:break-all}
+.btg-side a{color:var(--pri);text-decoration:none;word-break:break-all}
+.btg-side a:hover{text-decoration:underline}
+.btg-mks{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.btg-mks button{flex:1;min-width:64px;border:1px solid var(--line2);background:var(--card);padding:6px 4px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--tx2)}
+.btg-mks button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.btg-mks button[data-mk="data"].on{background:var(--green);border-color:var(--green)}
+.btg-mks button[data-mk="focus"].on{background:var(--amber);border-color:var(--amber)}
+.btg-mks button[data-mk="skip"].on{background:var(--tx3);border-color:var(--tx3)}
+.btg-mks button:disabled{opacity:.45;cursor:default}
+.btg-mks button.on:disabled{opacity:1}
+.btg-leaves{max-height:190px;overflow:auto;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.btg-leaf{display:flex;gap:6px;padding:2px 0;font-size:12px;color:var(--tx2)}
+.btg-leaf .p{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btg-tip{color:var(--tx3);font-size:12px;padding:6px 0}
+@media(max-width:1100px){.btg-wrap{flex-direction:column}.btg-side{width:100%;flex:none}}
+
+/* 选品分析报告 抽屉 (s10) */
+.rep-wrap{position:fixed;inset:0;z-index:120;display:none}
+.rep-wrap.on{display:block}
+.rep-mask{position:absolute;inset:0;background:rgba(16,21,30,.38)}
+.rep-panel{position:absolute;top:0;right:0;height:100%;width:min(780px,94vw);background:var(--card);border-left:1px solid var(--line2);display:flex;flex-direction:column;animation:repIn .16s ease-out}
+@keyframes repIn{from{transform:translateX(26px);opacity:.3}to{transform:none;opacity:1}}
+.rep-head{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);flex:0 0 auto;background:var(--card)}
+.rep-head .t{font-size:15px;font-weight:600}
+.rep-head .s{font-size:12px;color:var(--tx3);margin-top:2px;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rep-head .sp{flex:1}
+.rep-body{flex:1;overflow-y:auto;padding:14px 26px 56px;font-size:13.5px;line-height:1.75;color:var(--tx)}
+.rep-body h1{font-size:19px;font-weight:600;margin:8px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--pri-bg);line-height:1.45}
+.rep-body h2{font-size:15.5px;font-weight:600;margin:26px 0 10px;padding-left:10px;border-left:4px solid var(--pri);line-height:1.4}
+.rep-body h3{font-size:14px;font-weight:600;margin:18px 0 8px;color:var(--tx)}
+.rep-body h4{font-size:13.5px;font-weight:600;margin:14px 0 6px}
+.rep-body p{margin:8px 0}
+.rep-body ul,.rep-body ol{margin:8px 0;padding-left:24px}
+.rep-body li{margin:4px 0}
+.rep-body table{margin:12px 0 16px;font-size:12.5px}
+.rep-body th{background:var(--pri-bg);color:var(--tx);white-space:normal}
+.rep-body blockquote{margin:10px 0;padding:9px 14px;background:#fafbfc;border-left:3px solid var(--line2);color:var(--tx2);border-radius:0 8px 8px 0}
+.rep-body blockquote p{margin:2px 0}
+.rep-body code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:5px;font-size:12px;font-family:Consolas,Menlo,monospace;word-break:break-all}
+.rep-body pre{background:#f7f8fa;border:1px solid var(--line);padding:12px 14px;border-radius:8px;overflow-x:auto;margin:10px 0}
+.rep-body pre code{background:none;border:none;padding:0}
+.rep-body hr{border:none;border-top:1px dashed var(--line2);margin:18px 0}
+.rep-body a{color:var(--pri)}
+
+/* 同期对比面板（同类目跨期数据集） */
+.cmp-wrap{position:fixed;inset:0;z-index:130;display:none}
+.cmp-wrap.on{display:block}
+.cmp-mask{position:absolute;inset:0;background:rgba(16,21,30,.46)}
+.cmp-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1200px,96vw);height:min(90vh,920px);background:var(--card);border:1px solid var(--line2);border-radius:14px;display:flex;flex-direction:column;box-shadow:0 20px 64px rgba(0,0,0,.4);animation:cmpIn .18s ease-out;overflow:hidden}
+@keyframes cmpIn{from{transform:translate(-50%,-53%);opacity:.3}to{transform:translate(-50%,-50%);opacity:1}}
+.cmp-head{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:var(--card)}
+.cmp-head .t{font-size:15.5px;font-weight:600;white-space:nowrap}
+.cmp-head .s{font-size:11.5px;color:var(--tx3);max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp-head .sp{flex:1}
+.cmp-pick{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cmp-pick select{height:28px;max-width:230px;border:1px solid var(--line2);border-radius:7px;font-size:12px;color:var(--tx2);background:var(--bg);padding:0 5px;font-family:inherit}
+.cmp-body{flex:1;overflow-y:auto;padding:15px 20px 46px;font-size:13px;line-height:1.65;color:var(--tx)}
+.cmp-kv{display:flex;gap:6px;align-items:center}
+.cmp-sum{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 16px 11px 14px;margin:2px 0 14px}
+.cmp-sum ul{margin:0;padding-left:2px;list-style:none}
+.cmp-sum li{padding:2.5px 0 2.5px 17px;position:relative;font-size:12.8px}
+.cmp-sum li:before{content:"▸";position:absolute;left:0;color:var(--pri);font-size:11px;top:4px}
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin:0 0 16px}
+.cmp-card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.cmp-card .k{font-size:11.5px;color:var(--tx3);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-card .v{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-card .sub{font-size:11px;color:var(--tx3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-up{color:#e5484d}.cmp-dn{color:#2f9e57}.cmp-flat{color:var(--tx3)}
+.cmp-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.cmp-tab{border:1px solid var(--line2);background:var(--bg);color:var(--tx2);height:29px;padding:0 13px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit}
+.cmp-tab.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:12.2px;margin:2px 0 8px}
+.cmp-tbl th{background:var(--pri-bg);text-align:left;padding:6px 8px;font-weight:600;border:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+.cmp-tbl td{padding:5px 8px;border:1px solid var(--line);vertical-align:top;word-break:break-word}
+.cmp-tbl td.num,.cmp-tbl th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cmp-tbl tr:hover td{background:var(--bg)}
+.cmp-wrap .cmp-note{font-size:11px;color:var(--tx3);margin:2px 0 12px;line-height:1.7}
+.cmp-bars{margin:2px 0 6px}
+.cmp-bar-row{display:grid;grid-template-columns:88px 1fr 34px 1fr 40px;gap:7px;align-items:center;margin:3.5px 0;font-size:11.5px;color:var(--tx2)}
+.cmp-bar-track{background:var(--bg);border:1px solid var(--line);border-radius:4px;height:13px;overflow:hidden;position:relative}
+.cmp-bar-track>i{position:absolute;left:0;top:0;bottom:0;display:block}
+.cmp-a{background:#3b82f6}.cmp-b{background:#ea580c}
+.cmp-sect-title{font-size:13.5px;font-weight:600;margin:14px 0 8px;padding-left:9px;border-left:3.5px solid var(--pri);line-height:1.4}
+/* 同期对比 视图切换（📖解读报告 / 📊动态对比） */
+.cmp-vtabs{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.cmp-vtabs .cmp-tab{height:27px;padding:0 11px;font-size:11.8px;border-radius:99px}
+.cmp-rep-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 12px;font-size:12px;color:var(--tx2)}
+.cmp-rep-pick select{height:28px;max-width:430px;border:1px solid var(--line2);border-radius:7px;font-size:12px;color:var(--tx2);background:var(--bg);padding:0 6px;font-family:inherit}
+.cmp-rep-meta{font-size:11.5px;color:var(--tx3);margin:0 0 4px;line-height:1.9}
+.cmp-body .rep-body{flex:none;overflow:visible;padding:0 4px 12px}
+.cmp-body .rep-body table{display:table;min-width:560px}
+.cmp-body .rep-body .num{text-align:right}
+
+/* ============================================================
+   主题层 · 紫罗兰极简 Violet Minimal ｜ 2026-09-11
+   落地方式：只追加覆盖，不修改上方任何原有规则 → 删除本段即完整回退。
+   影响范围：仅 CSS 变量与视觉层；结构 / JS 逻辑 / 数据 均未改动。
+   ============================================================ */
+
+/* 1 · 变量基线 */
+:root{
+--bg:#f7f7fb;--card:#ffffff;--line:#e9e7f1;--line2:#d7d4e4;
+--tx:#16121f;--tx2:#5a5470;--tx3:#8f89a4;
+--pri:#7c3aed;--pri-bg:#f5f3ff;--pri-lt:#c4b5fd;
+--green:#2f7d4f;--green-bg:#e9f6ee;
+--amber:#9a5b06;--amber-bg:#fdf3e3;
+--red:#c02b3c;--red-bg:#fdecee;
+--teal:#0d7a75;--teal-bg:#e2f5f4;
+--nav:#ffffff;--nav2:#f2f0fa;--navt:#554f6b;--navt2:#8f89a4;
+--r:14px;
+--sh1:0 1px 2px rgba(22,18,31,.05),0 1px 3px rgba(22,18,31,.05);
+--sh2:0 2px 6px rgba(22,18,31,.05),0 10px 26px rgba(22,18,31,.07);
+--sh3:0 14px 38px rgba(22,18,31,.13),0 2px 8px rgba(22,18,31,.06);
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+--grad:linear-gradient(135deg,#7c3aed,#8b5cf6 62%,#a78bfa);
+}
+
+/* 2 · 底色与主区留白（两处极淡光晕，避免整页死平） */
+body{background:radial-gradient(1200px 560px at 100% -10%,rgba(124,58,237,.075),transparent 60%),radial-gradient(900px 480px at -10% 8%,rgba(56,189,248,.055),transparent 58%),var(--bg);background-attachment:fixed}
+.main{padding:26px 30px 64px;max-width:1520px}
+
+/* 3 · 侧栏：深色 → 浅色，激活项紫渐变块 */
+.nav{background:var(--nav);border-right:1px solid var(--line);box-shadow:2px 0 12px rgba(22,18,31,.03)}
+.nav h1{color:var(--tx);font-weight:700}
+.nav h1:before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin:0 8px 1px 0;background:var(--grad)}
+.nav .sub{color:var(--tx3)}
+.nav .grp{color:var(--tx3);font-size:10px;letter-spacing:.14em}
+.nav a{color:var(--navt);border-radius:10px;transition:background .16s,color .16s,box-shadow .18s}
+.nav a:hover{background:var(--nav2);color:var(--tx)}
+.nav a.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(124,58,237,.3)}
+.nav a .n{color:var(--tx3)}
+.nav a.on .n{color:rgba(255,255,255,.8)}
+.nav a .tag{background:var(--nav2);color:var(--tx3)}
+.nav a.on .tag{background:rgba(255,255,255,.22);color:#fff}
+
+/* 4 · 卡片：大圆角 + 分层阴影 + 顶部紫渐变细条 */
+.card,.diag,.ph,.btg-side,.ct-grid,.gs,.kpi,.cmp-card{border-radius:var(--r)}
+.card{background-image:linear-gradient(90deg,#7c3aed,#8b5cf6 46%,#c4b5fd);background-repeat:no-repeat;background-size:100% 3px;background-position:top left;box-shadow:var(--sh1)}
+.diag,.btg-side,.ct-grid,.gs,.kpi,.blink,.btg-tree{box-shadow:var(--sh1)}
+.card,.ct-c,.blink,.gs,.kpi,.btn,.subtabs a,.btg-mks button{transition:box-shadow .18s,border-color .18s,background .18s,color .18s,transform .18s}
+
+/* 5 · 分类树面板：淡紫渐变头 + 药丸 + 进度条 */
+.ct-head{background:linear-gradient(135deg,#f6f4ff,#ede9fe 55%,#f9f8ff);border-color:#e6e0fb;padding:17px 20px}
+.ct-head h3:before{content:"";display:inline-block;width:4px;height:15px;border-radius:2px;margin-right:9px;vertical-align:-2px;background:var(--grad)}
+.ct-pill{background:#fff;border-color:#e6e0fb;box-shadow:var(--sh1);font-size:11.5px}
+.ct-pill b{font-family:var(--mono);font-size:13px}
+.ct-cur{background:#fdfcff;padding:12px 20px}
+.ct-grid{background:#fff;padding:15px 20px}
+.ct-c{border-radius:12px}
+.ct-c:hover{border-color:var(--pri-lt);box-shadow:var(--sh2);transform:translateY(-1px)}
+.ct-c.on{border-color:var(--pri);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
+.ct-prog{height:7px;background:#ece9f6}
+.ct-prog i{background:var(--grad)}
+.ct-acts .btn{background:#fff}
+
+/* 6 · KPI 数字梯度（23px → 31px / 800） */
+.gs{padding:13px 16px}
+.gs b{font-size:31px;font-weight:800;letter-spacing:-.9px;line-height:1.2}
+.gs i{font-size:11px;color:var(--tx3);letter-spacing:.02em}
+.gs.hl{border-color:var(--pri-lt);background:linear-gradient(180deg,#fbfaff,#f5f3ff)}
+.gs.dk{background:linear-gradient(135deg,#2e1065,#5b21b6 58%,#7c3aed);border-color:transparent;box-shadow:0 10px 24px rgba(76,29,149,.26)}
+.gs.dk b{color:#fff}
+.gs.dk i{color:rgba(255,255,255,.75)}
+.kpi .vl{font-size:26px;font-weight:700;letter-spacing:-.4px}
+.kpi.hl{background:linear-gradient(180deg,#fbfaff,#f5f3ff);border-color:var(--pri-lt)}
+.kpi.na{background:var(--bg)}
+
+/* 7 · 表格 / 药丸 / 链接卡 */
+th{font-weight:600;font-size:11.5px;color:var(--tx2)}
+tbody tr:hover{background:#faf9ff}
+.subtabs a{border-radius:999px;box-shadow:var(--sh1)}
+.subtabs a:hover{box-shadow:0 4px 14px rgba(124,58,237,.16)}
+.btn{border-radius:10px}
+.btn:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-bg)}
+.blink{border-radius:12px;background:#fff}
+.blink:hover{background:var(--pri-bg)}
+#bsrlinks .blink.act{box-shadow:var(--sh2)}
+#bsrlinks .blink .xl{border-radius:9px}
+.pill{border-radius:999px;font-weight:600}
+.ditem,.btg-tree{background:var(--bg)}
+.empty .a,.ph .need{background:var(--bg)}
+.ins{color:#4c1d95}
+
+/* 8 · 报告抽屉 / 同期对比面板 */
+.cmp-panel{border-radius:18px;box-shadow:0 30px 84px rgba(22,18,31,.34)}
+.cmp-head,.rep-head{background:linear-gradient(180deg,#fdfcff,#f7f5ff)}
+.rep-body h1{border-bottom-color:var(--pri-lt)}
+.rep-body blockquote{background:var(--bg)}
+.cmp-sum,.cmp-card{background:var(--bg)}
+.cmp-tab.on{background:var(--grad);border-color:transparent}
+
+/* 9 · 滚动条 */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d8d3e8;border-radius:99px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#bdb4d8;background-clip:content-box}
+.nav::-webkit-scrollbar{width:8px}
+
+/* 9.5 · 层次强化：大类卡片数值 + 卡片标题竖条 */
+.ct-c b{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.ct-c .n{font-size:12.5px;font-weight:700}
+.ct-c .e,.ct-c .m{letter-spacing:.01em}
+.card h4{font-weight:700}
+.card h4:before{content:"";flex:0 0 auto;width:4px;height:14px;border-radius:2px;background:var(--grad)}
+.sh h3{font-weight:700;letter-spacing:-.2px}
+.sh h3:before{content:"";display:inline-block;width:4px;height:14px;border-radius:2px;margin-right:9px;vertical-align:-2px;background:var(--grad)}
+
+/* 10 · 还原被本层覆盖的响应式规则（媒体查询优先级低于后置同权重规则） */
+@media(max-width:900px){.main{padding:14px 12px 40px}.kpi .vl{font-size:19px}}
+@media(max-width:520px){.kpi .vl{font-size:17px}}
+</style>
+</head>
+<body data-page-node-id="TETkMe3g0cjx3uEPMrLkvg">
+<div class="wrap" data-page-node-id="nDsJEP92mB36bWYsMEESH0">
+
+<aside class="nav" data-page-node-id="mYcP1S6OaZJFyrn6cUS3q3">
+  <h1 data-page-node-id="jN3ohBTOzEx1FGB7dGVpd6">亚马逊运营工作台</h1>
+  <div class="sub" data-page-node-id="RWlr1lXAxG4JA5Jmua8bJ0">自然 + 广告 · 每日监控 / 选品分析</div>
+
+  <div class="grp" data-page-node-id="2HtDAofaaO9KqnxlPY1CCX">监控</div>
+  <a data-mod="m01" data-page-node-id="EJgomOxz70FlUWThItuJ51"><span class="n" data-page-node-id="0BPhUNNoSlYulvbjh7zydN">01</span>总览<span class="tag" data-page-node-id="MYptraXaJC8ZDLLZHprxcV">待接入</span></a>
+  <a data-mod="m02" data-page-node-id="TDFqGXALiERVTpwpgLt3SF"><span class="n" data-page-node-id="FlvW5974inezMjCICy8nbc">02</span>ASIN 监控<span class="tag" data-page-node-id="0n8xis7gT1VT8sINsOARtW">待接入</span></a>
+  <a data-mod="m03" data-page-node-id="aVlMJSKmBtOtxGMSItvgkk"><span class="n" data-page-node-id="9OXlOz4m6R4WfTagIyCnPw">03</span>流量趋势<span class="tag" data-page-node-id="RO1kWCuE8TXfbEolvEim46">待接入</span></a>
+  <a data-mod="m04" data-page-node-id="FLqrrly9SHa5I2UAJU2eEY"><span class="n" data-page-node-id="OIAaFC0FAKEKrE8HoNZQ3P">04</span>关键词变化<span class="tag" data-page-node-id="EcntGlOLvUCy1jFeZYFDXq">待接入</span></a>
+  <a data-mod="m05" data-page-node-id="SCvVq4hCAL8rNm7A7bduFk"><span class="n" data-page-node-id="sSLgfUpF5SLtDoq7jGK5oo">05</span>异常中心<span class="tag" data-page-node-id="buGJ4MQomVNsdxTNySKkLs">待接入</span></a>
+  <a data-mod="m06" data-page-node-id="2hqM0VjqQEd7bCMd5CC6CD"><span class="n" data-page-node-id="IbJpnvSXjSmufwVbMdl4G1">06</span>竞品对比<span class="tag" data-page-node-id="u5PgpRlYA2TcAmYHJEH3Vl">待接入</span></a>
+  <a data-mod="m07" data-page-node-id="udZitwugUMF9wJ1LDOQ4Yl"><span class="n" data-page-node-id="ro7mEAGKOUsJQ2VRwBdqPB">07</span>AI 日报<span class="tag" data-page-node-id="MRpBX8fxuK26OvgPdb04su">待接入</span></a>
+  <a data-mod="m08" data-page-node-id="sW0JWZLCqNFrm8ZT9YwMzD"><span class="n" data-page-node-id="ABQhYtzkIBrEvGbS5pliML">08</span>数据记录<span class="tag" data-page-node-id="WdYF6DcoWUW0TQ9KFXYaTB">待接入</span></a>
+
+  <div class="grp" data-page-node-id="BNYVWKAVcQBN8Ti9z0kSCt">分析</div>
+  <a data-mod="sel" class="on" data-page-node-id="Ze3COF3WR4gQYYcLFDz4VI"><span class="n" data-page-node-id="OwNl0qQWts01DZT2pcrIHx">09</span>选品分析</a>
+</aside>
+
+<main class="main" data-page-node-id="OzTO5bQY6vFK9Oiyx3vEgy">
+  <div class="top" id="top" data-page-node-id="PndrIBJ6ne2HlvnQ9t7wHM">
+    <div class="meta" id="meta" data-page-node-id="a2kBTD6Egu2Wo7Dpf4IYyp">—</div>
+  </div>
+
+  <div class="alerts" id="alerts" data-page-node-id="alerts20260910">
+    <div class="alert run" id="runbar" style="display:none"></div>
+    <div class="alert warn" id="warnbar" style="display:none"></div>
+  </div>
+
+  <div class="view" id="ph" data-page-node-id="r6vw8pJsDYkuFBKd7Zy00F"></div>
+
+  <div class="view on" id="sel" data-page-node-id="13nuKzpOab89I2IjMknRzj">
+    <section id="s1" data-page-node-id="5N7oCOC8kKkkFMZu3WVkls">
+      <div class="ct-head" data-page-node-id="ctHead20260911">
+        <div>
+          <h3 id="ctTitle">Amazon 分类树</h3>
+          <div class="ct-sub" id="s1d" data-page-node-id="mRpavfBnl0U2BGRbvB5hql">Amazon Browse Tree Guide · 多类目选品管理中心</div>
+        </div>
+        <div class="ct-right">
+          <div class="ct-pills" id="ctPills"></div>
+          <div class="ct-acts" data-page-node-id="ctActs20260911">
+            <button class="btn" data-act="import" data-page-node-id="WhvlrbqK6r9oXnBQEBAeRy">导入数据集</button>
+            <button class="btn" data-act="export" data-page-node-id="VCRczydrNVTGZMA5PSV2ND">导出备份</button>
+          </div>
+        </div>
+      </div>
+      <div class="ct-cur" data-page-node-id="ctCur20260911">
+        <span>当前大类</span>
+        <select id="ctSel" data-page-node-id="ctSel20260911"><option value="">— 选择大类 —</option></select>
+        <span class="lf"><b id="ctLeaf">—</b>叶子类目</span>
+        <div class="ct-prog"><i id="ctProg"></i></div>
+        <span class="pc" id="ctPct">0%</span>
+        <button class="btn" id="ctFold" data-page-node-id="ctFold20260911">收起大类</button>
+      </div>
+      <div class="ct-grid" id="btgCats" data-page-node-id="Io46RgFlDmREpfCjQQy6sM"><span class="btg-tip" data-page-node-id="UCopntr5ylo48Z0f8acKw5">加载中…</span></div>
+      <div class="card" data-page-node-id="09EHYolOG7x8LaqFme3mhU">
+        <h4 data-page-node-id="Dgaz89RmN1PycoAluuGe93">类目树 <span class="tag" data-page-node-id="mxHtPSpf9BOzt4TRWixz2c">点大类才加载该类数据（分片懒加载，按需取用）</span></h4>
+        <div class="btg-bar" data-page-node-id="nw4P1c9Lwg6MpdME5lU7Z2">
+          <input id="btgSearch" placeholder="搜索类目名 / Node ID" style="height:30px;padding:0 10px;width:210px;border:1px solid var(--line2);border-radius:8px;font-size:12px;font-family:inherit" data-page-node-id="yxylYwfoT4KlYFtuQmATdH">
+          <button class="btn" data-btg="expand2" data-page-node-id="PcKUb19DDYXSUBAM7y80YF">展开两级</button>
+          <button class="btn" data-btg="collapse" data-page-node-id="eXpbsQRBvs7gPTl99tgA5l">全部收起</button>
+          <button class="btn" data-btg="leafonly" data-page-node-id="s7SOiUA7s4KrUtRYmmW2hn">只显示叶子</button>
+          <select id="btgFilter" style="height:30px;padding:0 8px;border:1px solid var(--line2);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx2)" data-page-node-id="6fOk9f84lWYc6HwNqiwDJM">
+            <option value="all" data-page-node-id="3xkXR3OOiO8OGfdGbj4d9b">全部状态</option>
+            <option value="data" data-page-node-id="6sTBJEAEHOwjiiLDbvNRjA">有数据</option>
+            <option value="follow" data-page-node-id="LFaDlZ7p4r2uhRItsHKFXS">待跟进</option>
+            <option value="focus" data-page-node-id="5EN0zHWsAEZYQ3KE0Mb8qk">重点关注</option>
+            <option value="skip" data-page-node-id="knAPBHof3QjD5LNNICauHX">已排除</option>
+          </select>
+          <span class="btg-stat" id="btgStat" data-page-node-id="9w8y2IYyhrlas1Kw4sqOig"></span>
+        </div>
+        <div class="btg-wrap" data-page-node-id="L1VQ5832peGbUq2oqpjMPP">
+          <div class="btg-tree" id="btgTree" tabindex="0" data-page-node-id="8Xc0PJMmnlRfLrpfExgvhu"><div class="btg-tip" data-page-node-id="JJO8et5k4jDwhTd4HhzNDP">先在上方选择一个大类</div></div>
+          <div class="btg-side" id="btgSide" data-page-node-id="uzLg922as4e8Fn1YHOUwjy"><div class="btg-tip" data-page-node-id="qlWiCvzvmk25YHHCh1HIGM">点击左侧节点查看详情</div></div>
+        </div>
+        <div class="btg-bar" style="margin-top:10px" data-page-node-id="r864jprum9TkM7ruaLaQfh">
+          <button class="btn" data-btg="csv" data-page-node-id="onnRuDMZc4Ry9CrO4E7iJX">导出 CSV</button>
+          <button class="btn" data-btg="save" data-page-node-id="YwtXxiSaRRuqug0d23gss2">保存进度</button>
+          <button class="btn" data-btg="queue" data-page-node-id="fr44fY9OJbjxn3We2e4fzC">加入采集队列</button>
+          <span class="btg-stat" id="btgQueueStat" data-page-node-id="XKc0fpQC3hJArfxckBe9K8"></span>
+        </div>
+        <div class="btg-tip" data-page-node-id="ASv4uhQrSjVs4pjTKOw8Eo">快捷键（点树后生效）：↑↓ 切换节点 · Enter 打开榜单 · 1 待跟进 · 2 重点 · 3 排除 · N 未评估</div>
+      </div>
+      <div class="card" id="btgLink" style="display:none" data-page-node-id="VxDPOlxHQA4Yy23jmEJdqP">
+        <h4 data-page-node-id="cUe6L4Xe6Z2UV5UlIbUVA3">类目联动 <span class="tag" id="btgLinkTag" data-page-node-id="nVjXnuDLQZbiaHT47DpjUy"></span></h4>
+        <div id="btgLinkBody" data-page-node-id="VlTYy55YaPHNbdNyUY2raB"></div>
+      </div>
+      <div class="gsum" id="ctKpi" style="margin-top:14px" data-page-node-id="ctKpi20260911"></div>
+    </section>
+
+    <div class="subtabs" data-page-node-id="XaLn7Xwa3ujHGIkygrjpmF">
+      <a data-go="s1" data-page-node-id="qFEH1cKWz4yu1Nzo8zHeza"><span class="n" data-page-node-id="EeHJKFXBrFayeCHOUjtHcr">01</span>类目选品树</a>
+      <a data-go="s2" data-page-node-id="VbdfobyjWfjaSQMB6uqTUK"><span class="n" data-page-node-id="kvHTedp0rgyjIGK1JJXicR">02</span>市场全景总览</a>
+      <a data-go="s3" data-page-node-id="IPcXUqWhUQKi1VNBXKFF7t"><span class="n" data-page-node-id="xjmT0AxiM3YDGltR0KQYqS">03</span>今日诊断</a>
+      <a data-go="s4" data-page-node-id="Rf2arZPsmCpyc5RhIcjhce"><span class="n" data-page-node-id="wRG767Dqb6AiyBa8B21ohV">04</span>销量分析</a>
+      <a data-go="s5" data-page-node-id="F7IJvQoYUR9nKuVqcoloBf"><span class="n" data-page-node-id="G5OpBEimWKL4nSCtPQWOwD">05</span>价格带分析</a>
+      <a data-go="s6" data-page-node-id="gOXmZAexFxqGOxDJcFnEHZ"><span class="n" data-page-node-id="b7mNNAgItrixGfBA8SAofB">06</span>品牌集中度</a>
+      <a data-go="s7" data-page-node-id="k2bVZ28sUCFW0dOJ1sJKdO"><span class="n" data-page-node-id="NBUoRosgAuJ9AZwmPQYwu2">07</span>品牌销量占比</a>
+      <a data-go="s8" data-page-node-id="U6H4Tx7fLHNQhS9Od39DLM"><span class="n" data-page-node-id="qiohya2huOZuEsAxiQiJul">08</span>卖家类型占比</a>
+      <a data-go="s9" data-page-node-id="Va6IKAapcqDP1UbUo5Zuoh"><span class="n" data-page-node-id="sKuWXwEcNwpNcbCQ1OJZAx">09</span>上架时间分布</a>
+      <a id="subtabsCmp" style="border-color:#0e7490;color:#0e7490" title="同类目不同采集时间的数据集对比：大盘升降 / 榜单换血 / 排名变动 / 品牌变化 / 明细变化（可导出 Excel）"><span class="n" style="color:#0e7490">📊</span>同期对比</a>
+    </div>
+
+    <section id="s2" data-page-node-id="v7MrO68SXibtrD56Iz05Ie"><div class="sh" data-page-node-id="P65VG3FVdvrq8K8VaKEaJI"><h3 data-page-node-id="qWOSgKfeWuSTyvWhVmape8">市场全景总览</h3><span class="d" data-page-node-id="VKXMu7ExnHgfCBvLfeDg2M">榜单大盘核心指标</span></div>
+      <div class="card" id="bsrlink" data-page-node-id="7aIKnNVAHJOvM8aUWNO5QJ">
+        <h4 data-page-node-id="csg1OfMoAvQLWBHR9kydqA">榜单数据 <span class="tag" data-page-node-id="HwPbxuUYn96NMBhId0xv7a">点击切换 02~09 章节数据源 · 默认展示最新</span></h4>
+        <div class="bsrlinks" id="bsrlinks" data-page-node-id="OKGVRU5ZSXZFfrKLOTYzMo"></div>
+      </div>
+      <div class="kpis" id="k1" data-page-node-id="jTYUakZlQ39zo4EmuelXn9"></div>
+      <div class="card" data-page-node-id="3dUyIq4lfESSxyPyBwuQb7"><h4 data-page-node-id="3CYAqiLeEC3fwDzBRl07Su">指标口径说明</h4><div id="note1" style="font-size:12.5px;color:var(--tx2);line-height:1.9" data-page-node-id="oyPfJWifoKvDZ74jn1rexL"></div></div>
+    </section>
+
+    <section id="s3" data-page-node-id="TNA0BbB1kiddYwVSAD8XhP"><div class="sh" data-page-node-id="OrqjZ23rMD7gitThUzBGMy"><h3 data-page-node-id="sWFfYXoeiHyidmjtAhiO22">今日诊断</h3><span class="d" data-page-node-id="WrmsN7JS8qo4DWZs10oFvE">基于当前数据集自动生成</span></div>
+      <div class="diag" data-page-node-id="2DtxzGDGyIhrub57OEzQH7">
+        <div class="dh" data-page-node-id="zL3EEeEQFcTcAahHIU0Zt0">今日诊断 <span data-page-node-id="gNwNrNyQbWGj2YvY4f3PwT">基于当前数据集自动生成</span></div>
+        <div class="dlist" id="diag" data-page-node-id="iPhG99UE1ACHwydvUyMpby"></div>
+      </div>
+    </section>
+
+    <section id="s4" data-page-node-id="6y7Wddh2CMuvo7nyVayb1n"><div class="sh" data-page-node-id="Z5sQezB42m9OuV5vVtZXZC"><h3 data-page-node-id="KGW417lwDd7dSqFBZ4ZxuA">销量分析</h3><span class="d" data-page-node-id="uAA0fLOuGiWCLx4pUKsFn3">近30日前台销量分布与头部链接</span></div>
+      <div class="card" data-page-node-id="VibHhNsH5RTQTBClsoel7L"><h4 data-page-node-id="tam31qAyyL16iHodp4p22V">销量档位分布<span class="tag" data-page-node-id="b2UXThV9BdthAqXQQbWGMo">按近30日销量分档</span></h4><div id="g2" data-page-node-id="5oYqtPfIkRF18FJ0tECve8"></div><div class="legend" id="l2" data-page-node-id="sPG6p9rHYOINanT373Llef"></div></div>
+      <div class="two" data-page-node-id="BT6AMwyv5KhzTajHlJFqkH">
+        <div class="card" data-page-node-id="FrrWjkNFcYfpJcacCGxb26"><h4 data-page-node-id="mbpsreAn6cViZ3ib0CLlD3">各档位明细</h4><div class="scroll" data-page-node-id="P4FbofAfMBNVBX7oJpiNwy"><table id="t2" data-page-node-id="ZIWAcDhrqUgyU5l6su2NJW"></table></div></div>
+        <div class="card" data-page-node-id="aVVDHQRriKxg3IHhqoQpyH"><h4 data-page-node-id="ISWlkwmn1nQvOioF7axTkN">销量 Top10 链接</h4><div class="scroll" data-page-node-id="rtEgzKqKnylYHUl2OokDeX"><table id="t2b" data-page-node-id="PxgL3oDBZizQvYYvibHL1G"></table></div></div>
+      </div>
+      <div class="ins" id="i2" data-page-node-id="g7dIEMNWfSLfsl98tGj20o"></div>
+    </section>
+
+    <section id="s5" data-page-node-id="BAFi3EdRVFBlFBbVD25erG"><div class="sh" data-page-node-id="i01JUaHn6JpCg8FcsrKz5l"><h3 data-page-node-id="v4kXoDPDQR4SJKQgsZaj8P">价格带分析</h3><span class="d" data-page-node-id="iuWYARpPEoebxMxRpjImBA">价格带 × 销量 × 销售额结构</span></div>
+      <div class="card" data-page-node-id="uLg2MEo64qDCIjKuvs9HX5"><h4 data-page-node-id="vxjDRQCTM5QzKCp5PjHo5y">Listing 数 vs 销售额<span class="tag" data-page-node-id="oCxsfe3TZWFAV5tPArvDxu">识别供给密度与产出的错配</span></h4><div id="g3" data-page-node-id="zNGKvMELzIPU2tgU421r6x"></div><div class="legend" id="l3" data-page-node-id="6DPtTxs10YtsRJkxuPjFUY"></div></div>
+      <div class="card" data-page-node-id="fA2JfEpvPHAAX2bcIx6l0k"><h4 data-page-node-id="Q1ANtarzYXvD4dk8ooBCR2">价格带明细</h4><div class="scroll" data-page-node-id="hxj3Pwteymetd7z3CpLj7a"><table id="t3" data-page-node-id="hLzPKWpxF9g6NUvdnubjtm"></table></div></div>
+      <div class="ins" id="i3" data-page-node-id="6uxo6b4lBRNRcTr20R7lDy"></div>
+    </section>
+
+    <section id="s6" data-page-node-id="3hmDU1l5gJNqggSGSFAGlG"><div class="sh" data-page-node-id="cJDFbywbygwpUrUmanX0C7"><h3 data-page-node-id="pat2N1Tw83vzUoW5MROxOw">品牌集中度</h3><span class="d" data-page-node-id="COeEUTcCBuNMayxYMqz4s1">按品牌拥有的 Listing 数量占比</span></div>
+      <div class="card" data-page-node-id="9mJJikwjADryQAtyf6KHQH"><h4 data-page-node-id="eSVKXgWbkqxIMTBBmw5SFy">Top12 品牌 · Listing 数<span class="tag" data-page-node-id="lbFd2nvDjq5XwnDZOKrQFl">反映品牌入场密度</span></h4><div id="g4" data-page-node-id="hCSR1Jmd6wEDaZXFWfxy5n"></div></div>
+      <div class="two" data-page-node-id="Nz3lWGluGdRNobTp4IDRYl">
+        <div class="card" data-page-node-id="aiU0NNy6SJGq6rNF7Id2bP"><h4 data-page-node-id="NcCCfBWuXjK6AxMxhV8xAG">品牌入场规模分布</h4><div id="g4b" data-page-node-id="S4tfW1lFv9l0VaOXoCmiTN"></div></div>
+        <div class="card" data-page-node-id="CKZnaemVMH6n0iBH2espy5"><h4 data-page-node-id="PCyfxainH6KNNhut747J6l">品牌明细</h4><div class="scroll" style="max-height:330px;overflow-y:auto" data-page-node-id="lmBVJnsaxCCK5YEAb3q08M"><table id="t4" data-page-node-id="FYx8j483zf37kd3WfVviG3"></table></div></div>
+      </div>
+      <div class="ins" id="i4" data-page-node-id="hCf68m9IJ6PcDnT96YaJlG"></div>
+    </section>
+
+    <section id="s7" data-page-node-id="PuXCJC9zp3AUtpGyPg9ez3"><div class="sh" data-page-node-id="l2isHSEec0HaexDgBy0M89"><h3 data-page-node-id="9iKFxRqimVhUlCeOluKX07">品牌销量占比</h3><span class="d" data-page-node-id="YrCl3XdLLK5vllCdpW4N3v">按品牌链接销量合计占比</span></div>
+      <div class="card" data-page-node-id="vOgHy2dXlUrDk1ALH6Y10A"><h4 data-page-node-id="7YjxA8SUgLHZAPwqTIqxLO">Top12 品牌 · 销量占比<span class="tag" data-page-node-id="vkiDz7Awa4SaCRy1DvO1en">反映实际市场份额</span></h4><div id="g5" data-page-node-id="JPnAnruKv8X7B6SGCrS6uZ"></div></div>
+      <div class="card" data-page-node-id="vGSETW5AQb6AYEfgEzTCJi"><h4 data-page-node-id="2sFhWvVXxzImyxvWSaH8Kh">数量占比 vs 销量占比对比<span class="tag" data-page-node-id="0E64ZNrxitSq8xd6JH6joK">识别高效率与虚胖品牌</span></h4><div class="scroll" data-page-node-id="FXgcDQTBgStQnqLVeU7ZAl"><table id="t5" data-page-node-id="2bZ1GCVOrwIiJnUpA7l4i7"></table></div></div>
+      <div class="ins" id="i5" data-page-node-id="6drt6ryjt7z8TSDfn4S8He"></div>
+    </section>
+
+    <section id="s8" data-page-node-id="EF6gnHBZ8O6Mxi7eyYViUf"><div class="sh" data-page-node-id="GULS3zxcNsV6uMPzeFIHqh"><h3 data-page-node-id="ORfBFNgfECGypyvuxiP6Ki">卖家类型占比</h3><span class="d" data-page-node-id="wVdDLmhq6E6AeyZCCZpwq2">按发货方式划分</span></div>
+      <div class="card" data-page-node-id="dNvtKWbImRkIS1safdEIWv">
+        <h4 data-page-node-id="SQR0vt7jHHqAuaJftXspCK">卖家类型构成
+          <span class="seg" id="seg6" data-page-node-id="l16dtjf107ZSUaz5EFWylR"><button class="on" data-m="cnt" data-page-node-id="Yo3aNrrvPBNDwNhO79xiM7">按链接数</button><button data-m="sale" data-page-node-id="2bwE19im21xt21iHtyP04R">按销量</button></span>
+        </h4>
+        <div class="two" data-page-node-id="mTdC3cyZMpXEqaTO19kuXC"><div id="g6" data-page-node-id="x7DhYLz7G6TYgcaurQDjIQ"></div><div class="scroll" data-page-node-id="m9uoOA0ID2s5CHWmFO0PGm"><table id="t6" data-page-node-id="Lgh72ziSfEou3IlCDrpwq5"></table></div></div>
+      </div>
+      <div class="ins" id="i6" data-page-node-id="VjcynHnD720vBQLxtErPN1"></div>
+    </section>
+
+    <section id="s9" data-page-node-id="6n1Akq0j89Bqv9BHTqRYrj"><div class="sh" data-page-node-id="AjJBcFVFbZ3axsSnVz2qAk"><h3 data-page-node-id="UcaCnGohq8klSj4Bvv9c6g">上架时间分布</h3><span class="d" data-page-node-id="WkxpDWUTYm7NhFQpLxu72B">按年份与月度维度</span></div>
+      <div class="card" data-page-node-id="G1koY2R0iRNZ3qmfTthBoN"><h4 data-page-node-id="sHAnQIG1Hawehdw7h8ldJo">上架时间分布</h4><div id="g7" data-page-node-id="iwiP7VJTYkRNLwfC7ZK692"></div></div>
+    </section>
+
+  </div>
+</main>
+</div>
+
+<!-- 选品分析报告 抽屉 (s10) -->
+<div class="rep-wrap" id="repWrap" data-page-node-id="0j3j2fULsGw05LEaCDMWhd">
+  <div class="rep-mask" id="repMask" data-page-node-id="z1kcCmJyraKTrCvxBxYKQ8"></div>
+  <aside class="rep-panel" data-page-node-id="7t69ylOIXNjELC60vLhjMl">
+    <div class="rep-head" data-page-node-id="CoZJtUJuzlnA1b6Vf0e4HO">
+      <div style="min-width:0" data-page-node-id="OOUARQHCyukdXSB042Cujt">
+        <div class="t" data-page-node-id="l13xhoGuBQodbeIFAgyfgV">选品分析报告</div>
+        <div class="s" id="repSub" data-page-node-id="bUHl4Xp9lDKId95k8y8rO1">—</div>
+      </div>
+      <div class="sp" data-page-node-id="DJV0Xy9o8E8K2ivXpXuzRu"></div>
+      <select id="repPick" style="display:none;height:30px;max-width:340px;border:1px solid var(--line2);border-radius:8px;font-size:12px;color:var(--tx2);background:var(--card);padding:0 6px;font-family:inherit" data-page-node-id="M19x5EvJTw3fk1tOGKqYGL"></select>
+      <button class="btn" id="repClose" style="height:32px;font-size:12.5px;flex:0 0 auto" data-page-node-id="MZZazfCpXfVLLT1yHm4xvI">✕ 关闭</button>
+    </div>
+    <div class="rep-body" id="repBody" data-page-node-id="RtCqt3YcYk22w8rE7v8R23"></div>
+  </aside>
+</div>
+
+<!-- 同期对比面板：同类目不同采集时间的数据集对比（大盘/换血/排名/品牌/明细） -->
+<div class="cmp-wrap" id="cmpWrap" data-page-node-id="1oKm5dkhBBa6DD8sT7XqGG">
+  <div class="cmp-mask" id="cmpMask" data-page-node-id="HoxIsGNr3ijtF5RjbXbZI8"></div>
+  <div class="cmp-panel" data-page-node-id="0ZYClLTdX0HXb5p1DFlQ6S">
+    <div class="cmp-head" data-page-node-id="B1VN4EQ3A8Y2SCVuXDXsrY">
+      <div style="min-width:0" data-page-node-id="m01h0RH2J2GPl1RTAJRfT0">
+        <div class="t" data-page-node-id="rFtpL2uQNOww6af1q1j6KE">同期对比分析</div>
+        <div class="s" id="cmpSub" data-page-node-id="YXaUwn2eb3QWyC01oAiuEC">—</div>
+      </div>
+      <div class="sp" data-page-node-id="OCCInuDYpkYcLlAIli2Kir"></div>
+      <div class="cmp-vtabs" id="cmpVTabs" style="display:none">
+        <button class="cmp-tab" data-cmpview="rep">📖 解读报告</button>
+        <button class="cmp-tab" data-cmpview="dyn">📊 动态对比</button>
+      </div>
+      <div class="cmp-pick" id="cmpPickBar" style="display:none" data-page-node-id="nO4McdVnjqZNBYB9eUxlxY">
+        <span style="font-size:11.5px;color:var(--tx3);white-space:nowrap" data-page-node-id="7YfihIgCqW09BNjtet9x5T">旧期 A</span>
+        <select id="cmpA" data-page-node-id="nHTdegc11EGFNxoN55Fdyf"></select>
+        <span style="color:var(--tx3)" data-page-node-id="TXpvxXVEpU2tjB5Xwx9z60">⇄</span>
+        <select id="cmpB" title="新期 B" data-page-node-id="alf9opTJDrcAvsseQDhIbv"></select>
+        <button class="btn" id="cmpNear" style="height:28px;font-size:11.5px;padding:0 9px" title="A=上一期，B=最新" data-page-node-id="9Y9fFn7U9EdyIIaUVqlxWa">相邻期</button>
+        <button class="btn" id="cmpSpan" style="height:28px;font-size:11.5px;padding:0 9px" title="A=最早，B=最新" data-page-node-id="FDAVrrSs1OvpxcnoJse5V0">首尾</button>
+        <button class="btn" id="cmpSwap" style="height:28px;font-size:11.5px;padding:0 9px" title="交换 A/B 方向" data-page-node-id="kk6w4NjOLoZPgxchCh7NHG">⇄ 互换</button>
+      </div>
+      <button class="btn" id="cmpExport" style="display:none;height:30px;font-size:12px;background:#1f8a4c;border-color:#1f8a4c;color:#fff;font-weight:600" title="导出对比明细 Excel 归档 07_OUTPUTS" data-page-node-id="IqMr5R3V9OVoyzBkYyLxpQ">⭳ 导出 Excel</button>
+      <button class="btn" id="cmpClose" style="height:30px;font-size:12.5px" data-page-node-id="0quj4w0qYaMwlQBGdVEAwm">✕ 关闭</button>
+    </div>
+    <div class="cmp-body" id="cmpBody" data-page-node-id="VFxmgI5wanRzJygdDmC4vR"></div>
+  </div>
+</div>
+
+<input type="file" id="file" accept=".json,application/json" style="display:none" data-page-node-id="bUo9ivmURnxOoeaBd9Mzko">
+<script>
+const RAW = [{"a":"B0C7TNXZQS","t":"60 PCS XHF 5/8” Adhesive Cable Wire Clips Clear, Outdoor Christmas Light Clips, Cable Staples Cable Management Wire Orga","b":"XHF","p":6.99,"r":4.4,"c":8668,"s":10000,"bsr":61,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DBVCL44N","t":"Lamicall 8 Pack Cord Organizer, [1s Lock] Cable Management Clips for Desk","b":"Lamicall","p":8.99,"r":4.7,"c":4125,"s":10000,"bsr":283,"st":"第三方FBA","h":0,"fa":null},{"a":"B0CH159ZNT","t":"JOYROOM 9 Pack Magnetic Cable Clips, Cord Organizer Adhesive Wire Holder","b":"JOYROOM","p":8.4,"r":4.6,"c":6182,"s":10000,"bsr":325,"st":"第三方FBA","h":0,"fa":null},{"a":"B0CNSYPZBQ","t":"Flezoo 12PCS Black Adhesive Cable Clips Cord Organizer for Wire Management","b":"Flezoo","p":4.99,"r":4.5,"c":2549,"s":8000,"bsr":483,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DP4FV7QZ","t":"Lamicall 6 Pack Rotatable Cord Organizer, 1s Lock Spring Cable Holder Clips","b":"Lamicall","p":11.99,"r":4.7,"c":1626,"s":6000,"bsr":624,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DP4JMT71","t":"Lamicall 6 Pack Rotatable Cord Organizer, [1s Lock] Spring Cable Clips","b":"Lamicall","p":15.99,"r":4.6,"c":901,"s":2000,"bsr":614,"st":"第三方FBA","h":0,"fa":null},{"a":"B0D9HRTFHD","t":"KGROTE 100PCS Cable Clips, Adhesive Wire Clips Strong Cord Clips Wire Holders, Cable Management Clips for Desk, Wall, Ca","b":"KGROTE","p":9.99,"r":4.4,"c":4027,"s":6000,"bsr":718,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GHP439B2","t":"[Made in the UK] 10-Pack Adjustable Elastic Adhesive Cable Clips, Wire Management Holder, Cord Organizer for Home Office","b":"CableGenie","p":17.2,"r":4.5,"c":383,"s":5000,"bsr":803,"st":"第三方FBA","h":0,"fa":null},{"a":"B07RK94L8J","t":"SmiLife Cable Clips, Cord Holder, Wire Holder for Cable Management, 9PCS","b":"SmiLife","p":5.99,"r":4.4,"c":8057,"s":6000,"bsr":837,"st":"第三方FBA","h":0,"fa":null},{"a":"B076ZT3FVN","t":"Command Clear Cord Clips, 13 Clips, 16 Strips","b":"Command","p":10.04,"r":4.3,"c":11625,"s":5000,"bsr":999,"st":"Amazon自营","h":0,"fa":"October 30, 2017"},{"a":"B08RMNPCYN","t":"Abnii Cable Nails Clips, 400 Pcs, 4mm 6mm 8mm 10mm, Wire Wall Clips, White","b":"Abnii","p":8.09,"r":4.6,"c":10440,"s":4000,"bsr":1038,"st":"第三方FBA","h":0,"fa":null},{"a":"B0B27WSMCF","t":"Shintop 6pcs Cord Holder, Self-Adhesive Cable Clips for Phone Chargers","b":"Shintop","p":5.89,"r":4.5,"c":18637,"s":3000,"bsr":1101,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F99D2W54","t":"6PC Cord Organizer Holder for Desk, New 360° Rotatable Spring Cable Clips","b":"Keuaaao","p":4.98,"r":4.6,"c":794,"s":3000,"bsr":1866,"st":"第三方FBA","h":0,"fa":null},{"a":"B0BRQS5GV3","t":"Cord Organizer for Desk, Nightstand Cable Holder, 5 Pack, Multislot, White","b":"GLUIT","p":9.99,"r":4.4,"c":559,"s":3000,"bsr":2080,"st":"第三方FBA","h":0,"fa":null},{"a":"B0BTCQWJKQ","t":"100 Pcs Cable Clips, Adhesive Cable Organizer Cord Holder Wire Clip Wire Management Self Adhesive Hooks Wire Holder for ","b":"suoundey","p":8.46,"r":4.3,"c":3056,"s":2000,"bsr":2120,"st":"第三方FBA","h":0,"fa":null},{"a":"B0CGRXNLWF","t":"30 Pcs Small Black Adhesive Cable Clips for Cord Management Under Desk Nightstand Phone PC Charger Plug Speaker TV Cord ","b":"TEZOP","p":6.99,"r":4.4,"c":1025,"s":2000,"bsr":2130,"st":"第三方FBA","h":0,"fa":null},{"a":"B0CGRQYCPT","t":"JOYROOM 9 Pack Magnetic Cable Clips Cord Organizer Adhesive Wire Management","b":"JOYROOM","p":9.99,"r":4.6,"c":2282,"s":3000,"bsr":2509,"st":"第三方FBA","h":0,"fa":null},{"a":"B09R4QNG4W","t":"TidyHelper Adhesive Cable Clips Clear (40PCS, M), Indoor/Outdoor","b":"TidyHelper","p":7.89,"r":4.4,"c":4292,"s":2000,"bsr":2452,"st":"第三方FBA","h":0,"fa":null},{"a":"B0D4DP6JJX","t":"XHF 50pcs Medium Self Adhesive Cable Clips Black,Wire Clips Cable Management Wire Organizer Cord Holder for Under Desk, ","b":"XHF","p":7.99,"r":4.5,"c":1499,"s":1000,"bsr":2631,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FTXCF536","t":"6-Pack 360°Rotating Cord Holder for Nightstand, LISEN Magnetic Clips","b":"LISEN","p":9.99,"r":4.5,"c":424,"s":2000,"bsr":2762,"st":"第三方FBA","h":0,"fa":null},{"a":"B000BQN5ZU","t":"Gardner Bender PS-225J Plastic Staple, ½ Inch., Secures Romex, UF & (NM) Non-Metalic Cable, Polyethylene - UV Resistant,","b":"Gardner Bender","p":7.99,"r":4.7,"c":572,"s":500,"bsr":2986,"st":"Amazon自营","h":0,"fa":null},{"a":"B0FWR96KRP","t":"Art3d 8-Pack Magnetic Cable Clips, Cord Organizer, Office Cable Management","b":"Art3d","p":4.99,"r":4.7,"c":114,"s":2000,"bsr":3010,"st":"第三方FBA","h":0,"fa":"October 17, 2025"},{"a":"B0B2HXYH3G","t":"Cable Clips Nail in Cable Clips 100 Pcs 8mm Flat Ethernet Cable Wall Clips Cable Tacks Coax Cable Clip Speaker Wire Clip","b":"Easytle","p":4.79,"r":4.6,"c":1957,"s":2000,"bsr":3446,"st":"第三方FBA","h":0,"fa":null},{"a":"B0H3ZBLF8Z","t":"Silkland 6 Pack Snap-Lock Cable Clips, 360° Rotatable Cord Holder for Desk","b":"Silkland","p":18.99,"r":4.9,"c":59,"s":1000,"bsr":3324,"st":"第三方FBA","h":0,"fa":null},{"a":"B071FXZBMV","t":"OHill 16-Pack Black Cord Organizer - Adhesive Cable Clips Holder for Desk, Wall, Car - Wire Management Clips for iPhone ","b":"OHill","p":7.96,"r":4.4,"c":81429,"s":1000,"bsr":4123,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DT5628FZ","t":"10PCS Cable Organizer - Data Cable Storage Artifact for Desktop Computer - Cable Tie Wire Network Cable Routing Fixer","b":"—","p":1.41,"r":4.1,"c":244,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B0DSPBDBPG","t":"SmallCat 3 Sets Charger Cord Holders, Adhesive Cord Anchor, Antique Copper","b":"SmallCat","p":9.99,"r":4.2,"c":806,"s":null,"bsr":4174,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DT9MZB2P","t":"Rindion Cord Hider, 85.2in TV Cable Hider, Cord Covers for Wires on Wall, Self-Adhesive Wire Hider for TV on Wall Cable ","b":"Rindion","p":4.99,"r":4.4,"c":1107,"s":1000,"bsr":4236,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FKMDK84Z","t":"TidyHelper 100 PCS Adhesive Cable Clips Clear, Small, Indoor/Outdoor","b":"TidyHelper","p":8.35,"r":4.4,"c":922,"s":2000,"bsr":4464,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DD7BF3XG","t":"Magnetic Cable Clips, Cute Desk Charger Cord Holder","b":"COOCAT","p":9.49,"r":4.4,"c":1909,"s":4000,"bsr":5088,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F93NWG47","t":"8 Pack Cable Clips, Cord Organizer, Cute Spring Cord Holder","b":"Chfeila","p":9.59,"r":4.7,"c":1027,"s":3000,"bsr":5047,"st":"第三方FBA","h":0,"fa":null},{"a":"B0H13MRCH4","t":"Lamicall 6 Pack Rotating Magnetic Cable Clips, Cord Organizer Holder","b":"Lamicall","p":12.99,"r":4.4,"c":315,"s":2000,"bsr":4871,"st":"第三方FBA","h":0,"fa":null},{"a":"B07TXLCGQ3","t":"Cable Wire Clips 4mm 6mm 8mm 10mm (Pack of 200) Cable Management RG6 RG59 CAT5 CAT6 RJ45 Electrical Ethernet Dish TV Spe","b":"Easytle","p":5.99,"r":4.6,"c":3102,"s":1000,"bsr":4807,"st":"第三方FBA","h":0,"fa":null},{"a":"B09V298Z1V","t":"200 Pcs Cable Clips 4/6/8/10mm Nail in Cable Clips Cable Wire Clips Cable Tacks Coax Cable Clips Speaker Wire Clips Cabl","b":"Easytle","p":5.99,"r":4.5,"c":1021,"s":2000,"bsr":5110,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FR4YCH36","t":"OneLeaf 12 Pack 360° Rotatable Spring Cable Clips[1s Lock], Adhesive Cord Holder for Nightstand, Phone Charger Cord Hold","b":"OneLeaf","p":6.19,"r":4.7,"c":404,"s":1000,"bsr":5181,"st":"第三方FBA","h":0,"fa":null},{"a":"B0915X9MTD","t":"12 Pack Cable Clips, Adhesive Cord Organizer Holder for Desk Black","b":"Znben","p":6.99,"r":4.3,"c":4236,"s":500,"bsr":5577,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FH4SF38G","t":"3 Pack Upgraded Cord Management Clips with Extra-Large Adhesive","b":"Kofuyni","p":8.99,"r":4.5,"c":168,"s":1000,"bsr":5517,"st":"第三方FBA","h":0,"fa":null},{"a":"B0CRDW485T","t":"Abnii 100PCS Cable Clips, Adhesive Cord Wire Organizer, Small","b":"Abnii","p":7.99,"r":4.4,"c":3882,"s":1000,"bsr":6376,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DKFXGYBX","t":"Chfeila 8-Pack Cable Clips, Quick-Lock Cord Organizer Black","b":"Chfeila","p":9.58,"r":4.7,"c":2004,"s":1000,"bsr":6581,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GG4QMV37","t":"60Pcs Adhesive Cable Clips, Black Small, Cord Holder, Cord Clips for Dash cam, Ethernet Cable, Christmas Lights, USB, Ph","b":"KnotKing","p":6.99,"r":4.3,"c":196,"s":1000,"bsr":6242,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F93M8YPB","t":"6Pack Cord Organizer, Spring Cable Clips [1s Lock] Cord Holder for Nightstand Car Home Office Desk Accessories Cubicle D","b":"Chfeila","p":12.99,"r":4.8,"c":572,"s":1000,"bsr":6684,"st":"第三方FBA","h":0,"fa":null},{"a":"B086RRTBLW","t":"Cable Clips Self with 3M Adhesive Cord Organizer, Wire Holder Clamp Management Sticky for Desk Car Dash Cam Tables Wall,","b":"EtoBesy","p":6.99,"r":4.2,"c":1377,"s":500,"bsr":6662,"st":"第三方FBA","h":0,"fa":null},{"a":"B0B3DTT386","t":"Guardtier CGM909 Pressure Switch Cable Guides Compatible with M-LOK System","b":"Guardtier","p":9.95,"r":4.7,"c":2160,"s":1000,"bsr":6863,"st":"第三方FBM","h":0,"fa":null},{"a":"B0CVX4F83K","t":"TidyHelper 100 PCS Outdoor Light Clips Clear, Small & Large Cable Clips","b":"TidyHelper","p":8.95,"r":4.4,"c":3038,"s":500,"bsr":7405,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FZ8MJ53X","t":"Rotatable Cable Clips, 8 Pack Cord Holder for Nightstand Multicolor","b":"Lancord","p":6.99,"r":4.6,"c":447,"s":1000,"bsr":7306,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F1MYVFV2","t":"mxuteuk 200PCS Cable Clips with Steel Nails,4/6/8/10mm Round White Cable Wire Clips,Wall Clips for Cords,Cable Cord Clip","b":"mxuteuk","p":6.99,"r":4.6,"c":351,"s":500,"bsr":7054,"st":"第三方FBA","h":0,"fa":null},{"a":"B07RQCXCR2","t":"SOULWIT 50Pcs Self Adhesive Cable Management Clips - Black","b":"SOULWIT","p":12.95,"r":4.6,"c":12387,"s":1000,"bsr":7588,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DXZDFMK7","t":"AGPTEK 8 Pack Magnetic Cable Clips, 360° Rotatable Cord Holder, Clear","b":"AGPTEK","p":8.99,"r":4.6,"c":471,"s":500,"bsr":7620,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FCY91T4J","t":"Daisyhome Rotatable Cord Organizer, Strong Adhesive Spring Cable Clips","b":"Daisyhome","p":6.74,"r":4.6,"c":475,"s":1000,"bsr":8648,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DQ3JK567","t":"Rocoren 6-Pack Magnetic Adjustable Adhesive Cable Clips Cord Organizer","b":"Rocoren","p":7.99,"r":4.6,"c":1301,"s":1000,"bsr":9122,"st":"第三方FBA","h":0,"fa":null},{"a":"B0D4LL7ST8","t":"Lamicall 6 Pack Cord Organizer, Office Desk Accessories, Clear Cable Clips","b":"Lamicall","p":9.99,"r":4.6,"c":3507,"s":1000,"bsr":9296,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F34BT4XZ","t":"9 Pack Magnetic Cable Clips Cord Organizer,Desk Cable Management Accessories,Cord Clips,Adhesive USB Wire Holder Keeper ","b":"Aeebliay","p":7.96,"r":4.5,"c":237,"s":500,"bsr":8824,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GC7DCQQX","t":"Cable Clips with Screws Fastener 1/4 Inch (6 mm) - All Weather Wire Clips for Coaxial, Ethernet,Electrical Cables,Brick/","b":"TKCHAX","p":7.99,"r":4.5,"c":129,"s":300,"bsr":9880,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FCFRG24G","t":"Lamicall 8 Pack Magnetic Cable Clips Cord Organizer - Silver Shine Design","b":"Lamicall","p":9.98,"r":4.8,"c":378,"s":500,"bsr":10234,"st":"第三方FBA","h":0,"fa":null},{"a":"B07BFNP4W9","t":"40Pack Adhesive Cable Clips, Wire Holders for Desk Wall Car, Black","b":"Yocice","p":9.89,"r":4.2,"c":11178,"s":500,"bsr":11540,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FR44QSR3","t":"OneLeaf 8 Pack 360° Rotatable Strong Magnetic Cable Clips Cord Holder for Nightstand, 1s Lock Phone Charger Holder, Adhe","b":"OneLeaf","p":5.39,"r":4.6,"c":344,"s":1000,"bsr":11126,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DP4HJBCH","t":"Lamicall 6 Pack Cable Clips, Compact Spring Cord Organizer Holder for Desk","b":"Lamicall","p":8.99,"r":4.6,"c":1023,"s":500,"bsr":12176,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GTPZRJGG","t":"NEWDERY 6pc Magnetic Cable Clips Cord Organizer Cord Holder for Nightstand","b":"NEWDERY","p":6.99,"r":4.2,"c":234,"s":1000,"bsr":11807,"st":"第三方FBA","h":0,"fa":null},{"a":"B08ZJF9W33","t":"60 PCS Adhesive Cable Clips, Upgraded Wall Wire Clips for Cable Management, Strong Cord Clips Wire Holders for The Wall,","b":"TidyHelper","p":6.89,"r":4.3,"c":7733,"s":300,"bsr":13373,"st":"第三方FBA","h":0,"fa":null},{"a":"B0H4LJ5RC4","t":"10 Pack Adhesive Cable Clips, Adjustable Cable Management Clips Black","b":"Duseu","p":13.99,"r":4.8,"c":26,"s":null,"bsr":12042,"st":"第三方FBA","h":0,"fa":"July 30, 2026"},{"a":"B07YFFJ5G5","t":"Cable Clips with Strong Self-Adhesive, XIAOXI Cable Management TV PC Wire Holder Sticky Tidy and Organizer Cord and Wire","b":"XIAOXI","p":11.99,"r":4.4,"c":6881,"s":500,"bsr":13468,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F9FKGVQZ","t":"FLYLEAD 8-Pack Silicone Cord Organizer Magnetic Cable Clips, Adhesive","b":"FLYLEAD","p":9.99,"r":4.4,"c":591,"s":200,"bsr":14302,"st":"第三方FBA","h":0,"fa":null},{"a":"B0DLP63VGJ","t":"XHF 50 PCS Self Adhesive Cable Clips(L) Black,Wire Clips Cable Management Wire Organizer Cord Holder for Under Desk, Car","b":"XHF","p":9.99,"r":4.6,"c":490,"s":400,"bsr":15121,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GZKLMDGW","t":"50Pcs Strong Adhesive Cable Clips, Dash cam Clips, car Wire Clips,Cord Organizer Cable Management,Cord Holder for Under ","b":"Hopejourney","p":6.99,"r":4.6,"c":33,"s":500,"bsr":14928,"st":"第三方FBA","h":0,"fa":null},{"a":"B075QXS5BG","t":"HS 7mm Ethernet Cat6 Cable Clips Clamps RG6 with Steel Nail (200 Pack) Wire Clips Black for Wall,Cord Management","b":"HS","p":8.99,"r":4.7,"c":886,"s":500,"bsr":15875,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GQPYB4L4","t":"8 Pack Rotatable Cable Clips Cord Organizer,Desk Cable Management Accessory,Cord Clips,Adhesive USB Wire Holder Keeper O","b":"Aeebliay","p":7.98,"r":4.8,"c":54,"s":500,"bsr":15661,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F86B57ZP","t":"Command Plastic Cord Bundlers, Damage-Free Cable Organizer, No Tools Required, 12 Gray and 24 Adhesive Strips","b":"Command","p":22.99,"r":4.6,"c":47,"s":500,"bsr":7424,"st":"第三方FBM","h":0,"fa":null},{"a":"B089XXZ88X","t":"pzoz Cable Clips, 3 Pack Cord Organizer Charger Cable Management for Organizing Home Office Desk Phone Car Wire, Self Ad","b":"pzoz","p":9.99,"r":4.5,"c":7320,"s":400,"bsr":16549,"st":"第三方FBA","h":0,"fa":null},{"a":"B0D5YD14L1","t":"Jadaol Cable Clips 100Pcs 8mm Nail in Clips for Round Ethernet Cables Wall Clips Cable Tacks Electrical Wire TV Cable Sp","b":"Jadaol","p":4.29,"r":4.6,"c":407,"s":500,"bsr":16883,"st":"第三方FBA","h":0,"fa":null},{"a":"B0F4XCHJ2P","t":"100 PCS Adhesive Cable Clips Cord Organizer (Small, Medium,Large),Wire Holder for Cable Management, Outdoor Light Clips ","b":"ITUGOU","p":9.99,"r":4.3,"c":219,"s":400,"bsr":17006,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FQCG2KYK","t":"120 PCS Cable Clips, Adhesive Cord Clips for Wires on Wall, Strong Wire Clips Holders Cord Organizer for Cable Managemen","b":"TidyHelper","p":7.95,"r":4.4,"c":121,"s":400,"bsr":17117,"st":"第三方FBA","h":0,"fa":"September 9, 2025"},{"a":"B0C9DP8NXN","t":"TWTADE 306PCS Black Cable Clamps Nylon Plastic R-Type 6 Sizes 3/16'' 1/4'' 3/8'' 1/2'' 3/4'' 1'' Cable Mounting Wire Cli","b":"TWTADE","p":11.99,"r":4.5,"c":474,"s":300,"bsr":17525,"st":"第三方FBM","h":0,"fa":null},{"a":"B0FCFV6S1Y","t":"6Pack Magnetic Cord Holder 360° Rotating, 1s Lock Adhesive Desk Organizers","b":"Tesmax","p":5.33,"r":4.7,"c":315,"s":200,"bsr":17100,"st":"第三方FBA","h":0,"fa":null},{"a":"B0002JSZ9M","t":"Arrow Fastener T59 Type Staples, 5/16\" (091-591189) 1 Box","b":"Arrow Fastener","p":11.99,"r":4.6,"c":1773,"s":200,"bsr":18318,"st":"Amazon自营","h":0,"fa":null},{"a":"B00PSFPW1O","t":"Gardner Bender MSI-200JT Insulated Metal Staple, ½, Secures: NM Electrical Cable, BX, MC, AC, and UF Cable, 200 Pack, Bl","b":"Gardner Bender","p":9.98,"r":4.7,"c":262,"s":400,"bsr":17684,"st":"Amazon自营","h":0,"fa":null},{"a":"B0DK93KJZ4","t":"6 Pack Cord Organizer Spring Cable Holder Clips - Desk Cable Management Clips, Adhesive Wire Keeper for Phone Chargers, ","b":"scores","p":1.7,"r":4.0,"c":807,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B0G528KMYN","t":"Cable Organizer Clips Set Magnetic Cord Holder for Charging Data USB Cable Management Desk Wire Storage(White,8PCS)","b":"—","p":1.83,"r":3.8,"c":149,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B08FKMMBVY","t":"SOULWIT Cable Holder Clips, 3-Pack Cable Management Cord Organizer Clips Silicone Self Adhesive for Desktop USB Charging","b":"SOULWIT","p":6.95,"r":4.5,"c":25120,"s":300,"bsr":18644,"st":"第三方FBA","h":0,"fa":null},{"a":"B005ZFKD4S","t":"nVent GARDNER BENDER MPS-2125 CableBoss 1/2 in. Metal Staple, 200-Pack","b":"Gardner Bender","p":9.69,"r":4.1,"c":1345,"s":200,"bsr":19529,"st":"Amazon自营","h":0,"fa":null},{"a":"B0GZL24X7V","t":"3 Pack Self-Adhesive Cable Management Clips - White Cord Organizers for Desktop, Nightstand & Office, Available in 3/5/7","b":"scores","p":1.24,"r":3.6,"c":36,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B0GCLL3V3K","t":"7mm Spring Cable Holder Clips, 9 Pack Desk Cord Organizer, Black","b":"RIFOVN","p":8.99,"r":4.4,"c":83,"s":400,"bsr":19045,"st":"第三方FBA","h":0,"fa":null},{"a":"B01N7KY5FE","t":"THE CIMPLE CO Single Cable Clips with Screws - 1/4 Inch Coaxial Cable Clamps Outdoor - Exterior Cord Management for Coax","b":"THE CIMPLE CO","p":12.97,"r":4.7,"c":1622,"s":300,"bsr":20295,"st":"第三方FBA","h":0,"fa":null},{"a":"B00PB9IL4M","t":"Gardner Bender MS-500BX Metal Cable Staple, ½\", Secures: Romex Wire and NM Electrical Cable, Splinter Free","b":"Gardner Bender","p":8.29,"r":4.4,"c":69,"s":200,"bsr":20082,"st":"Amazon自营","h":0,"fa":null},{"a":"B0GJCWHVY2","t":"JOYROOM 8 Pack Magnetic Cable Clips, 360° Swivel Cord Organizer Wire Holder","b":"JOYROOM","p":13.99,"r":4.5,"c":353,"s":300,"bsr":20770,"st":"第三方FBA","h":0,"fa":null},{"a":"B0BB4PV987","t":"DEWALT 1IN Insulated Elect Staples 540 Qty","b":"DEWALT","p":21.74,"r":4.8,"c":281,"s":500,"bsr":21126,"st":"第三方FBA","h":0,"fa":null},{"a":"B0H3N4VH2N","t":"OneLeaf 10-Pack Adjustable Elastic Cable Clips, Cable Management, Black","b":"OneLeaf","p":9.99,"r":4.9,"c":23,"s":300,"bsr":21271,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GWDJ8K5C","t":"Spring Loaded Cord Storage Clips - Pack of 6Desktop Cord Management Clips, Nightstand Mobile Phone Charging Cable Holder","b":"—","p":0.98,"r":3.6,"c":184,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B0BB88QDFG","t":"60PCS Cable Clips, KGROTE Outdoor Wire Clips Adhesive Cable Hooks Cord Organizer Holder Christmas Light Clips for Desk, ","b":"KGROTE","p":7.99,"r":4.2,"c":2026,"s":300,"bsr":25725,"st":"第三方FBA","h":0,"fa":null},{"a":"B01HR9VS4I","t":"EBOOT 3/4” Adhesive Cable Wire Clips for Desk Wall Car, 100 Pieces","b":"EBOOT","p":5.55,"r":4.2,"c":11303,"s":500,"bsr":27461,"st":"第三方FBA","h":0,"fa":null},{"a":"B08MW7LC31","t":"SOULWIT 50 Pcs Self Adhesive Cable Management Clips, Cable Organizers Sticky Wire Clips Cord Holder for TV PC Laptop Eth","b":"SOULWIT","p":7.95,"r":4.4,"c":3480,"s":300,"bsr":25651,"st":"第三方FBA","h":0,"fa":null},{"a":"B0H4QLP5NV","t":"20 Pack Cable Management Clips, Adhesive Cord Organizer-Black","b":"Nearockle","p":12.99,"r":5.0,"c":6,"s":200,"bsr":25128,"st":"第三方FBA","h":0,"fa":null},{"a":"B07VZZR4DL","t":"Cable Clamp R-Type Cable Clip Wire Clamp 1/4-inch Nylon Screw Mounting Cord Fastener Clips with Screws for Wire Manageme","b":"Alamic","p":7.99,"r":4.6,"c":1839,"s":300,"bsr":27034,"st":"第三方FBA","h":0,"fa":"April 28, 2019"},{"a":"B0FVFSPYZL","t":"Cable Management Kit Compatible with M-LOK & Picatinny Rails, Cable Clips","b":"Guardtier","p":18.99,"r":4.5,"c":98,"s":400,"bsr":26429,"st":"第三方FBA","h":0,"fa":null},{"a":"B009XI6T96","t":"Skywalker Flexible Single Cable Screw Clips (Pack of 100 / Black)","b":"Skywalker","p":15.49,"r":4.8,"c":745,"s":400,"bsr":27835,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FZ8YTXFC","t":"6 Pcs Cord Organizer Holder Single Slot Adhesive Cable Clips Organizer for Desk Adhesive Holder Cord Management, Black","b":"—","p":1.36,"r":4.3,"c":6,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B01M6U9Q9C","t":"Viaky 30 Pcs Black Clips Self Adhesive Backed Nylon Wire Adjustable Cable Clips Adhesive Cable Management Drop Wire Hold","b":"Viaky","p":7.88,"r":4.3,"c":8638,"s":100,"bsr":28036,"st":"第三方FBA","h":0,"fa":null},{"a":"B0FNXBKHFS","t":"Multi-Pack Cable Storage and Organizer Clips | Versatile Wire and Charging Cable Management for Travel, Desk, and Home |","b":"—","p":2.69,"r":3.8,"c":512,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B0DRL484RN","t":"10PCS Desk Cable Organizer Clips for Wire Management Adhesive Cord Holders USB Charging Cables Office Desktop Organizati","b":"—","p":1.64,"r":4.1,"c":196,"s":null,"bsr":0,"st":"第三方FBM","h":1,"fa":null},{"a":"B09S8VXZXC","t":"5Pack Cable Spring Holder Clips, Cord Organizer for Desk - Lamicall Adjustable Cord Wire Holder Keeper, Phone Charger Or","b":"Lamicall","p":8.99,"r":4.6,"c":5450,"s":300,"bsr":30218,"st":"第三方FBA","h":0,"fa":null},{"a":"B0GYRLPV5Y","t":"acer 9 Pack Magnetic Rotatable Cable Clips, Cord Holder for Desk Nightstand","b":"Acer","p":12.99,"r":4.5,"c":46,"s":300,"bsr":30524,"st":"第三方FBA","h":0,"fa":null}];
+const META_DEFAULT = {name:"Electrical Cable Staples",node:"6396128011",date:"2026-09-03",src:"amazon_bsr_cable_staples_FINAL.json",geo:"美区 90010",cat:"Tools & Home Improvement",sub:"Electrical Cable Staples"};
+let DATA = [], META = META_DEFAULT, SELLER_MODE = "cnt", CUR = "sel";
+
+const $ = s => document.querySelector(s);
+const es = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* Haul 低价商城品牌徽标（x.b 归一为 "Haul" 后经此渲染） */
+const bTxt = b => b==="Haul" ? '<span class="hp" title="Amazon Haul 低价商城商品（前台不展示月销量）">Haul</span>' : es(b);
+const fmt = n => (n===null||n===undefined||isNaN(n)) ? "—" : Number(n).toLocaleString("en-US");
+const money = n => (n===null||n===undefined||isNaN(n)) ? "—" : "$" + Math.round(n).toLocaleString("en-US");
+const money2 = n => (n===null||n===undefined||isNaN(n)) ? "—" : "$" + Number(n).toFixed(2);
+const pct = (a,b) => b ? (a/b*100) : 0;
+const p1 = n => (n===null||n===undefined||isNaN(n)) ? "—" : Number(n).toFixed(1) + "%";
+const mid = a => { if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const i=Math.floor(s.length/2); return s.length%2?s[i]:(s[i-1]+s[i])/2; };
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+
+/* ---------- 数据层 ---------- */
+function nn(v){
+  if(v===null||v===undefined||v===""||v==="—"||v==="-") return null;
+  if(typeof v==="number") return isNaN(v)?null:v;
+  const f=parseFloat(String(v).replace(/[$,]/g,""));
+  return isNaN(f)?null:f;
+}
+function parseSales(v){
+  if(v===null||v===undefined) return null;
+  const s=String(v).trim();
+  if(!s||s==="—"||s==="-") return null;
+  const m=s.match(/^([\d.]+)K\+$/i); if(m) return Math.round(parseFloat(m[1])*1000);
+  const n=s.match(/^(\d+)\+?$/); if(n) return parseInt(n[1]);
+  return null;
+}
+function norm(list){
+  const out=[];
+  (list||[]).forEach(x=>{
+    if(!x||(!x.asin&&!x.a)) return;
+    const st = x.st || (function(){
+      const sb=String(x.shipped_by||""), sl=String(x.seller||"");
+      if(sb.indexOf("sold by Amazon")>=0) return "Amazon自营";
+      if(sb==="Amazon") return "第三方FBA";
+      if(sl.indexOf("第三方")>=0) return "第三方FBM";
+      return "第三方FBM";
+    })();
+    const hraw = x.h!==undefined&&x.h!==null ? String(x.h).trim() : (x.haul?String(x.haul).trim():"");
+    const isH = hraw!=="" && hraw!=="—" && hraw!=="-" && hraw!=="0" && hraw!=="false" && hraw!=="no";
+    out.push({
+      a:x.asin||x.a||"—", t:String(x.title||x.t||"—"),
+      b:isH?"Haul":((x.brand&&x.brand!=="—")?(x.brand||x.b):(x.b||"—")),
+      h:isH?1:0,
+      p:nn(x.p!==undefined?x.p:x.price), r:nn(x.r!==undefined?x.r:x.rating),
+      c:x.c!==undefined?(x.c||0):(parseInt(String(x.review_count||"0").replace(/,/g,""))||0),
+      s:x.s!==undefined?(nn(x.s)):(parseSales(x.monthly_sales)),
+      bsr:x.bsr!==undefined?(x.bsr||0):(parseInt(x.bsr_main)||0),
+      st:st, fa:x.first_available||x.fa||null,
+      cat:x.bsr_main_category||null, sub:x.bsr_sub_category||null
+    });
+  });
+  return out;
+}
+function load(list, meta){ DATA=norm(list); if(meta) META=meta; renderAll(); }
+
+/* ---------- 计算层 ---------- */
+const withS = () => DATA.filter(x=>x.s);
+function c1(){
+  const W=withS(), totS=W.reduce((a,b)=>a+b.s,0), totR=W.reduce((a,b)=>a+b.s*(b.p||0),0);
+  const P=DATA.map(x=>x.p).filter(v=>v!==null), R=DATA.map(x=>x.r).filter(v=>v!==null), C=DATA.map(x=>x.c);
+  const bm={}; W.forEach(x=>{ bm[x.b]=(bm[x.b]||0)+x.s; });
+  const bs=Object.entries(bm).sort((a,b)=>b[1]-a[1]);
+  const t3=bs.slice(0,3).reduce((a,b)=>a+b[1],0), t5=bs.slice(0,5).reduce((a,b)=>a+b[1],0);
+  const l5=W.map(x=>x.s).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);
+  const fa=DATA.filter(x=>x.fa&&String(x.fa)!=="—").length;
+  const B={}; DATA.forEach(x=>{ B[x.b]=(B[x.b]||0)+1; });
+  return {n:DATA.length, nw:W.length, totS, totR,
+    pAvg:avg(P), pMin:P.length?Math.min(...P):null, pMax:P.length?Math.max(...P):null,
+    rAvg:avg(R), rMin:R.length?Math.min(...R):null, rMax:R.length?Math.max(...R):null,
+    cAvg:avg(C), cMin:C.length?Math.min(...C):null, cMax:C.length?Math.max(...C):null,
+    brandN:Object.keys(B).length, t3, t5, t3p:pct(t3,totS), t5p:pct(t5,totS),
+    l5p:pct(l5,totS), faN:fa, faPct:pct(fa,DATA.length)};
+}
+const SB=[["<500",0,500],["500-1K",500,1000],["1K-2K",1000,2000],["2K-5K",2000,5000],["5K-10K",5000,10000],["10K+",10000,1e9]];
+function c2(){
+  const W=withS(), tot=W.reduce((a,b)=>a+b.s,0), totR=W.reduce((a,b)=>a+b.s*(b.p||0),0);
+  const g=SB.map(([lb,a,b])=>{ const r=W.filter(x=>x.s>=a&&x.s<b);
+    return {lb, n:r.length, s:r.reduce((p,q)=>p+q.s,0), rev:r.reduce((p,q)=>p+q.s*(q.p||0),0)}; });
+  g.forEach(x=>{ x.sp=pct(x.s,tot); x.rp=pct(x.rev,totR); });
+  return {g, noS:DATA.length-W.length, tot, top:[...W].sort((a,b)=>b.s-a.s).slice(0,10)};
+}
+const PB=[["<$5",0,5],["$5-10",5,10],["$10-15",10,15],["$15-20",15,20],["$20+",20,1e9]];
+function c3(){
+  const totR=withS().reduce((a,b)=>a+b.s*(b.p||0),0);
+  return PB.map(([lb,a,b])=>{
+    const r=DATA.filter(x=>x.p!==null&&x.p>=a&&x.p<b), rw=r.filter(x=>x.s);
+    const rv=rw.reduce((p,q)=>p+q.s*(q.p||0),0);
+    return {lb, n:r.length, np:pct(r.length,DATA.length), s:rw.reduce((p,q)=>p+q.s,0), rev:rv, rp:pct(rv,totR),
+      rAvg:avg(r.map(x=>x.r).filter(v=>v!==null)), rMid:mid(r.map(x=>x.c)), pAvg:avg(r.map(x=>x.p))};
+  });
+}
+function c4(){
+  const B={}; DATA.forEach(x=>{ B[x.b]=(B[x.b]||0)+1; });
+  const list=Object.entries(B).sort((a,b)=>b[1]-a[1]);
+  const dist=[["1 条",0],["2 条",0],["3 条",0],["4 条",0],["5 条及以上",0]];
+  list.forEach(([,c])=>{ const i=c>=5?4:c-1; if(i>=0) dist[i][1]++; });
+  return {list, dist, top10:list.slice(0,10).reduce((a,b)=>a+b[1],0), totBrand:list.length};
+}
+function c5(){
+  const W=withS(), tot=W.reduce((a,b)=>a+b.s,0), bm={}, bc={};
+  W.forEach(x=>{ bm[x.b]=(bm[x.b]||0)+x.s; });
+  DATA.forEach(x=>{ bc[x.b]=(bc[x.b]||0)+1; });
+  const list=Object.entries(bm).sort((a,b)=>b[1]-a[1]).map(([b,s])=>({b, s, sp:pct(s,tot), cnt:bc[b]||0, cp:pct(bc[b]||0,DATA.length)}));
+  return {list, tot};
+}
+const SC={ "第三方FBA":"#7c3aed", "第三方FBM":"#ba7517", "Amazon自营":"#3b6d11" };
+function c6(){
+  const W=withS(), tot=W.reduce((a,b)=>a+b.s,0);
+  const m={};
+  DATA.forEach(x=>{ m[x.st]=m[x.st]||{n:0,s:0,rev:0}; m[x.st].n++; });
+  W.forEach(x=>{ m[x.st]=m[x.st]||{n:0,s:0,rev:0}; m[x.st].s+=x.s; m[x.st].rev+=x.s*(x.p||0); });
+  const list=Object.entries(m).map(([k,v])=>({k, n:v.n, np:pct(v.n,DATA.length), s:v.s, sp:pct(v.s,tot), rev:v.rev})).sort((a,b)=>b.n-a.n);
+  return {list, tot};
+}
+function c7(){
+  const Y={}, M={};
+  DATA.forEach(x=>{
+    if(!x.fa||String(x.fa)==="—") return;
+    const s=String(x.fa);
+    const ym=s.match(/(20\d{2})/);
+    const mon=s.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)/i);
+    if(ym) Y[ym[1]]=(Y[ym[1]]||0)+1;
+    if(mon) M[mon[1]]=(M[mon[1]]||0)+1;
+  });
+  return {Y, M, n:DATA.filter(x=>x.fa&&String(x.fa)!=="—").length};
+}
+
+/* ---------- SVG 图表 ---------- */
+function svgBar(items, opt){
+  opt=opt||{};
+  const W=680, H=opt.h||230, pl=48, pr=16, pt=14, pb=44;
+  const iw=W-pl-pr, ih=H-pt-pb, max=Math.max(1,...items.map(x=>x.v));
+  const bw=iw/items.length, bar=Math.min(58, bw*0.56);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-height:'+H+'px" preserveAspectRatio="xMidYMid meet">';
+  for(let i=0;i<=4;i++){
+    const y=pt+ih-i/4*ih;
+    s+='<line x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'" stroke="#e4e7ec" stroke-width="1"/>';
+    s+='<text x="'+(pl-7)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="#8b95a3">'+fmt(Math.round(max*i/4))+'</text>';
+  }
+  items.forEach((x,i)=>{
+    const h=Math.max(2, x.v/max*ih), cx=pl+bw*i+bw/2, y=pt+ih-h;
+    s+='<rect x="'+(cx-bar/2)+'" y="'+y+'" width="'+bar+'" height="'+h+'" rx="4" fill="'+(x.c||opt.c||"#7c3aed")+'"/>';
+    s+='<text x="'+cx+'" y="'+(y-6)+'" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a1d23">'+(x.lbTop||fmt(x.v))+'</text>';
+    s+='<text x="'+cx+'" y="'+(pt+ih+17)+'" text-anchor="middle" font-size="11" fill="#5b6472">'+es(x.k)+'</text>';
+    if(x.sub) s+='<text x="'+cx+'" y="'+(pt+ih+31)+'" text-anchor="middle" font-size="10" fill="#8b95a3">'+es(x.sub)+'</text>';
+  });
+  return s+'</svg>';
+}
+function svgHBar(items, opt){
+  opt=opt||{};
+  const W=680, rowH=opt.rowH||30, pt=6, pl=opt.pl||128, pr=opt.pr||76;
+  const H=pt*2+items.length*rowH, iw=W-pl-pr, max=Math.max(1,...items.map(x=>x.v));
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-height:'+H+'px" preserveAspectRatio="xMidYMid meet">';
+  items.forEach((x,i)=>{
+    const y=pt+i*rowH, w=Math.max(2, x.v/max*iw);
+    const isHl=x.k==="Haul";
+    s+='<text x="'+(pl-9)+'" y="'+(y+rowH/2+4)+'" text-anchor="end" font-size="11.5" fill="'+(isHl?"#D96C00":"#1a1d23")+'"'+(isHl?' font-weight="700"':"")+'>'+es(String(x.k).slice(0,opt.klen||16))+'</text>';
+    s+='<rect x="'+pl+'" y="'+(y+rowH/2-9)+'" width="'+iw+'" height="18" rx="4" fill="#f1f3f6"/>';
+    s+='<rect x="'+pl+'" y="'+(y+rowH/2-9)+'" width="'+w+'" height="18" rx="4" fill="'+(x.c||opt.c||"#7c3aed")+'"/>';
+    s+='<text x="'+(pl+w+7)+'" y="'+(y+rowH/2+4)+'" font-size="11.5" font-weight="600" fill="#1a1d23">'+es(x.lb||fmt(x.v))+'</text>';
+  });
+  return s+'</svg>';
+}
+function svgGroup(items, opt){
+  const W=680, H=opt.h||250, pl=48, pr=48, pt=16, pb=48;
+  const iw=W-pl-pr, ih=H-pt-pb;
+  const m1=Math.max(1,...items.map(x=>x.a)), m2=Math.max(1,...items.map(x=>x.b));
+  const bw=iw/items.length, bar=Math.min(26, bw*0.3);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-height:'+H+'px" preserveAspectRatio="xMidYMid meet">';
+  for(let i=0;i<=4;i++){ const y=pt+ih-i/4*ih;
+    s+='<line x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'" stroke="#e4e7ec" stroke-width="1"/>'; }
+  s+='<text x="'+(pl-7)+'" y="'+(pt+8)+'" text-anchor="end" font-size="10" fill="#7c3aed">'+fmt(Math.round(m1))+'</text>';
+  s+='<text x="'+(pl-7)+'" y="'+(pt+ih+4)+'" text-anchor="end" font-size="10" fill="#7c3aed">0</text>';
+  s+='<text x="'+(W-pr+7)+'" y="'+(pt+8)+'" font-size="10" fill="#ba7517">'+money(Math.round(m2))+'</text>';
+  items.forEach((x,i)=>{
+    const cx=pl+bw*i+bw/2, h1=Math.max(2,x.a/m1*ih), h2=Math.max(2,x.b/m2*ih);
+    s+='<rect x="'+(cx-bar-2)+'" y="'+(pt+ih-h1)+'" width="'+bar+'" height="'+h1+'" rx="3" fill="#7c3aed"/>';
+    s+='<rect x="'+(cx+2)+'" y="'+(pt+ih-h2)+'" width="'+bar+'" height="'+h2+'" rx="3" fill="#ba7517"/>';
+    s+='<text x="'+(cx-bar/2-2)+'" y="'+(pt+ih-h1-6)+'" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">'+x.a+'</text>';
+    s+='<text x="'+(cx+bar/2+2)+'" y="'+(pt+ih-h2-6)+'" text-anchor="middle" font-size="10" font-weight="600" fill="#ba7517">'+x.lbB+'</text>';
+    s+='<text x="'+cx+'" y="'+(pt+ih+18)+'" text-anchor="middle" font-size="11" fill="#5b6472">'+es(x.k)+'</text>';
+    if(x.sub) s+='<text x="'+cx+'" y="'+(pt+ih+32)+'" text-anchor="middle" font-size="10" fill="#8b95a3">'+es(x.sub)+'</text>';
+  });
+  return s+'</svg>';
+}
+function svgDonut(items, opt){
+  opt=opt||{};
+  const S=250, cx=S/2, cy=S/2, r=opt.r||82, sw=opt.sw||30;
+  const tot=items.reduce((a,b)=>a+b.v,0)||1, C=2*Math.PI*r;
+  let off=0, s='<svg viewBox="0 0 '+S+' '+S+'" width="100%" style="display:block;max-width:'+S+'px;margin:0 auto">';
+  items.forEach(x=>{
+    const frac=x.v/tot, len=C*frac;
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+x.c+'" stroke-width="'+sw+'" stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-C*off)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+    off+=frac;
+  });
+  s+='<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" font-size="21" font-weight="600" fill="#1a1d23">'+es(opt.center||fmt(tot))+'</text>';
+  s+='<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" font-size="11" fill="#8b95a3">'+es(opt.centerSub||"")+'</text>';
+  return s+'</svg>';
+}
+const ICO = {
+  red:'<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#a32d2d" stroke-width="1.6"/><path d="M10 6v5" stroke="#a32d2d" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="14" r="1" fill="#a32d2d"/></svg>',
+  amber:'<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#854f0b" stroke-width="1.6"/><path d="M10 6v4.5" stroke="#854f0b" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="13.8" r="1" fill="#854f0b"/></svg>',
+  green:'<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#3b6d11" stroke-width="1.6"/><path d="M6.5 10.2l2.4 2.4 4.6-4.9" stroke="#3b6d11" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  blue:'<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#7c3aed" stroke-width="1.6"/><path d="M10 9v5.5" stroke="#7c3aed" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="6.2" r="1" fill="#7c3aed"/></svg>',
+  lock:'<svg class="ic" viewBox="0 0 48 48" fill="none"><rect x="9" y="21" width="30" height="20" rx="4" stroke="#b4b2a9" stroke-width="2.4"/><path d="M16 21v-5a8 8 0 0116 0v5" stroke="#b4b2a9" stroke-width="2.4" stroke-linecap="round"/></svg>'
+};
+
+/* ---------- 渲染层（平级，互不调用） ---------- */
+const MOD = {
+  m01:{t:"总览", d:"每日自然 + 广告流量总览与异常速览", need:[["每日流量快照（自然流量 / 广告流量分列）","x"],["监控 ASIN 清单","x"],["采集时间序列表","x"]]},
+  m02:{t:"ASIN 监控", d:"监控 ASIN 的增删改与采集状态管理", need:[["监控 ASIN 集合定义","x"],["每次采集的成功 / 失败状态","o"],["当前数据集（可复用选品分析的榜单数据）","o"]]},
+  m03:{t:"流量趋势", d:"自然与广告流量的时间序列趋势", need:[["连续 7 天以上的日快照","x"],["自然流量字段","x"],["广告流量字段","x"]]},
+  m04:{t:"关键词变化", d:"关键词排名与流量变动追踪", need:[["SIF 或卖家精灵的关键词导出","x"],["关键词自然排名 / 广告位","x"],["历史排名快照（用于算变动）","x"]]},
+  m05:{t:"异常中心", d:"按强度分级的异常 ASIN 与处理流", need:[["依赖模块 01-03 的日快照","x"],["异常阈值规则（自然 ≥10% / 广告 ≥20%）","o"]]},
+  m06:{t:"竞品对比", d:"竞品横向对比", need:[["Top100 榜单数据","o"],["竞品分组定义","x"],["多期快照（用于看变化）","x"]]},
+  m07:{t:"AI 日报", d:"自动生成每日分析与结论", need:[["依赖模块 01-03 的分析结果","x"],["分析引擎 / 规则库","x"]]},
+  m08:{t:"数据记录", d:"原始采集数据存档", need:[["已加载数据集（当前可用）","o"],["历史采集批次索引","x"],["采集日志","x"]]}
+};
+/* 全局类目汇总口径（2026-09-11 主公拍板）：
+   细分类目 = 类目树叶子节点（无下级目录的末端类目），不含中间层目录；
+   已采集   = 本地已有数据集的去重节点数。
+   数据源：/api/btg/index（leafCount/nodeCount）+ /api/datasets（node）。 */
+function catStat(){
+  const idx=BTG.index||[];
+  const leaf=idx.reduce((a,c)=>a+(c.leafCount||0),0);
+  const node=idx.reduce((a,c)=>a+(c.nodeCount||0),0);
+  const done=new Set((BTG.datasets||[]).map(d=>String(d.node||"").trim()).filter(Boolean)).size;
+  return {big:idx.length, leaf, node, done, left:Math.max(0,leaf-done)};
+}
+const catPct=(a,b)=>!b?"—":(a?((a/b*100)<0.1?(a/b*100).toFixed(2):(a/b*100).toFixed(1)):"0")+"%";
+/* 顶部汇总 KPI 卡（数字 + 标签） */
+const kpi=(v,t,c,tip)=>'<div class="gs'+(c?" "+c:"")+'"'+(tip?' title="'+tip+'"':'')+'><b>'+v+'</b><i>'+t+'</i></div>';
+function renderTop(){
+  /* 2026-09-11 第三轮：KPI 卡从顶端挪到「分类树面板」底部 */
+  /* 2026-09-11 第五轮：顶端横条(#top)在 sel 页整体隐藏，导入/导出入口统一到面板头部 .ct-acts */
+  if(CUR==="sel"){
+    const s=catStat();
+    const box=$("#ctKpi");
+    if(box){
+      if(s.leaf){
+        const mid=Math.max(0,s.node-s.leaf), dsN=(BTG.datasets||[]).length;
+        box.innerHTML=kpi(fmt(s.leaf),"细分类目","hl","细分类目 = 类目树叶子节点（下面没有子目录的末端类目），共 "+fmt(s.leaf)+" 个；另有 "+fmt(mid)+" 个中间层目录不计入。")
+          +kpi(s.done,"已采集",null,"本地已有数据集的去重类目节点数")
+          +kpi(fmt(s.left),"待采集",null,"尚未采集数据集的细分类目数")
+          +kpi(s.big,"大类",null,"Amazon Browse Tree Guide 一级大类数")
+          +kpi(dsN,"数据集",null,"已入库数据集份数（同一节点多次采集算多份）")
+          +kpi(catPct(s.done,s.leaf),"覆盖率 · "+s.done+"/"+fmt(s.leaf),"dk","已采集类目 / 细分类目总数");
+      } else box.innerHTML="";
+    }
+    const sd=$("#s1d");
+    if(sd && s.leaf) sd.textContent="Amazon Browse Tree Guide · 多类目选品管理中心（共 "+s.big+" 个大类，共 "+fmt(s.leaf)+" 个叶子类目）";
+    $("#meta").innerHTML="";
+    /* 2026-09-11：选品分析页隐藏顶端空横条，让「分类树面板」真正置顶（导入/导出已挪进面板头部） */
+    const tp=$("#top"); if(tp) tp.style.display="none";
+    renderCtPills(); renderCtCur();
+  } else {
+    const tp=$("#top"); if(tp) tp.style.display="";
+    $("#meta").innerHTML = '<b>'+(MOD[CUR] ? es(MOD[CUR].t) : "—")+'</b> ｜ 该模块暂未接入数据 ｜ 当前可用数据集：' + es(META.name) + " · " + DATA.length + " 条";
+  }
+  renderWarn();
+}
+/* 当前数据集在 /api/datasets 里的登记（含 expected / incomplete） */
+function curDs(){
+  return (BTG.datasets||[]).find(d=>d.src===BTG.curSrc)
+      || (BTG.datasets||[]).find(d=>d.src===META.src) || null;
+}
+/* 数据完整性警示（2026-09-10）：实际条数 < 采集目标 → 顶部红条 + 一键重采 */
+function renderWarn(){
+  const box=$("#warnbar"); if(!box) return;
+  const ds=curDs();
+  const exp=(ds&&ds.expected)||0, cnt=DATA.length;
+  if(exp && cnt<exp){
+    box.style.display="";
+    box.innerHTML='⚠ <b>数据集不完整</b>：实际 <b>'+cnt+'</b> 条 / 目标 <b>'+exp+'</b> 条（'+Math.round(100*cnt/exp)+'%）'
+      +' —— 疑似采集中断或榜单页抓取异常。下方 02~09 章节按这 '+cnt+' 条计算，结论不可用，建议重采。'
+      +'<button class="btn" data-act="recoll">重新采集</button>';
+  }else{
+    box.style.display="none"; box.innerHTML="";
+  }
+}
+function renderBsrLinks(){
+  // 大类 slug 映射（美区 Amazon BSR 通用品类）。数据里 bsr_main_category 为英文名，此处按已知映射兜底；未知品类退回 gp/bestsellers 通用入口。
+  const SLUG = { "Tools & Home Improvement":"hi", "Home & Kitchen":"home-garden", "Kitchen & Dining":"kitchen", "Home Improvement":"hi", "Electronics":"electronics", "Health & Household":"hpc", "Beauty & Personal Care":"beauty", "Toys & Games":"toys-and-games", "Sports & Outdoors":"sporting-goods", "Office Products":"office-products", "Automotive":"automotive", "Grocery & Gourmet Food":"grocery", "Baby":"baby-products", "Pet Supplies":"pet-supplies", "Clothing, Shoes & Jewelry":"fashion", "Video Games":"videogames", "Industrial & Scientific":"industrial", "Arts, Crafts & Sewing":"arts-crafts" };
+  const cat = META.cat || (DATA.find(x=>x.cat)||{}).cat || "";
+  const sub = META.sub || (DATA.find(x=>x.sub)||{}).sub || META.name || "";
+  const slug = SLUG[cat] || ((BTG.index||[]).find(c=>c.key===cat||c.titleEn===cat||c.titleZh===cat)||{}).slug || "";
+  const node = META.node && META.node!=="—" ? META.node : "";
+  // 热销榜图标（榜单人形）+ 新品榜图标（星标）
+  const icoB = '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z" stroke="#fff" stroke-width="1.5"/><path d="M6.5 13.5c0-1.5 1.5-2.5 3.5-2.5s3.5 1 3.5 2.5M10 10a1.8 1.8 0 100-3.6A1.8 1.8 0 0010 10z" stroke="#fff" stroke-width="1.5" fill="none"/></svg>';
+  const icoN = '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2l1.7 5.2L17 9l-5.3 1.8L10 16l-1.7-5.2L3 9l5.3-1.8z" fill="#fff"/></svg>';
+  const go = '<span class="go">打开 ›</span>';
+  // 两榜对照参考站：热销榜=Amazon橙、新品榜=Amazon深蓝
+  // 2026-09-09 改为「榜单数据切换器」：节点有本地数据集 → 整卡点击切换 02~09 章节数据源（默认最新），右上角 ↗ 直达 Amazon；
+  // 无本地数据集 → 整卡保留外链直达 Amazon（采集入库后自动变为可切换）。
+  const hrefB = node&&slug ? "https://www.amazon.com/gp/bestsellers/"+slug+"/"+node
+    : slug ? "https://www.amazon.com/Best-Sellers-"+cat.replace(/[ &]+/g,"-")+"/zgbs/"+slug+"/"
+    : "https://www.amazon.com/gp/bestsellers/";
+  const hrefN = node&&slug ? "https://www.amazon.com/gp/new-releases/"+slug+"/"+node
+    : slug ? "https://www.amazon.com/gp/new-releases/"+slug
+    : "https://www.amazon.com/gp/new-releases/";
+  const dss = node ? (BTG.datasets||[]).filter(d=>String(d.node)===String(node)) : [];
+  const latestOf = ch => dss.find(d=>d.chart===ch);   // 后端已按 mtime 倒序 → 首条即该榜最新
+  const nrAbsent = !!(node && btgNrOf(node)===false);  // 该节点 Amazon 未提供新品榜（已实测）
+  const mk = (chart,bg) => {
+    const isB = chart==="bsr", label = isB?"热销榜数据":"新品榜数据";
+    if(!isB && nrAbsent){        /* 不一刀切套热销榜模板：无榜节点不给死链，直接说明 */
+      return '<div class="blink" style="opacity:.72;cursor:default" title="Amazon 未提供该节点 New Releases 榜单（实测该 URL 打开为空榜）">'
+        +'<span class="bi" style="background:#8b95a1">'+icoN+'</span>'
+        +'<span><span class="bt">'+label+'<span class="cur" style="background:var(--amber-bg);color:var(--amber)">无此榜</span></span>'
+        +'<span class="bd">该类目没有新品榜 · Amazon 未提供该节点 New Releases<br>已实测确认（避免误采空榜）；需要数据请采集热销榜</span></span></div>';
+    }
+    const ds = isB?latestOf("bsr"):latestOf("new");
+    const href = isB?hrefB:hrefN;
+    const act = !!(ds && META.src===ds.src);
+    const dsTxt = ds ? ((ds.date||ds.mtime||"").slice(0,10)+" 采集 · "+ds.count+" 条") : "";
+    const main = ds ? (isB?"热销榜 Best Sellers":"新品榜 New Releases")+" · "+dsTxt
+      : (sub?es(sub)+" · ":"")+(cat?es(cat)+" · ":"")+(isB?"Best Sellers":"New Releases");
+    const bd = ds
+      ? (dss.length>1
+          ? ("节点下 "+dss.length+" 份数据集；切换后下方 02~09 章节按该榜最新数据重算")
+          : ("最新 "+ds.mtime+" 采集；下方 02~09 章节即展示该榜数据"))
+      : ("暂无本地数据 → 点击直达 Amazon "+label+"（采集入库后此处自动可切换）");
+    const body = '<span class="bi" style="background:'+bg+'">'+(isB?icoB:icoN)+'</span>'
+      +'<span><span class="bt">'+label+(act?'<span class="cur">✓ 当前</span>':'')+'</span>'
+      +'<span class="bd">'+main+'<br>'+bd+'</span></span>';
+    const attrs = ds
+      ? ' data-switch="'+chart+'" title="'+(act?"当前展示该榜数据（点击无变化）":"点击切换 02~09 章节为 "+label)+'"'
+      : ' data-go-url="'+href+'" title="直达 Amazon '+label+'页面"';
+    return '<div class="blink'+(act?' act act-'+(isB?"b":"n"):'')+'"'+attrs+'>'+body
+      +(ds?'<span class="xl" data-href="'+href+'" title="直达 Amazon '+label+'">↗</span>':go)
+      +'</div>';
+  };
+  const items = [];
+  if(node && slug){
+    items.push(mk("bsr","#FF9900"));
+    items.push(mk("new","#232F3E"));
+  } else {
+    // 未关联节点（如启动态主区）：退化为外链卡
+    const card=(href,ic,t,d,bg)=>'<a class="blink" href="'+href+'" target="_blank" rel="noopener"><span class="bi" style="background:'+bg+'">'+ic+'</span><span><span class="bt">'+t+'</span><span class="bd">'+d+'</span></span>'+go+'</a>';
+    if(slug){
+      items.push(card(hrefB, icoB, "热销榜数据", es(cat)+" · Best Sellers 直达", "#FF9900"));
+      items.push(card(hrefN, icoN, "新品榜数据", es(cat)+" · New Releases 直达", "#232F3E"));
+    } else {
+      items.push(card("https://www.amazon.com/gp/bestsellers/", icoB, "热销榜数据", "亚马逊 Best Sellers 入口", "#FF9900"));
+    }
+  }
+  if(node && slug && btgNrOf(node)===null) btgCheckNr(node, slug);   /* 未判定 → 懒判定一次，出结果自动重绘 */
+  $("#bsrlinks").innerHTML = items.join("");
+}
+/* 榜单数据切换：点击「热销榜数据/新品榜数据」→ 02~09 章节切换为该榜最新数据集 */
+async function btgSwitchChart(chart){
+  const node=META.node; if(!node){ return; }
+  const ds=(BTG.datasets||[]).find(d=>String(d.node)===String(node)&&d.chart===chart);
+  if(!ds){ return; }
+  if(ds.src===META.src){ return; }                     // 已在该榜，无需切换
+  await btgLoadDataset(ds);                            // load → renderAll → 激活态自动重绘
+  const nm=chart==="bsr"?"热销榜":"新品榜";
+  const st=$("#btgRunStat");
+  if(st){ st.style.color="var(--green)"; st.textContent="⇄ 已切换：02~09 章节现展示 "+nm+" 数据（"+(ds.date||"").slice(0,10)+" · "+ds.count+" 条）"; }
+}
+$("#bsrlinks").addEventListener("click",e=>{
+  const xl=e.target.closest(".xl");
+  if(xl){ window.open(xl.dataset.href,"_blank","noopener"); return; }
+  const sw=e.target.closest(".blink[data-switch]");
+  if(sw){ btgSwitchChart(sw.dataset.switch); return; }
+  const gl=e.target.closest(".blink[data-go-url]");
+  if(gl){ window.open(gl.dataset.goUrl,"_blank","noopener"); }
+});
+/* renderBar 已于 2026-09-11 移除：顶端数据集统计条整体下线，只保留全局类目汇总（#meta）。
+   当前数据集的采集日期/条数在下方各章节自带，不再单独占一行。 */
+function renderDiag(){
+  const k=c1(), pb=c3(), st=c6(), it=[];
+  if(k.faPct<50) it.push({lv:"red", t:"数据缺口 · 上架时间", d:"first_available 字段仅 "+k.faN+"/"+k.n+" 条有值，「平均上架天数」与「上架时间分布」两项指标暂不可计算。", a:"建议：爬虫 field_mapping 增加 first_available，从详情页 Date First Available 抓取后重新导入"});
+  const hi=pb[3], main=pb[1];
+  it.push({lv:"green", t:"结构性机会 · " + hi.lb + " 价格带", d:hi.n+" 条链接（"+p1(hi.np)+"）贡献 "+p1(hi.rp)+" 销售额，评论中位仅 "+fmt(hi.rMid)+" 条——链接稀少、单产高、评论门槛低。", a:"建议：作为差异化定价的首选窗口"});
+  it.push({lv:"amber", t:"红海警示 · " + main.lb + " 价格带", d:main.n+" 条链接（"+p1(main.np)+"）聚集于此，贡献 "+p1(main.rp)+" 销售额，供给与产出基本对等。", a:"建议：避免低价正面竞争"});
+  const fba=st.list.find(x=>x.k==="第三方FBA");
+  if(fba) it.push({lv:"blue", t:"履约方式 · FBA 主导", d:"第三方 FBA 占 "+fba.n+" 条链接（"+p1(fba.np)+"）、"+p1(fba.sp)+" 销量；自发货仅占 "+p1(st.list.filter(x=>x.k!=="第三方FBA").reduce((a,b)=>a+b.sp,0))+" 销量。", a:"建议：本类目 FBM 缺乏竞争力，新品应按 FBA 备货模型测算"});
+  it.push({lv:"blue", t:"竞争格局 · 无垄断", d:"品牌垄断系数 Top3 "+p1(k.t3p)+" / Top5 "+p1(k.t5p)+"，"+k.brandN+" 个品牌分占 "+k.n+" 条链接，前 5 条链接占 "+p1(k.l5p)+" 销量。", a:"建议：新品牌可进入，但需靠形态或场景差异化"});
+  $("#diag").innerHTML = it.map(x=>'<div class="ditem '+x.lv+'">'+ICO[x.lv]
+    +'<div><div class="tt">'+es(x.t)+'</div><div class="dd">'+es(x.d)+'</div><div class="aa">'+es(x.a)+'</div></div></div>').join("");
+}
+function renderK1(){
+  const k=c1(), h=[];
+  const card=(lb,dot,vl,rg,ft,cls)=>'<div class="kpi '+(cls||"")+'"><div class="lb">'+(dot?'<span class="dot" style="background:'+dot+'"></span>':"")+lb+'</div><div class="vl">'+vl+'</div>'+(rg?'<div class="rg">'+rg+'</div>':"")+(ft?'<div class="ft">'+ft+'</div>':"")+'</div>';
+  h.push(card("商品数量","#7c3aed",fmt(k.n),"榜单链接总数","—","hl"));
+  h.push(card("近30日总销量","#7c3aed",fmt(k.totS)+" 件","前台销量合计",k.nw+" 条有值 / "+(k.n-k.nw)+" 条无值","hl"));
+  h.push(card("近30日总销售额","#7c3aed",money(k.totR),"销量 × 售价",k.nw+" 条有值参与计算","hl"));
+  h.push(card("平均价格","#a78bfa",money2(k.pAvg),"最小 "+money2(k.pMin)+" 丨 最大 "+money2(k.pMax)));
+  h.push(card("平均评分星级","#ba7517",k.rAvg?k.rAvg.toFixed(2):"—","最小 "+(k.rMin?k.rMin.toFixed(2):"—")+" 丨 最大 "+(k.rMax?k.rMax.toFixed(2):"—")));
+  h.push(card("平均评分数","#ba7517",fmt(Math.round(k.cAvg)),"最小 "+fmt(k.cMin)+" 丨 最大 "+fmt(k.cMax)));
+  h.push(card("平均上架天数","#8b95a3","数据不足","first_available 仅 "+k.faN+"/"+k.n+" 条有值","需补爬该字段","na"));
+  h.push(card("品牌数量","#0f6e56",fmt(k.brandN),"榜单内去重品牌数","—"));
+  h.push(card("品牌垄断系数","#a32d2d","Top3 "+p1(k.t3p)+" / Top5 "+p1(k.t5p),"前三品牌 "+fmt(k.t3)+" 件 ｜ 前五 "+fmt(k.t5)+" 件","数值越低越分散","hl"));
+  h.push(card("链接垄断系数","#a32d2d",p1(k.l5p),"前 5 条链接销量占榜单总销量","数值越低越分散","hl"));
+  $("#k1").innerHTML=h.join("");
+  $("#note1").innerHTML=[
+    "<b>近30日销量</b>：取前台展示的月度销量（如 “10K+”）解析为数值后求和，为<b>下限估算</b>（10K+ 按 10000 计）。",
+    "<b>近30日销售额</b>：逐条 销量 × 当前售价 求和，未扣除佣金与 FBA 费用，也未计入优惠券折扣。",
+    "<b>无销量数据</b>：通常为 Amazon Haul 低价商品，前台不展示销量模块，本统计<b>不计入分母</b>。",
+    "<b>品牌垄断系数</b>：按品牌聚合销量，Top3 / Top5 品牌销量 ÷ 榜单总销量。一般认为 Top3 低于 50% 属<b>无垄断</b>格局。",
+    "<b>链接垄断系数</b>：销量最高的 5 条链接销量 ÷ 榜单总销量，衡量头部单品虹吸程度。",
+    "<b>平均上架天数</b>：需详情页 “Date First Available” 字段，当前数据集覆盖不足，暂不计算。"
+  ].join("<br>");
+}
+function renderS2(){
+  const c=c2();
+  $("#g2").innerHTML=svgBar(c.g.map(x=>({k:x.lb, v:x.s, c:"#7c3aed", lbTop:fmt(x.s), sub:x.n+" 条"})),{h:240});
+  $("#l2").innerHTML='<span><i style="background:#7c3aed"></i>各档位销量合计（件）</span>';
+  $("#t2").innerHTML='<thead><tr><th>销量档位</th><th class="num">链接数</th><th class="num">销量</th><th class="num">销量占比</th><th class="num">销售额</th><th class="num">销售额占比</th></tr></thead><tbody>'
+    + c.g.map(x=>'<tr><td>'+x.lb+'</td><td class="num">'+x.n+'</td><td class="num">'+fmt(x.s)+'</td><td class="num">'+p1(x.sp)+'</td><td class="num">'+money(x.rev)+'</td><td class="num">'+p1(x.rp)+'</td></tr>').join("")
+    + '<tr><td style="color:var(--tx3)">无销量数据（含 Haul 低价 '+DATA.filter(x=>x.h).length+' 条）</td><td class="num">'+c.noS+'</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr></tbody>';
+  $("#t2b").innerHTML='<thead><tr><th>#</th><th>ASIN</th><th class="num">价格</th><th class="num">销量</th><th class="num">销售额</th><th class="num">评论</th></tr></thead><tbody>'
+    + c.top.map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="mono">'+es(x.a)+(x.h?' <span class="hp" title="Amazon Haul 低价商城商品">Haul</span>':"")+'</td><td class="num">'+money2(x.p)+'</td><td class="num">'+fmt(x.s)+'</td><td class="num">'+money(x.s*(x.p||0))+'</td><td class="num">'+fmt(x.c)+'</td></tr>').join("")
+    + '</tbody>';
+  const top5=c.top.slice(0,5).reduce((a,b)=>a+b.s,0), low=c.g[0].n+c.g[1].n;
+  $("#i2").innerHTML='<b>销量结构</b>：榜单总销量 '+fmt(c.tot)+' 件，前 5 条链接贡献 '+fmt(top5)+' 件。'
+    + '月销低于 1000 件的链接共 '+low+' 条，但合计销量仅占 '+p1(pct(c.g[0].s+c.g[1].s,c.tot))+'，属于长尾。'
+    + '<br><b>提示</b>：销量为前台模糊值（如 10K+），本表数据适合看结构比例，不适合做绝对值核算。';
+}
+function renderS3(){
+  const c=c3();
+  $("#g3").innerHTML=svgGroup(c.map(x=>({k:x.lb, sub:p1(x.np), a:x.n, b:x.rev, lbB:"$"+Math.round(x.rev/1000)+"K"})),{h:260});
+  $("#l3").innerHTML='<span><i style="background:#7c3aed"></i>Listing 数（左轴）</span><span><i style="background:#ba7517"></i>销售额（右轴）</span>';
+  $("#t3").innerHTML='<thead><tr><th>价格带</th><th class="num">链接数</th><th class="num">占比</th><th class="num">销量</th><th class="num">销售额</th><th class="num">销售额占比</th><th class="num">平均评分</th><th class="num">评论中位</th><th class="num">平均价格</th></tr></thead><tbody>'
+    + c.map(x=>'<tr><td>'+x.lb+'</td><td class="num">'+x.n+'</td><td class="num">'+p1(x.np)+'</td><td class="num">'+fmt(x.s)+'</td><td class="num">'+money(x.rev)+'</td><td class="num">'+p1(x.rp)+'</td><td class="num">'+(x.rAvg?x.rAvg.toFixed(2):"—")+'</td><td class="num">'+fmt(x.rMid)+'</td><td class="num">'+money2(x.pAvg)+'</td></tr>').join("")
+    + '</tbody>';
+  const main=c[1], hi=c[3];
+  $("#i3").innerHTML='<b>结构性错配</b>：'+main.lb+' 带聚集 '+main.n+' 条链接（'+p1(main.np)+'），贡献销售额 '+p1(main.rp)+'，供给与产出基本对等，属<b>主力红海带</b>。'
+    + '<br><b>空档信号</b>：'+hi.lb+' 带仅 '+hi.n+' 条链接（'+p1(hi.np)+'），却贡献销售额 '+p1(hi.rp)+'，且评论中位仅 '+fmt(hi.rMid)+' 条——<b>链接稀少、单产高、评论门槛低</b>，是差异化定价的窗口。'
+    + '<br><b>价格与质量同向</b>：价格带越高，平均评分越高（'+c[0].lb+' 为 '+(c[0].rAvg||0).toFixed(2)+' → '+c[4].lb+' 为 '+(c[4].rAvg||0).toFixed(2)+'），低价带差评风险更高。';
+}
+function renderS4(){
+  const c=c4();
+  $("#g4").innerHTML=svgHBar(c.list.slice(0,12).map(([b,n])=>({k:b, v:n, c:"#7c3aed", lb:n+" 条 · "+p1(pct(n,DATA.length))})),{rowH:29});
+  $("#g4b").innerHTML=svgHBar(c.dist.map(([k,v])=>({k, v, c:"#0f6e56", lb:v+" 个品牌"})),{rowH:29, pl:96});
+  $("#t4").innerHTML='<thead><tr><th>品牌</th><th class="num">链接数</th><th class="num">占比</th></tr></thead><tbody>'
+    + c.list.slice(0,30).map(([b,n])=>'<tr><td>'+bTxt(b)+'</td><td class="num">'+n+'</td><td class="num">'+p1(pct(n,DATA.length))+'</td></tr>').join("")+'</tbody>';
+  const single=c.dist[0][1];
+  $("#i4").innerHTML='<b>品牌格局</b>：'+DATA.length+' 条链接分散在 '+c.totBrand+' 个品牌，Top10 品牌仅占 '+p1(pct(c.top10,DATA.length))+' 的链接数，'
+    + '其中 <b>'+single+' 个品牌只有 1 条链接</b>在榜——新品牌进入不被头部数量锁死。'
+    + '<br><b>注意</b>：链接数占比只反映入场密度，不代表市场份额，需结合「品牌销量占比」一起看。';
+}
+function renderS5(){
+  const c=c5();
+  $("#g5").innerHTML=svgHBar(c.list.slice(0,12).map(x=>({k:x.b, v:x.s, c:"#7c3aed", lb:fmt(x.s)+" · "+p1(x.sp)})),{rowH:29, pr:110});
+  $("#t5").innerHTML='<thead><tr><th>品牌</th><th class="num">链接数</th><th class="num">数量占比</th><th class="num">销量</th><th class="num">销量占比</th><th class="num">效率差</th></tr></thead><tbody>'
+    + c.list.slice(0,15).map(x=>{
+        const d=x.sp-x.cp, col=d>=1.5?"var(--green)":(d<=-1.5?"var(--red)":"var(--tx2)");
+        return '<tr><td>'+bTxt(x.b)+'</td><td class="num">'+x.cnt+'</td><td class="num">'+p1(x.cp)+'</td><td class="num">'+fmt(x.s)+'</td><td class="num">'+p1(x.sp)+'</td><td class="num" style="color:'+col+'">'+(d>=0?"+":"")+d.toFixed(1)+'pp</td></tr>';
+      }).join("")+'</tbody>';
+  const t5=c.list.slice(0,5).reduce((a,b)=>a+b.sp,0);
+  $("#i5").innerHTML='<b>份额集中</b>：销量 Top5 品牌合计占 '+p1(t5)+'，对比「品牌集中度」的链接数占比，可识别两类品牌——'
+    + '<b>高效率型</b>（销量占比明显高于数量占比，单条链接产出具优势）与 <b>虚胖型</b>（链接多但单产低）。'
+    + '<br><b>效率差列</b>为「销量占比 − 数量占比」，正值越大说明该品牌的单链接产出越强，是重点对标对象。';
+}
+function renderS6(){
+  const c=c6(), bySale=SELLER_MODE==="sale";
+  const items=c.list.map(x=>({k:x.k, v:bySale?x.s:x.n, c:SC[x.k]||"#888780"}));
+  const tot=bySale?c.tot:DATA.length;
+  $("#g6").innerHTML=svgDonut(items,{center:fmt(tot), centerSub:bySale?"总销量（件）":"总链接数", r:82, sw:30});
+  $("#t6").innerHTML='<thead><tr><th>卖家类型</th><th class="num">链接数</th><th class="num">链接占比</th><th class="num">销量</th><th class="num">销量占比</th><th class="num">销售额</th></tr></thead><tbody>'
+    + c.list.map(x=>{
+        const cls=x.k==="第三方FBA"?"fba":(x.k==="Amazon自营"?"amz":"fbm");
+        return '<tr><td><span class="pill '+cls+'">'+es(x.k)+'</span></td><td class="num">'+x.n+'</td><td class="num">'+p1(x.np)+'</td><td class="num">'+fmt(x.s)+'</td><td class="num">'+p1(x.sp)+'</td><td class="num">'+money(x.rev)+'</td></tr>';
+      }).join("")+'</tbody>';
+  const fba=c.list.find(x=>x.k==="第三方FBA");
+  $("#i6").innerHTML='<b>履约结构</b>：'+(fba?('第三方 FBA 占 '+fba.n+' 条链接（'+p1(fba.np)+'），却贡献 '+p1(fba.sp)+' 的销量——<b>FBA 是该类目的绝对主流履约方式</b>'):"")
+    + '，说明自发货（FBM）在本类目几乎没有竞争力。'
+    + '<br><b>判定规则</b>：shipped_by = Amazon 且 seller 标注第三方 → 第三方 FBA；shipped_by 含 sold by Amazon → Amazon 自营；其余 → 第三方 FBM。';
+}
+function renderS7(){
+  const c=c7();
+  if(c.n<DATA.length*0.5){
+    $("#g7").innerHTML='<div class="empty"><div class="t">数据不足，暂无法生成上架时间分布</div>'
+      +'<div>当前数据集 '+DATA.length+' 条链接中，仅 <b>'+c.n+' 条</b>含上架时间（first_available），覆盖度 '+p1(pct(c.n,DATA.length))+'。</div>'
+      +'<div class="a"><b>补齐方法（二选一）：</b><br>'
+      +'1. 在爬虫的 field_mapping 中新增 <code>first_available</code> 字段，从详情页「Date First Available / Product information」区块抓取，重新采集后导入本页即可自动呈现；<br>'
+      +'2. 若用 Keepa / 卖家精灵等第三方工具导出，把上架日期列映射为 <code>first_available</code> 后同样可直接导入。<br><br>'
+      +'<b>本页已预留该字段的解析与统计逻辑</b>（年份分布 + 全年月度分布），数据补齐后无需改代码即可出图。</div></div>';
+    return;
+  }
+  const Y=Object.entries(c.Y).sort(), MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const M=MN.map(m=>[m.slice(0,3), c.M[m]||0]);
+  $("#g7").innerHTML='<div class="two"><div>'+svgBar(Y.map(([y,n])=>({k:y, v:n, c:"#0f6e56"})),{h:210})+'</div><div>'+svgBar(M.map(([m,n])=>({k:m, v:n, c:"#a78bfa"})),{h:210})+'</div></div>'
+    +'<div class="legend"><span><i style="background:#0f6e56"></i>左：按年份上架链接数</span><span><i style="background:#a78bfa"></i>右：按月份上架链接数</span></div>';
+}
+function renderPlaceholder(){
+  if(CUR==="sel") return;
+  const m=MOD[CUR]; if(!m) return;
+  const li=m.need.map(([t,s])=>'<li class="'+s+'">'+(s==="x"?"缺：":"已有：")+es(t)+'</li>').join("");
+  const canUse=m.need.some(x=>x[1]==="o");
+  $("#ph").innerHTML='<div class="ph">'+ICO.lock+'<h3>'+es(m.t)+' · 待接入</h3>'
+    +'<div class="d">'+es(m.d)+'</div>'
+    +'<div class="need"><div class="t">接入该模块所需的数据</div><ul>'+li+'</ul></div>'
+    +(canUse?'<div class="go">当前数据集已包含该模块的部分字段<br><button data-jump="sel">前往 09 选品分析查看可用视图</button></div>':'')
+    +'</div>';
+}
+function renderAll(){
+  renderTop(); renderBsrLinks(); renderDiag(); renderK1(); renderS2(); renderS3(); renderS4(); renderS5(); renderS6(); renderS7(); renderPlaceholder();
+}
+
+/* ---------- 事件 ---------- */
+function switchView(id){
+  CUR=id;
+  document.querySelectorAll("[data-mod]").forEach(a=>a.classList.toggle("on", a.dataset.mod===id));
+  document.getElementById("sel").classList.toggle("on", id==="sel");
+  document.getElementById("ph").classList.toggle("on", id!=="sel");
+  renderTop(); renderPlaceholder();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.querySelectorAll("[data-mod]").forEach(a=>{
+  a.addEventListener("click",()=>switchView(a.dataset.mod));
+});
+document.querySelectorAll("[data-go]").forEach(a=>{
+  a.addEventListener("click",()=>{
+    const el=document.getElementById(a.dataset.go);
+    if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+});
+/* 顶部导航「📊 同期对比」chip：跟随当前上下文（左树选中节点优先，否则当前展示数据节点），榜随当前展示数据推断 */
+function btgChipCmp(){
+  if(typeof BTG==="undefined") return;
+  const src=String(META&&META.src||"");
+  const want=src.indexOf("amazon_new_")===0?"new":"bsr";
+  const nid=BTG.sel||String(META&&META.node||"");
+  if(!nid){ alert("请先在左侧类目树选中一个类目节点（或先点开某节点的数据），再点「同期对比」"); return; }
+  btgOpenCmp(want,nid);
+}
+const _cmpChip=document.getElementById("subtabsCmp");
+if(_cmpChip) _cmpChip.addEventListener("click",btgChipCmp);
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-jump]");
+  if(b) switchView(b.dataset.jump);
+});
+$("#seg6").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  $("#seg6").querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); SELLER_MODE=b.dataset.m; renderS6();
+});
+$("#file").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      let j=JSON.parse(r.result), list=j, meta=null;
+      if(!Array.isArray(j)){ list=j.data||j.list||j.items||[]; meta=j.meta||null; }
+      if(!Array.isArray(list)||!list.length) throw new Error("无有效记录");
+      load(list, meta||{name:f.name.replace(/\.json$/i,""), node:"—", date:new Date().toISOString().slice(0,10), src:f.name, geo:"—"});
+      switchView("sel");
+    }catch(err){ alert("导入失败："+err.message); }
+  };
+  r.readAsText(f,"utf-8");
+  e.target.value="";
+});
+function doExport(){
+  const blob=new Blob([JSON.stringify({meta:META, data:DATA}, null, 1)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="选品分析备份_"+META.date+"_"+DATA.length+"条.json";
+  a.click(); URL.revokeObjectURL(a.href);
+}
+document.querySelectorAll("[data-act]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const a=b.dataset.act;
+    if(a==="import") $("#file").click();
+    if(a==="export") doExport();
+  });
+});
+/* 顶部警示条里动态生成的「重新采集」按钮：事件委托到 document（2026-09-10） */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act='recoll']"); if(!b) return;
+  const ds=curDs(), nid=(ds&&ds.node)||META.node;
+  if(!nid||nid==="—"){ alert("当前数据集未登记类目节点，无法重采；请在左侧类目树选中节点后点「立即采集」"); return; }
+  BTG.chart=(ds&&(ds.chart==="new"?"new":"bsr"))||BTG.chart;
+  btgRunNow(String(nid));
+});
+/* 采集中刷新/关闭页面时提醒（2026-09-10）：后台仍会跑完，此处只做确认，避免误以为中断 */
+window.addEventListener("beforeunload",e=>{
+  if(!BTG_RUN_ID) return;
+  e.preventDefault();
+  e.returnValue="采集仍在后台运行（刷新不会中断）。确定要离开当前页面吗？离开后重新打开会自动续接进度。";
+  return e.returnValue;
+});
+
+/* ============ 类目选品树 (BTG) ============ */
+const BTG={index:[],cache:{},map:{},cur:null,tree:[],marks:{},open:new Set(),sel:null,leafOnly:false,filter:"all",flat:[],cursor:-1,q:"",dirty:false,datasets:[],dataNodes:new Set(),curSrc:"",dataOn:true,chart:"bsr",nr:{},nrReady:false};
+/* 状态: none=无数据(默认) / data=有数据(系统按本地数据集自动判定, 不可手改) / follow / focus / skip */
+const MK_TXT={none:"无数据",data:"有数据",follow:"待跟进",focus:"重点关注",skip:"已排除"};
+const ANALYSIS_IDS=["s2","s3","s4","s5","s6","s7","s8","s9"];
+const BTG_LIMIT=800, SEARCH_LIMIT=400;
+
+function btgCat(){ return BTG.index.find(x=>x.key===BTG.cur)||{slug:""}; }
+function btgUrlBsr(n){ return "https://www.amazon.com/gp/bestsellers/"+btgCat().slug+"/"+n.id; }
+function btgUrlSearch(n){ return "https://www.amazon.com/s?i="+btgCat().slug+"&rh=n:"+n.id+(n.query?","+n.query:""); }
+function btgUrlNew(n){ return "https://www.amazon.com/gp/new-releases/"+btgCat().slug+"/"+n.id; }
+function btgFind(id){ const m=BTG.map[id]; return m?m.node:null; }
+
+async function btgInit(){
+  try{
+    const [ri,rp,rd,rn]=await Promise.all([
+      fetch("/api/btg/index",{cache:"no-store"}),
+      fetch("/api/btg/progress",{cache:"no-store"}),
+      fetch("/api/datasets",{cache:"no-store"}),
+      fetch("/api/btg/nr-bulk",{cache:"no-store"})
+    ]);
+    if(ri.ok) BTG.index=await ri.json();
+    if(rp.ok) BTG.marks=(await rp.json())||{};
+    if(rd.ok){ BTG.datasets=await rd.json(); BTG.dataNodes=new Set(BTG.datasets.map(d=>d.node).filter(Boolean)); }
+    if(rn.ok){ btgNrLoad(await rn.json()); try{ renderBsrLinks(); }catch(e){} }   /* 标记到位后重绘主区榜单卡 */
+  }catch(e){}
+  renderWarn();                    /* 数据集清单到位后重算完整性警示 */
+  renderTop();                     /* 类目规模 + 数据集清单到位后重绘顶端汇总（2026-09-11） */
+  renderBtgCats(); btgQueueStat();
+  const pref=BTG.index.find(x=>x.key==="home-improvement")||BTG.index[0];
+  if(pref) btgPick(pref.key);
+}
+/* ---- 分类树面板：当前大类 / 已采集数 / 头部胶囊 / 当前大类行（2026-09-11） ---- */
+function ctCur(){ return (BTG.index||[]).find(c=>c.key===BTG.cur)||null; }
+/* 某大类下已采集的类目节点数（dataset_nodes.cat 与 index.key 同源） */
+function ctDone(key){
+  return new Set((BTG.datasets||[]).filter(d=>(d.cat||"")===key)
+    .map(d=>String(d.node||"").trim()).filter(Boolean)).size;
+}
+/* 面板头右侧胶囊：跟随当前大类；未选大类时为全站合计 */
+function renderCtPills(){
+  const box=$("#ctPills"); if(!box) return;
+  const c=ctCur(), idx=BTG.index||[];
+  const sum=f=>idx.reduce((a,x)=>a+(x[f]||0),0);
+  const node=c?c.nodeCount:sum("nodeCount");
+  const q=c?c.queryCount:sum("queryCount");
+  const leaf=c?c.leafCount:sum("leafCount");
+  const done=c?ctDone(c.key):new Set((BTG.datasets||[]).map(d=>String(d.node||"").trim()).filter(Boolean)).size;
+  box.innerHTML='<span class="ct-pill"><b>'+fmt(node)+'</b>分类路径</span>'
+    +'<span class="ct-pill"><b>'+fmt(q)+'</b>唯一 ID</span>'
+    +'<span class="ct-pill"><b>'+fmt(leaf)+'</b>叶子类目</span>'
+    +'<span class="ct-pill"><b>'+done+'</b>已采集</span>';
+  const t=$("#ctTitle"); if(t) t.textContent=(c?c.titleZh+" · ":"")+"Amazon 分类树";
+}
+/* 当前大类行：下拉 + 叶子数 + 采集进度条 + 收起按钮 */
+function renderCtCur(){
+  const sel=$("#ctSel"); if(!sel) return;
+  const idx=BTG.index||[];
+  if(sel.options.length!==idx.length+1)
+    sel.innerHTML='<option value="">— 选择大类 —</option>'+idx.map(c=>'<option value="'+c.key+'">'+es(c.titleZh)+' ('+fmt(c.leafCount)+')</option>').join("");
+  sel.value=BTG.cur||"";
+  const c=ctCur(), lf=$("#ctLeaf"), pg=$("#ctProg"), pc=$("#ctPct");
+  if(c){
+    const d=ctDone(c.key), raw=c.leafCount?100*d/c.leafCount:0, pct=Math.min(100,raw);
+    if(lf) lf.textContent=fmt(c.leafCount);
+    if(pg) pg.style.width=(d&&pct<1?"1":pct)+"%";
+    if(pc) pc.textContent=catPct(d,c.leafCount);
+  } else {
+    if(lf) lf.textContent="—";
+    if(pg) pg.style.width="0%";
+    if(pc) pc.textContent="0%";
+  }
+}
+function renderBtgCats(){
+  const h=$("#btgCats");
+  if(!BTG.index.length){ h.innerHTML='<span class="btg-tip">类目索引缺失：需经本地服务访问，且 data/btg/ 分片已生成</span>'; return; }
+  h.innerHTML=BTG.index.map(c=>{
+    const n=ctDone(c.key);
+    return '<div class="ct-c'+(c.key===BTG.cur?' on':'')+'" data-cat="'+c.key+'" title="'+es(c.titleZh)+' · '+es(c.titleEn)+' ｜ 叶子类目 '+fmt(c.leafCount)+' 个，已采集 '+n+' 个">'
+      +'<div class="r1"><span class="n">'+es(c.titleZh)+'</span><b>'+fmt(c.leafCount)+'</b></div>'
+      +'<div class="r2"><span class="e">'+es(c.titleEn)+'</span><span class="m">叶子类目 · '+catPct(n,c.leafCount)+'</span></div></div>';
+  }).join("");
+}
+async function btgPick(key){
+  BTG.cur=key; BTG.open=new Set(); BTG.sel=null; BTG.cursor=-1;
+  renderBtgCats(); renderCtPills(); renderCtCur();
+  $("#btgTree").innerHTML='<div class="btg-tip">加载中…</div>';
+  let tree=BTG.cache[key];
+  if(!tree){
+    try{
+      const r=await fetch("/api/btg/tree/"+key,{cache:"no-store"});
+      const j=await r.json();
+      if(!r.ok) throw new Error(j.error||"HTTP "+r.status);
+      tree=j.tree||[]; BTG.cache[key]=tree;
+    }catch(e){ $("#btgTree").innerHTML='<div class="btg-tip">加载失败：'+es(e.message)+'</div>'; return; }
+  }
+  BTG.tree=tree;
+  tree.forEach(n=>BTG.open.add(n.id));
+  btgMap(tree,null); btgExpandToData(); btgRender(); btgSide();
+}
+function btgMap(ns,pid){
+  ns.forEach(n=>{
+    BTG.map[n.id]={node:n,pid:pid||null,name:n.name,path:n.path,query:n.query||"",cat:BTG.cur,slug:btgCat().slug};
+    if(n.children&&n.children.length) btgMap(n.children,n.id);
+  });
+}
+/* 把有本地数据的节点所在分支自动展开，避免它藏在未展开的层级里 */
+function btgExpandToData(){
+  BTG.dataNodes.forEach(id=>{
+    let m=BTG.map[id];
+    while(m&&m.pid){ BTG.open.add(m.pid); m=BTG.map[m.pid]; }
+  });
+}
+function btgPass(n){
+  if(BTG.filter==="all") return true;
+  if(BTG.filter==="data") return BTG.dataNodes.has(n.id);
+  return (BTG.marks[n.id]||"none")===BTG.filter;
+}
+function btgLine(n,d){
+  const kids=n.children||[], st=BTG.marks[n.id]||"none";
+  return '<div class="btg-node'+(BTG.sel===n.id?' sel':'')+'" data-id="'+n.id+'" style="padding-left:'+(6+Math.min(d,8)*11)+'px">'
+    +'<span class="tw">'+(kids.length?(BTG.open.has(n.id)?'\u25be':'\u25b8'):'\u00b7')+'</span>'
+    +(BTG.dataNodes.has(n.id)?'<span class="dt" title="本地已有数据集">数</span>':'')
+    +'<span class="mk '+st+'" title="'+MK_TXT[st]+'"></span>'
+    +'<span class="nm" title="'+es(n.zhPath||n.path)+'">'+es(n.name)+(n.zh?' <i class="zh">'+es(n.zh)+'</i>':'')+'</span>'
+    +(n.query?'<span class="q" title="'+es(n.query)+'">Q</span>':'')
+    +'<span class="id">'+n.id+'</span></div>';
+}
+function btgRender(){
+  const host=$("#btgTree"); BTG.flat=[];
+  const q=BTG.q.trim().toLowerCase();
+  let lines=[],shown=0;
+  if(q){
+    (function walk(ns){ ns.forEach(n=>{
+      if(shown>=SEARCH_LIMIT) return;
+      if(((n.name||"")+" "+(n.zh||"")+" "+(n.zhPath||"")+" "+(n.path||"")+" "+(n.id||"")).toLowerCase().includes(q)&&btgPass(n)){ BTG.flat.push(n); lines.push(btgLine(n,0)); shown++; }
+      if(n.children) walk(n.children);
+    });})(BTG.tree);
+    host.innerHTML=lines.length?lines.join(""):'<div class="btg-tip">无匹配节点</div>';
+    if(shown>=SEARCH_LIMIT) host.insertAdjacentHTML("beforeend",'<div class="btg-tip">匹配过多，仅显示前 '+SEARCH_LIMIT+' 条，请细化关键词</div>');
+  }else{
+    const forceOpen=BTG.filter!=="all";
+    (function walk(ns,d){ ns.forEach(n=>{
+      const kids=n.children||[], leaf=!kids.length;
+      if(!(BTG.leafOnly&&!leaf)&&btgPass(n)&&shown<BTG_LIMIT){ BTG.flat.push(n); lines.push(btgLine(n,d)); shown++; }
+      if(kids.length&&(BTG.open.has(n.id)||BTG.leafOnly||forceOpen)) walk(kids,d+1);
+    });})(BTG.tree,1);
+    host.innerHTML=lines.length?lines.join(""):'<div class="btg-tip">无匹配节点（切换筛选或关闭「只显示叶子」）</div>';
+    if(shown>=BTG_LIMIT) host.insertAdjacentHTML("beforeend",'<div class="btg-tip">已达显示上限 '+BTG_LIMIT+' 条'+(BTG.leafOnly?'（叶子过多，请用上方搜索框缩小范围）':'，请收起部分分支')+'</div>');
+  }
+  btgStat(shown);
+}
+function btgStat(shown){
+  $("#btgStat").textContent="显示 "+shown+" 个节点 · 已标记 "+Object.keys(BTG.marks).length+" 个"+(BTG.dirty?" · 未保存":" · 已保存");
+}
+function btgDsInfo(n){
+  /* 详情卡「数据」行：按榜单(BSR/New)分组列出本地数据集与报告状态 */
+  const dss=(BTG.datasets||[]).filter(d=>String(d.node)===String(n&&n.id));
+  if(!dss.length) return '<span style="color:var(--amber)">暂无数据</span>';
+  const g={}; dss.forEach(d=>{ const c=d.chart==="new"?"new":"bsr"; (g[c]=g[c]||[]).push(d); });
+  const line=ck=>{
+    const a=g[ck]; if(!a) return '';
+    const latest=a[0];                                   /* datasets 已按 mtime 降序，首条最新 */
+    const label=ck==="new"?"新品榜 NEW":"热销榜 BSR", col=ck==="new"?"#0e7490":"#ea580c";
+    const rep=latest.has_report;
+    const repHtml=rep
+      ?'<span style="color:var(--green);white-space:nowrap">📄 报告 ✓</span>'
+      :'<span style="color:var(--amber);white-space:nowrap">📄 报告未生成</span>';
+    const cnt=a.length>1?'<span style="color:var(--tx3)">(含历史 '+a.length+' 份)</span>':'';
+    const cmpBtn=a.length>1
+      ?'<button class="btn" data-act2="cmpOpen" data-chart="'+ck+'" style="height:20px;padding:0 8px;font-size:10.5px;white-space:nowrap;color:var(--pri);border-color:var(--pri)" title="对比 '+label+' 不同采集时间的数据（大盘/换血/排名/品牌/明细）">📊 同期对比</button>':'';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px" title="'
+      +a.map(x=>x.src+' · '+x.count+'条 · '+x.date).join('\n')+'">'
+      +'<span><i style="font-style:normal;font-weight:600;color:'+col+'">'+label+'</i> '
+      +'<b>'+latest.count+'</b> 条 · '+latest.date+' '+cnt+'</span>'
+      +'<span style="display:flex;gap:5px;align-items:center;flex:0 0 auto">'+repHtml+cmpBtn+'</span></div>';
+  };
+  const html=(line("bsr")+line("new"));
+  return '<span style="display:block;line-height:1.9;font-size:12px">'+html+'</span>';
+}
+/* ===== 新品榜(New Releases)可用性标记 — 2026-09-11 =====
+   Amazon 只有部分浏览节点提供 New Releases 榜：无榜节点打开 /gp/new-releases/<slug>/<node>
+   仍返回 200、title 正常，但商品网格为空（实测 21 个节点里 14 个无榜，含多数大类根节点）。
+   服务端 app/nr.py 用纯 HTTP 判定并缓存 data/nr_index.json；前端只读标记 + 必要时懒判定，
+   避免把热销榜模板一刀切套到新品榜、拼出一条"打开是空榜"的死链。 */
+const NR_TRIED=new Set();
+function btgNrLoad(bulkMap){
+  BTG.nr={};
+  Object.keys(bulkMap||{}).forEach(k=>{
+    const v=bulkMap[k], n=String(k).split("|")[1];
+    if(n&&v&&(v.has===true||v.has===false)) BTG.nr[n]=!!v.has;
+  });
+  BTG.nrReady=true;
+}
+function btgNrOf(id){                     /* true=有榜 / false=无榜 / null=未判定 */
+  const v=BTG.nr[String(id)];
+  return (v===true||v===false)?v:null;
+}
+async function btgCheckNr(node,slug){
+  node=String(node||""); if(!node||!slug) return;
+  if(!BTG.nrReady) return;                               /* 批量标记未到位前不发起（避免刷请求） */
+  if(btgNrOf(node)!==null||NR_TRIED.has(node)) return;   /* 已知或本会话已试过 → 不重复请求 */
+  NR_TRIED.add(node);
+  try{
+    const r=await fetch("/api/btg/nr?node="+encodeURIComponent(node)+"&slug="+encodeURIComponent(slug),{cache:"no-store"});
+    if(!r.ok) return;
+    const j=await r.json();
+    if(j&&(j.has===true||j.has===false)){
+      BTG.nr[node]=!!j.has;
+      try{ btgRender(); }catch(e){}
+      if(BTG.sel&&String(BTG.sel)===node){ try{ btgSide(); }catch(e){} }
+      try{ renderBsrLinks(); }catch(e){}
+    }
+  }catch(e){}
+}
+function btgSide(){
+  const host=$("#btgSide"), n=BTG.sel?btgFind(BTG.sel):null;
+  if(!n){ host.innerHTML='<div class="btg-tip">点击左侧节点查看详情</div>'; return; }
+  const st=BTG.marks[n.id]||"none", hasData=BTG.dataNodes.has(n.id), leaves=[];
+  (function col(ns){ ns.forEach(x=>{ (x.children&&x.children.length)?col(x.children):leaves.push(x); }); })(n.children||[]);
+  const ub=btgUrlBsr(n), us=btgUrlSearch(n), un=btgUrlNew(n);
+  const nrHas=btgNrOf(n.id);                     /* true有榜 / false无榜 / null未判定 */
+  const nrCell = nrHas===false
+    ? '<i style="font-style:normal;color:var(--amber)">该类目没有新品榜</i> <span style="color:var(--tx3)">· Amazon 未提供该节点 New Releases（已实测，不提供直达链接）</span>'
+    : '<a href="'+un+'" target="_blank" rel="noopener">'+un+'</a>'+(nrHas===null?' <span style="color:var(--tx3)">⏳ 校验中…</span>':'');
+  if(nrHas===null) btgCheckNr(n.id, btgCat().slug);   /* 未判定 → 懒判定一次，出结果自动重绘 */
+  host.innerHTML='<h5>'+es(n.name)+(n.zh?' <i class="zh" style="font-style:normal;font-size:12px;color:var(--tx3)">'+es(n.zh)+'</i>':'')+'</h5>'
+    +'<div class="kv"><b>Node ID</b><span>'+n.id+' <button class="btn" style="height:22px;padding:0 8px;font-size:11px" data-copy="'+n.id+'">复制</button></span></div>'
+    +'<div class="kv"><b>路径</b><span>'+(n.zhPath?'<span title="'+es(n.path)+'">'+es(n.zhPath)+'</span>':es(n.path))+'</span></div>'
+    +'<div class="kv"><b>Query</b><span>'+(n.query?es(n.query):'—')+'</span></div>'
+    +'<div class="kv"><b>数据</b><span>'+btgDsInfo(n)+'</span></div>'
+    +'<div class="kv"><b>子叶子</b><span>'+leaves.length+' 个</span></div>'
+    +'<div class="btg-mks">'
+    +'<button data-mk="data" class="'+(hasData?'on':'')+'" disabled title="由本地数据集自动判定">有数据</button>'
+    +["follow","focus","skip"].map(k=>'<button data-mk="'+k+'"'+(st===k?' class="on"':'')+'>'+MK_TXT[k]+'</button>').join("")
+    +'</div>'
+    +'<div class="kv"><b>热销榜</b><span><a href="'+ub+'" target="_blank" rel="noopener">'+ub+'</a></span></div>'
+    +'<div class="kv"><b>新品榜</b><span>'+nrCell+'</span></div>'
+    +'<div class="kv"><b>搜索</b><span><a href="'+us+'" target="_blank" rel="noopener">'+us+'</a></span></div>'
+    +'<div style="margin-top:9px;display:flex;align-items:center;gap:6px">'
+    +'<span style="font-size:11.5px;color:var(--tx2);white-space:nowrap">采集榜单</span>'
+    +'<select id="btgChartSel" onchange="BTG.chart=this.value" style="height:26px;font-size:12px;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:0 6px" title="决定采集与报告对应的榜单">'
+    +'<option value="bsr"'+(BTG.chart==="bsr"?" selected":"")+'>热销榜 Best Sellers</option>'
+    +'<option value="new"'+(BTG.chart==="new"?" selected":"")+(nrHas===false?' disabled':'')+'>新品榜 New Releases'+(nrHas===false?'（该类目无此榜）':'')+'</option></select>'
+    +(nrHas===false?'<span style="font-size:11px;color:var(--amber);white-space:nowrap">⚠ 已禁选</span>':'')+'</div>'
+    +'<div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap">'
+    +'<button class="btn" data-act2="queueNode" style="height:30px;font-size:12px">加入采集队列</button>'
+    +'<button class="btn" data-act2="queueLeaves" style="height:30px;font-size:12px"'+(leaves.length?'':' disabled')+'>加子叶子('+Math.min(leaves.length,200)+')</button>'
+    +'<button class="btn" data-act2="runNow" style="height:30px;font-size:12px;background:#1f8a4c;border-color:#1f8a4c;color:#fff;font-weight:600">立即采集</button>'
+    +'<button class="btn" data-act2="viewReport" data-chart="bsr" style="height:30px;font-size:12px;background:#ea580c;border-color:#ea580c;color:#fff;font-weight:600">热销榜分析报告</button>'
+    +'<button class="btn" data-act2="viewReport" data-chart="new" style="height:30px;font-size:12px;background:#0e7490;border-color:#0e7490;color:#fff;font-weight:600">新品榜分析报告</button></div>'
+    +'<div id="btgRunStat" style="margin-top:6px;font-size:11.5px;color:var(--tx2);min-height:14px"></div>'
+    +(leaves.length?'<div class="btg-leaves">'+leaves.slice(0,200).map(l=>'<div class="btg-leaf" data-id="'+l.id+'"><span class="mk '+(BTG.marks[l.id]||"none")+'"></span><span class="p" title="'+es(l.path)+'">'+es(l.name)+'</span><span class="id">'+l.id+'</span></div>').join("")+(leaves.length>200?'<div class="btg-tip">仅显示前 200 个子叶子</div>':'')+'</div>':'');
+}
+function btgMark(id,st){
+  if(st==="data") return;                        /* 有数据由系统按数据集判定，禁止手改 */
+  if(st==="none") delete BTG.marks[id]; else BTG.marks[id]=st;
+  BTG.dirty=true; btgSaveSoon(); btgRender(); btgSide();
+  const n=btgFind(id); if(n) btgLink(n);
+}
+/* 联动: 选中节点有本地数据集 -> 加载并展示 02-08 分析视图; 无数据 -> 隐藏 */
+function showAnalysis(on){
+  BTG.dataOn=on;
+  ANALYSIS_IDS.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=on?"":"none"; });
+}
+async function btgLoadDataset(ds){
+  try{
+    const r=await fetch("/api/data?src="+encodeURIComponent(ds.src),{cache:"no-store"});
+    if(!r.ok) return;
+    const j=await r.json();
+    if(!Array.isArray(j.data)||!j.data.length) return;
+    load(j.data, Object.assign({},META_DEFAULT,j.meta||{},{src:ds.src,name:ds.name,node:ds.node,date:ds.date}));
+    BTG.curSrc=ds.src;
+  }catch(e){}
+}
+async function btgLink(n){
+  const card=$("#btgLink"); if(!card) return;
+  card.style.display="";
+  const tag=$("#btgLinkTag"), body=$("#btgLinkBody");
+  const ds=BTG.datasets.find(d=>d.node===n.id);
+  if(ds){
+    tag.textContent="已联动"; tag.style.background="var(--green-bg)"; tag.style.color="var(--green)";
+    body.innerHTML='<div style="font-size:12.5px;color:var(--tx2);line-height:1.9">类目 <b>'+es(ds.name)+'</b> 本地已有数据集：<b>'+ds.count+'</b> 条（'+es(ds.date)+' · '+es(ds.src)+'）<br>下方 02-08 分析视图已切换为该类目数据。<span style="color:var(--pri)">可点「02 榜单数据」卡在 热销榜 / 新品榜 间切换，默认展示最新采集。</span></div>';
+    if(BTG.curSrc!==ds.src) await btgLoadDataset(ds);
+    showAnalysis(true);
+  }else{
+    tag.textContent="无本地数据"; tag.style.background="var(--amber-bg)"; tag.style.color="var(--amber)";
+    body.innerHTML='<div style="font-size:12.5px;color:var(--tx2);line-height:1.9">类目 <b>'+es(n.name)+'</b>（Node '+n.id+'）暂无本地数据集 → 下方 02-08 分析视图已隐藏。<br>可加入采集队列，抓取结果 JSON 放进 data/ 后自动点亮该类目。</div>'
+      +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'
+      +'<button class="btn" data-act3="queue" style="height:30px;font-size:12px">加入采集队列</button>'
+      +'<button class="btn" data-act3="restore" style="height:30px;font-size:12px">恢复显示当前数据集</button></div>';
+    showAnalysis(false);
+  }
+}
+let _btgT=null;
+function btgSaveSoon(){ clearTimeout(_btgT); _btgT=setTimeout(btgSave,700); }
+async function btgSave(){
+  try{
+    await fetch("/api/btg/progress",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({marks:BTG.marks})});
+    BTG.dirty=false;
+    $("#btgStat").textContent="显示 "+BTG.flat.length+" 个节点 · 已标记 "+Object.keys(BTG.marks).length+" 个 · 已保存 ✓";
+  }catch(e){ alert("保存失败："+e.message); }
+}
+async function btgQueue(ids){
+  const items=[];
+  ids.forEach(id=>{
+    const m=BTG.map[id]; if(!m) return;
+    items.push({node:id,cat:m.cat,slug:m.slug,path:m.path,query:m.query,chart:BTG.chart,url_bsr:btgUrlBsr(m.node),url_search:btgUrlSearch(m.node)});
+  });
+  if(!items.length){ alert("所选节点不在已加载类目内，请先展开对应大类再操作"); return; }
+  const r=await fetch("/api/btg/queue",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items})});
+  const j=await r.json();
+  $("#btgQueueStat").textContent="已加入 "+j.added+" 个 · 队列共 "+j.total+" 个节点 ✓";
+}
+async function btgQueueStat(j){
+  if(!j){ try{ const r=await fetch("/api/btg/queue",{cache:"no-store"}); if(r.ok) j=await r.json(); }catch(e){} }
+  $("#btgQueueStat").textContent="采集队列："+((j&&j.items)?j.items.length:0)+" 个节点";
+}
+/* 立即采集：调 /api/btg/queue/run 异步跑 v21，每 1.5s 轮询 /api/btg/runs 显示状态
+   2026-09-10 修复：run_id 落 localStorage，页面刷新/重开自动续接轮询，不再“状态消失以为中断” */
+let BTG_RUN_POLL=null, BTG_RUN_ID="";
+const BTG_RUN_KEY="aom_last_run_id";
+function btgRunBox(html){                       /* 顶部采集状态条；空则隐藏 */
+  const box=$("#runbar"); if(!box) return;
+  if(!html){ box.style.display="none"; box.innerHTML=""; return; }
+  box.style.display=""; box.innerHTML=html;
+}
+async function btgRunNow(id){
+  const m=BTG.map[id]; if(!m){ alert("节点未在已加载类目内"); return; }
+  if(BTG.chart==="new"&&btgNrOf(id)===false){        /* 2026-09-11：无新品榜节点不发起无效采集 */
+    alert("该节点 Amazon 未提供新品榜(New Releases)，采集只会得到空结果。\n请把「采集榜单」切回暖销榜 Best Sellers 再采集。");
+    return;
+  }
+  const item={node:id,cat:m.cat,slug:m.slug,path:m.path,query:m.query,chart:BTG.chart};
+  $("#btgRunStat").textContent="⏳ 启动采集（节点 "+id+"）…";
+  try{
+    const r=await fetch("/api/btg/queue/run",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({items:[item],limit:100,pages:2})});
+    const j=await r.json();
+    if(!r.ok||!j.run_id){ $("#btgRunStat").textContent="❌ 启动失败："+(j.error||r.status); return; }
+    $("#btgRunStat").innerHTML='▶ run_id='+j.run_id+' · 落 <code style="font-size:11px">'+j.output_dir+'</code>';
+    try{ localStorage.setItem(BTG_RUN_KEY,j.run_id); }catch(e){}
+    btgWatch(j.run_id);
+  }catch(e){ $("#btgRunStat").textContent="❌ "+e.message; }
+}
+/* 轮询某个 run：启动时与刷新后复用同一套逻辑 */
+async function btgWatch(run_id){
+  if(BTG_RUN_POLL) clearInterval(BTG_RUN_POLL);
+  const tick=async()=>{
+    try{
+      const rr=await fetch("/api/btg/runs",{cache:"no-store"}); if(!rr.ok) return;
+      const jj=await rr.json();
+      const me=(jj.runs||[]).find(x=>x.run_id===run_id);
+      if(!me) return;
+      const st=me.status;
+      const icon=st==="done"?"✅":st==="failed"?"❌":st==="error"?"⛔":"⏳";
+      let msg=icon+" "+st+" · "+me.started_at+(me.finished_at?" → "+me.finished_at:"");
+      let banner="";
+      // 实时进度：running 且 v21 已上报 done/total 时优先显示采集进度
+      if(st==="running"&&me.progress&&me.progress.total>0&&me.progress.done>0){
+        const p=me.progress;
+        const pct=Math.round(100*p.done/p.total);
+        msg="⏳ 正在采集 "+p.done+"/"+p.total+" · "+p.cur+"（"+pct+"%）"+(p.ok===0?" · ⚠1条验证码":"");
+        banner="⏳ <b>采集中</b> "+p.done+"/"+p.total+"（"+pct+"%）· 后台进程运行，<b>刷新页面不会中断</b>，重开会自动续接进度。";
+      }else if(st==="running"){
+        msg="⏳ 采集中… · "+me.started_at;
+        banner="⏳ <b>采集中</b>（等待进度上报）· 后台进程运行，<b>刷新页面不会中断</b>，重开会自动续接进度。";
+      }
+      if(me.exit_code!=null) msg+=" · exit="+me.exit_code;
+      if(me.dataset_synced) msg+=' · 已同步到 <code style="font-size:11px">'+me.dataset_synced.split(/[/\\]/).pop()+'</code>';
+      if(me.sync_error) msg+=' · sync: '+me.sync_error;
+      if(me.sync_skipped){ msg+=' · 未同步：'+me.sync_skipped; banner="⚠ 上次采集<b>未正常完成</b>："+es(me.sync_skipped)+"（已有数据集未被覆盖，建议重新采集）"; }
+      $("#btgRunStat").textContent=msg;
+      if(st==="running"){ BTG_RUN_ID=run_id; btgRunBox(banner); return; }
+      // 结束态
+      clearInterval(BTG_RUN_POLL); BTG_RUN_POLL=null; BTG_RUN_ID="";
+      try{ localStorage.removeItem(BTG_RUN_KEY); }catch(e){}
+      if(st==="done"&&!me.sync_skipped){ btgRunBox(""); }
+      else btgRunBox("⚠ 采集未正常完成："+es(st)+(me.sync_skipped?" · "+es(me.sync_skipped):"")+" · 已有数据集未被覆盖，建议重新采集。");
+      if(st==="done"){ try{ await btgReloadIndex(); }catch(e){} }
+      if(st==="done"){ try{ await btgAutoFollowLatest(); }catch(e){} }
+    }catch(e){}
+  };
+  BTG_RUN_ID=run_id;
+  BTG_RUN_POLL=setInterval(tick,1500);
+  await tick();
+}
+/* 刷新/重开后续接：localStorage 里的 run 仍在跑 → 自动接上；已结束则把中断原因补显示 */
+async function btgResumeRun(){
+  let rid=""; try{ rid=localStorage.getItem(BTG_RUN_KEY)||""; }catch(e){}
+  try{
+    const r=await fetch("/api/btg/runs",{cache:"no-store"}); if(!r.ok) return;
+    const j=await r.json(); const runs=j.runs||[];
+    if(!runs.length) return;
+    const running=runs.filter(x=>x.status==="running");
+    const me=running.find(x=>x.run_id===rid)||running[running.length-1];
+    if(me){ btgWatch(me.run_id); return; }
+    if(rid){
+      const last=runs[runs.length-1];
+      if(last&&last.run_id===rid&&(last.status!=="done"||last.sync_skipped)){
+        btgRunBox("⚠ 上次采集<b>未正常完成</b>（"+es(last.status)+"）"
+          +(last.sync_skipped?" · "+es(last.sync_skipped):"")
+          +" · 已有数据集未被覆盖，建议重新采集。");
+      }
+      try{ localStorage.removeItem(BTG_RUN_KEY); }catch(e){}
+    }
+  }catch(e){}
+}
+async function btgReloadIndex(){
+  // 采集完成后刷新 BTG.index / dataNodes / datasets，触发"数"徽章亮起（datasets 供自动切榜与详情卡数据行使用）
+  try{
+    const ri=await fetch("/api/btg/index",{cache:"no-store"}); if(ri.ok) BTG.index=await ri.json();
+    const rd=await fetch("/api/datasets",{cache:"no-store"}); if(rd.ok){
+      const arr=await rd.json();
+      BTG.datasets=arr;
+      BTG.dataNodes=new Set((arr||[]).map(d=>String(d.node)));
+    }
+    renderTop();                  /* 采集入库后「已采集/待采集/覆盖率」跟着变（2026-09-11） */
+    renderBtgCats(); btgRender();
+  }catch(e){}
+}
+async function btgAutoFollowLatest(){
+  // 2026-09-09: 采集完成 → 用户正看的就是刚采的节点 → 02~09 章节自动切到该节点最新数据集（含本次新采集），并提示
+  const nid=BTG.sel&&btgFind(BTG.sel); if(!nid) return;
+  const all=(BTG.datasets||[]).filter(d=>String(d.node)===String(nid));
+  if(!all.length) return;
+  const latest=all[0];                                   // api_datasets 已按 mtime 倒序 → 首条即最新
+  if(!latest||latest.src===BTG.curSrc) return;           // 已在最新，无需切
+  await btgLoadDataset(latest);
+  const nm=latest.chart==="bsr"?"热销榜":"新品榜";
+  const st=$("#btgRunStat");
+  if(st){ st.style.color="var(--green)"; st.textContent="✅ 采集完成：02~09 章节已自动切到最新 "+nm+" 数据（"+(latest.date||"").slice(0,10)+" · "+latest.count+" 条）"; }
+}
+function btgCSV(){
+  const ids=Object.keys(BTG.marks);
+  if(!ids.length){ alert("还没有标记任何节点"); return; }
+  const rows=[["node","name","path","query","status","url_bsr","url_search"]];
+  ids.forEach(id=>{
+    const m=BTG.map[id]||{}, n=m.node;
+    rows.push([id,m.name||"",m.path||"",m.query||"",MK_TXT[BTG.marks[id]]||"",n?btgUrlBsr(n):"",n?btgUrlSearch(n):""]);
+  });
+  const csv="\uFEFF"+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download="类目选品标记_"+new Date().toISOString().slice(0,10)+".csv";
+  a.click(); URL.revokeObjectURL(a.href);
+}
+/* 事件绑定 */
+$("#btgCats").addEventListener("click",e=>{ const b=e.target.closest("[data-cat]"); if(b) btgPick(b.dataset.cat); });
+/* 分类树面板：下拉选大类 / 收起大类（2026-09-11） */
+$("#ctSel").addEventListener("change",e=>{ if(e.target.value) btgPick(e.target.value); });
+$("#ctFold").addEventListener("click",e=>{
+  const g=$("#btgCats"); g.classList.toggle("fold");
+  e.target.textContent=g.classList.contains("fold")?"展开大类":"收起大类";
+});
+$("#btgTree").addEventListener("click",e=>{
+  const el=e.target.closest(".btg-node"); if(!el) return;
+  const id=el.dataset.id, n=btgFind(id); if(!n) return;
+  if(e.target.classList.contains("tw")){
+    (n.children&&n.children.length)&&(BTG.open.has(id)?BTG.open.delete(id):BTG.open.add(id));
+    btgRender(); return;
+  }
+  if(n.children&&n.children.length){ BTG.open.has(id)?BTG.open.delete(id):BTG.open.add(id); }
+  BTG.sel=id; BTG.cursor=BTG.flat.findIndex(x=>x.id===id);
+  $("#btgTree").focus({preventScroll:true}); btgRender(); btgSide(); btgLink(n);
+});
+$("#btgSide").addEventListener("click",e=>{
+  const c=e.target.closest("[data-copy]");
+  if(c){
+    navigator.clipboard.writeText(c.dataset.copy).then(()=>{ const t=c.textContent; c.textContent="已复制"; setTimeout(()=>c.textContent=t,1200); });
+    return;
+  }
+  const m=e.target.closest("[data-mk]");
+  if(m&&BTG.sel){ btgMark(BTG.sel,m.dataset.mk); return; }
+  const a=e.target.closest("[data-act2]");
+  if(a&&BTG.sel){
+    if(a.dataset.act2==="queueNode") btgQueue([BTG.sel]);
+    if(a.dataset.act2==="queueLeaves"){
+      const n=btgFind(BTG.sel), ls=[];
+      (function col(ns){ ns.forEach(x=>{ (x.children&&x.children.length)?col(x.children):ls.push(x.id); }); })(n.children||[]);
+      btgQueue(ls.slice(0,200));
+    }
+    if(a.dataset.act2==="runNow") btgRunNow(BTG.sel);
+    if(a.dataset.act2==="viewReport"){
+      const chart=a.dataset.chart||"bsr";
+      const pref=chart==="new"?"amazon_new_":"amazon_bsr_";
+      const n=btgFind(BTG.sel);
+      const hasDs=(BTG.datasets||[]).some(d=>String(d.node)===String(n&&n.id)&&d.src.indexOf(pref)===0);
+      if(!(n&&hasDs)){
+        const st=$("#btgRunStat");
+        if(st){ st.style.color="var(--amber)"; st.textContent=chart==="new"
+          ?(btgNrOf(BTG.sel)===false
+            ?"⚠ 该类目没有新品榜：Amazon 未提供该节点 New Releases 榜单，无法采集 —— 请改用热销榜"
+            :"⚠ 该节点暂无新品榜(New Releases)数据：上方榜单选「新品榜」→「立即采集」，完成后此入口即有报告可读")
+          :"⚠ 该节点暂无热销榜数据：先「立即采集」（榜单选热销榜），完成后此入口即有报告可读"; }
+        return;
+      }
+      btgOpenReport(chart);
+    }
+    if(a.dataset.act2==="cmpOpen"){
+      btgOpenCmp(a.dataset.chart||"bsr");
+    }
+    return;
+  }
+  const lf=e.target.closest(".btg-leaf[data-id]");
+  if(lf){ BTG.sel=lf.dataset.id; btgRender(); btgSide(); }
+});
+$("#btgLink").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act3]"); if(!b) return;
+  if(b.dataset.act3==="queue"&&BTG.sel) btgQueue([BTG.sel]);
+  if(b.dataset.act3==="restore"){ showAnalysis(true); $("#btgLink").style.display="none"; }
+});
+$("#btgSearch").addEventListener("input",e=>{ BTG.q=e.target.value; btgRender(); });
+$("#btgFilter").addEventListener("change",e=>{ BTG.filter=e.target.value; btgRender(); });
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-btg]"); if(!b) return;
+  const a=b.dataset.btg;
+  if(a==="expand2"){ BTG.open=new Set(); BTG.tree.forEach(n=>{ BTG.open.add(n.id); (n.children||[]).forEach(c=>BTG.open.add(c.id)); }); btgRender(); }
+  if(a==="collapse"){ BTG.open=new Set(); btgRender(); }
+  if(a==="leafonly"){ BTG.leafOnly=!BTG.leafOnly; b.style.borderColor=BTG.leafOnly?"var(--pri)":""; b.style.color=BTG.leafOnly?"var(--pri)":""; btgRender(); }
+  if(a==="csv") btgCSV();
+  if(a==="save") btgSave();
+  if(a==="queue"){ if(BTG.sel) btgQueue([BTG.sel]); else alert("请先在左侧选中一个节点"); }
+});
+$("#btgTree").addEventListener("keydown",e=>{
+  const k=e.key;
+  if(k==="ArrowDown"||k==="ArrowUp"){
+    if(!BTG.flat.length) return;
+    e.preventDefault();
+    BTG.cursor=Math.max(0,Math.min(BTG.flat.length-1,BTG.cursor+(k==="ArrowDown"?1:-1)));
+    BTG.sel=BTG.flat[BTG.cursor].id; btgRender(); btgSide();
+    const el=$("#btgTree .btg-node.sel"); if(el) el.scrollIntoView({block:"nearest"});
+    return;
+  }
+  if(k==="Enter"&&BTG.sel){ window.open(btgUrlBsr(btgFind(BTG.sel)),"_blank"); return; }
+  if(BTG.sel&&(k==="1"||k==="2"||k==="3")) btgMark(BTG.sel,k==="1"?"follow":k==="2"?"focus":"skip");
+  if(BTG.sel&&(k==="n"||k==="N")) btgMark(BTG.sel,"none");
+});
+
+// 启动: 服务模式(经 /api/data) 优先使用 server/data/ 最新数据集; 失败(如 file:// 直接打开)回退内联
+async function boot(){
+  let list=null, meta=null;
+  try{
+    const r=await fetch("/api/data",{cache:"no-store"});
+    if(r.ok){ const j=await r.json();
+      if(Array.isArray(j.data)&&j.data.length){ list=j.data; meta=j.meta||null; }
+    }
+  }catch(e){}
+  if(list) load(list, Object.assign({},META_DEFAULT,meta,{src:meta?meta.src:META_DEFAULT.src}));
+  else load(RAW, META_DEFAULT);
+  btgInit();
+  btgResumeRun();                 /* 2026-09-10：刷新/重开后续接未完成的采集状态 */
+}
+boot();
+
+/* ============ 选品分析报告 抽屉 (s10) ============ */
+/* 极简 md 渲染：报告结构规整（# 标题 / **粗体** / 表格 / - 列表 / 引用 / ``` 代码），够用且零依赖 */
+function mdToHtml(md){
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inl=s=>esc(s)
+    .replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")
+    .replace(/`([^`]+)`/g,"<code>$1</code>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const lines=md.split(/\r?\n/), out=[]; let i=0;
+  while(i<lines.length){
+    const L=lines[i];
+    if(!L.trim()){ i++; continue; }
+    if(/^```/.test(L)){
+      const buf=[]; i++;
+      while(i<lines.length&&!/^```/.test(lines[i])){ buf.push(esc(lines[i])); i++; }
+      i++; out.push("<pre><code>"+buf.join("\n")+"</code></pre>"); continue;
+    }
+    const hm=L.match(/^(#{1,4})\s+(.*)$/);
+    if(hm){ out.push("<h"+hm[1].length+">"+inl(hm[2])+"</h"+hm[1].length+">"); i++; continue; }
+    if(/^>\s?/.test(L)){
+      const buf=[];
+      while(i<lines.length&&/^>\s?/.test(lines[i])){ buf.push("<p>"+inl(lines[i].replace(/^>\s?/,""))+"</p>"); i++; }
+      out.push("<blockquote>"+buf.join("")+"</blockquote>"); continue;
+    }
+    if(/^\s*\|/.test(L)){
+      const rows=[];
+      while(i<lines.length&&/^\s*\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      const cells=r=>r.trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(s=>s.trim());
+      const hdr=cells(rows[0]);
+      const sep=cells(rows[1]||"");
+      const isSep=rows.length>1&&sep.length>0&&sep.every(s=>/^:?-{2,}:?$/.test(s));
+      let html="<table><thead><tr>"+hdr.map(h=>"<th>"+inl(h)+"</th>").join("")+"</tr></thead><tbody>";
+      for(let r=(isSep?2:1);r<rows.length;r++){
+        const cs=cells(rows[r]);
+        html+="<tr>"+hdr.map((_,k)=>{
+          const v=(cs[k]==null?"":cs[k]).trim();
+          if(/^[0-9][\d,.%$€£¥+\-\s]*$/.test(v)) return '<td class="num">'+inl(v)+"</td>";
+          return "<td>"+inl(v)+"</td>";
+        }).join("")+"</tr>";
+      }
+      out.push(html+"</tbody></table>"); continue;
+    }
+    if(/^\s*[-*]\s+/.test(L)){
+      out.push("<ul>");
+      while(i<lines.length&&/^\s*[-*]\s+/.test(lines[i])){ out.push("<li>"+inl(lines[i].replace(/^\s*[-*]\s+/,""))+"</li>"); i++; }
+      out.push("</ul>"); continue;
+    }
+    if(/^\s*\d+[.)]\s+/.test(L)){
+      out.push("<ol>");
+      while(i<lines.length&&/^\s*\d+[.)]\s+/.test(lines[i])){ out.push("<li>"+inl(lines[i].replace(/^\s*\d+[.)]\s+/,""))+"</li>"); i++; }
+      out.push("</ol>"); continue;
+    }
+    const buf=[inl(L)]; i++;
+    while(i<lines.length&&lines[i].trim()
+      &&!/^(#{1,4}\s|>\s?|```)/.test(lines[i])
+      &&!/^\s*\|/.test(lines[i])
+      &&!/^\s*[-*]\s+/.test(lines[i])
+      &&!/^\s*\d+[.)]\s+/.test(lines[i])){ buf.push(inl(lines[i])); i++; }
+    out.push("<p>"+buf.join("<br>")+"</p>");
+  }
+  return out.join("\n");
+}
+/* 确定抽屉对应的数据集：按榜单前缀匹配选中节点数据集 > 已加载 curSrc > 同榜最新数据集。
+   chart="bsr" 只认 amazon_bsr_*，"new" 只认 amazon_new_*，绝不跨榜回退。 */
+function reportDs(chart){
+  chart=chart==="new"?"new":"bsr";
+  const pref=chart==="new"?"amazon_new_":"amazon_bsr_";
+  const byPref=d=>String(d.src||"").indexOf(pref)===0;
+  let ds=null;
+  if(BTG.sel){
+    const n=btgFind(BTG.sel);
+    if(n) ds=BTG.datasets.find(d=>String(d.node)===String(n.id)&&byPref(d));
+  }
+  if(!ds&&byPref(BTG.curSrc)) ds=BTG.datasets.find(d=>d.src===BTG.curSrc&&byPref(d));
+  if(!ds) ds=BTG.datasets.find(byPref)||null;
+  return ds;
+}
+async function btgOpenReport(chart){
+  const ds=reportDs(chart);
+  const cl=chart==="new"?"新品榜":"热销榜";
+  const body=$("#repBody"), sub=$("#repSub");
+  const wrap=$("#repWrap");
+  if(!ds){
+    body.innerHTML='<div style="max-width:520px;margin:70px auto;text-align:center;color:var(--tx2);line-height:2;font-size:13px">'
+      +'<b style="font-size:14px;color:var(--amber)">尚无'+cl+'数据集</b><br>先在左侧类目树选中一个节点，详情卡「采集榜单」选'+cl+'后点「立即采集」，<br>或用 AI 会话跑 <code>--chart '+(chart==="new"?"new":"bsr")+'</code> 完成一次采集，此抽屉才有所对应的报告可读。</div>';
+    sub.textContent="—";
+    wrap.classList.add("on");
+    return;
+  }
+  body.innerHTML='<div class="btg-tip" style="text-align:center;padding:60px 0;font-size:13px">加载报告…</div>';
+  sub.textContent=ds.name+" · "+ds.src;
+  wrap.classList.add("on");
+  await loadRep(ds.src);
+}
+async function loadRep(src){
+  const body=$("#repBody"), sub=$("#repSub"), pick=$("#repPick");
+  const ds=BTG.datasets.find(d=>d.src===src);
+  try{
+    const r=await fetch("/api/report?src="+encodeURIComponent(src),{cache:"no-store"});
+    const j=await r.json();
+    if(!j||!j.found||!j.reports||!j.reports.length){
+      const dirPref=src.indexOf("amazon_new_")===0?"new":"bsr";
+      sub.textContent=(ds?ds.name+" · ":"")+src;
+      pick.style.display="none";
+      body.innerHTML='<div style="max-width:540px;margin:70px auto;text-align:center;color:var(--tx2);line-height:2.1;font-size:13px">'
+        +'<div style="font-size:15px;font-weight:600;color:var(--tx);margin-bottom:8px">此数据集暂无选品分析报告</div>'
+        +'报告需在 WorkBuddy / 其他 AI 会话中调 <code style="background:var(--bg);border:1px solid var(--line);padding:1px 6px;border-radius:5px">amz-selection-engine</code> 生成，'
+        +'将 <b>选品分析报告.md</b> 放入该数据集对应目录<br>（如 07_OUTPUTS/'+dirPref+'_cable_staples_100/）后，本抽屉即自动显示。<br>'
+        +'<span style="color:var(--tx3);font-size:12px">注：页面 02-09 各分析视图由前端实时计算，不依赖此报告。</span></div>';
+      return;
+    }
+    const show=idx=>{
+      const x=j.reports[idx];
+      sub.textContent=(ds?ds.name+" · ":"")+x.file+"（"+x.mtime+" · "+x.dir+"）";
+      body.innerHTML=mdToHtml(x.text);
+      body.scrollTop=0;
+    };
+    if(j.reports.length>1){
+      pick.style.display="";
+      pick.innerHTML=j.reports.map((x,i)=>{ const nm=x.file.replace(/\.md$/i,""); return '<option value="'+i+'">'+nm+' — '+x.mtime+'（'+x.dir+'）</option>'; }).join("");
+      pick.onchange=()=>show(+pick.value);
+    }else pick.style.display="none";
+    show(0);
+  }catch(e){ body.innerHTML='<p style="padding:30px;color:var(--red)">加载失败：'+e.message+"</p>"; }
+}
+function btgCloseReport(){
+  const w=$("#repWrap"); if(w) w.classList.remove("on");
+}
+$("#repClose").addEventListener("click",btgCloseReport);
+$("#repMask").addEventListener("click",btgCloseReport);
+
+/* ============ 同期对比面板（同类目跨期数据集） ============ */
+const CMP={node:null,chart:"bsr",dss:[],ai:0,bi:0,data:null,view:"dyn",repFiles:[],repIdx:0,repLoaded:false};
+function cmpSets(){
+  const pref=CMP.chart==="new"?"amazon_new_":"amazon_bsr_";
+  return (BTG.datasets||[]).filter(d=>String(d.node)===String(CMP.node)&&String(d.src).indexOf(pref)===0)
+    .sort((x,y)=>String(x.date)<String(y.date)?-1:1);
+}
+async function btgOpenCmp(chart, nid){
+  let want=(chart==="new")?"new":"bsr";
+  const idStr=nid||BTG.sel||"";
+  let n=idStr?btgFind(idStr):null;
+  if(!n&&idStr){                                    /* 树未选中但当前展示数据有节点 → datasets 级兜底 */
+    const hit=(BTG.datasets||[]).find(d=>String(d.node)===String(idStr));
+    if(hit) n={id:hit.node,name:hit.name||"该节点",zh:""};
+  }
+  if(!n){ alert("请先在左侧类目树选中一个类目节点（或先点开某节点的数据），再点「同期对比」"); return; }
+  const cnt=ch=>(BTG.datasets||[]).filter(d=>String(d.node)===String(n.id)&&d.chart===ch).length;
+  /* 智能选榜仅用于顶部 chip（无明确榜上下文）：当前榜不足2期而另一榜足够 → 切可用榜；详情卡按钮(chart 显式)保持原榜语义 */
+  if(nid!==undefined&&cnt(want)<2&&(want==="bsr"?cnt("new"):cnt("bsr"))>=2) want=want==="bsr"?"new":"bsr";
+  CMP.chart=want;
+  CMP.node=n.id; CMP.dss=cmpSets();
+  const wrap=$("#cmpWrap"), body=$("#cmpBody"), sub=$("#cmpSub");
+  const cl=CMP.chart==="new"?"新品榜 NEW":"热销榜 BSR";
+  sub.textContent=es(n.name)+(n.zh?" · "+es(n.zh):"")+" · "+cl;
+  /* 打开面板：默认「解读报告」视图——先探测该节点目录的对比解读 md，命中即展示；无则回落动态对比/提示 */
+  CMP.data=null; CMP.repFiles=[]; CMP.repIdx=0; CMP.repLoaded=false;
+  CMP.ai=Math.max(0,CMP.dss.length-2); CMP.bi=CMP.dss.length-1;
+  $("#cmpVTabs").style.display="";
+  body.innerHTML='<div class="btg-tip" style="text-align:center;padding:70px 0">⏳ 加载…</div>';
+  wrap.classList.add("on");
+  await cmpBoot();
+}
+function cmpNoHistHtml(){
+  return '<div style="max-width:580px;margin:84px auto;text-align:center;color:var(--tx2);line-height:2.3;font-size:13px">'
+    +'<b style="font-size:15px;color:var(--amber)">该节点 '+es(CMP.chart==="new"?"新品榜 NEW":"热销榜 BSR")+' 暂无多期历史数据</b><br>'
+    +'同期对比需要同一榜单 ≥2 份不同采集时间的数据集（当前 '+CMP.dss.length+' 份）。<br>'
+    +'隔一段时间再点「立即采集」一轮，历史自动累积即可开启对比。'
+    +'<div style="margin-top:14px;color:var(--tx3);font-size:12px">已有数据集：'
+    +(CMP.dss.length?CMP.dss.map(d=>d.date+" · "+d.count+"条").join("；"):"—")+"</div></div>";
+}
+async function cmpBoot(){
+  const tabs=document.querySelectorAll("#cmpVTabs .cmp-tab");
+  const setTab=v=>tabs.forEach(x=>x.classList.toggle("on",x.dataset.cmpview===v));
+  /* 1) 解读优先：用最新数据集 src 定位产物目录探测对比解读报告 */
+  const latest=(CMP.dss[CMP.dss.length-1]||{}).src;
+  if(latest){
+    try{
+      const r=await fetch("/api/report?src="+encodeURIComponent(latest),{cache:"no-store"});
+      const j=await r.json();
+      if(j&&j.found) CMP.repFiles=(j.reports||[]).filter(x=>/解读|对比|vs/i.test(x.file));
+    }catch(e){ /* 网络失败回落动态 */ }
+  }
+  CMP.repLoaded=true;
+  if(CMP.repFiles.length){
+    CMP.view="rep"; setTab("rep"); cmpRenderRep(); return;
+  }
+  CMP.view="dyn"; setTab("dyn");
+  if(CMP.dss.length<2){
+    $("#cmpBody").innerHTML=cmpNoHistHtml();
+    $("#cmpPickBar").style.display="none"; $("#cmpExport").style.display="none";
+    return;
+  }
+  $("#cmpPickBar").style.display="";
+  cmpFillPicks(); await cmpLoad();
+}
+/* --- 「解读报告」视图：渲染该节点目录下的对比解读 md（多份可下拉切换） --- */
+function cmpRenderRep(){
+  const body=$("#cmpBody");
+  $("#cmpPickBar").style.display="none"; $("#cmpExport").style.display="none";
+  const files=CMP.repFiles;
+  if(!files.length){
+    body.innerHTML='<div style="max-width:560px;margin:84px auto;text-align:center;color:var(--tx2);line-height:2.3;font-size:13px">'
+      +'<b style="font-size:15px;color:var(--amber)">该节点暂无对比解读报告</b><br>'
+      +'在 WorkBuddy 会话中用选品分析技能生成「双周对比解读」报告后，<br>'
+      +'放入 07_OUTPUTS/<该节点目录>/（文件名含「解读」）即可，本面板自动显示。<br>'
+      +'<div style="margin-top:14px;color:var(--tx3);font-size:12px">也可切到「动态对比」直接查看数据级对比。</div></div>';
+    return;
+  }
+  CMP.repIdx=Math.min(CMP.repIdx,files.length-1);
+  const f=files[CMP.repIdx];
+  const pick=files.length>1
+    ?'<div class="cmp-rep-pick"><span>📄 报告：</span><select id="cmpRepPick">'+files.map((x,i)=>'<option value="'+i+'">'+es(x.file.replace(/\.md$/i,""))+' — '+es(x.mtime)+'</option>').join("")+'</select></div>'
+    :'<div class="cmp-rep-meta">📖 '+es(f.file.replace(/\.md$/i,""))+' · 更新 '+es(f.mtime)+' · 07_OUTPUTS/'+es(f.dir)+'</div>';
+  body.innerHTML="<div style='max-width:1000px;margin:0 auto'>"+pick
+    +'<div class="rep-body">'+mdToHtml(f.text)+"</div></div>";
+  const sel=$("#cmpRepPick");
+  if(sel){ sel.value=CMP.repIdx; sel.addEventListener("change",()=>{ CMP.repIdx=+sel.value; cmpRenderRep(); }); }
+}
+function cmpFillPicks(){
+  const lab=d=>d.date+" · "+d.count+"条"+(d.has_report?" · 📄":"");
+  const A=$("#cmpA"),B=$("#cmpB");
+  A.innerHTML=CMP.dss.map((d,i)=>'<option value="'+i+'">A · '+lab(d)+'</option>').join("");
+  B.innerHTML=CMP.dss.map((d,i)=>'<option value="'+i+'">B · '+lab(d)+'</option>').join("");
+  A.value=CMP.ai; B.value=CMP.bi;
+}
+async function cmpLoad(){
+  if(CMP.ai===CMP.bi){ $("#cmpBody").innerHTML='<div class="btg-tip" style="text-align:center;padding:70px 0;color:var(--amber)">A / B 需选择两份不同期次的数据集</div>'; return; }
+  const a=CMP.dss[CMP.ai], b=CMP.dss[CMP.bi];
+  $("#cmpBody").innerHTML='<div class="btg-tip" style="text-align:center;padding:70px 0">⏳ 正在计算 '+a.date+' → '+b.date+' 对比…</div>';
+  try{
+    const r=await fetch("/api/btg/compare?src_a="+encodeURIComponent(a.src)+"&src_b="+encodeURIComponent(b.src),{cache:"no-store"});
+    const j=await r.json();
+    if(!r.ok||j.error){ $("#cmpBody").innerHTML='<p style="padding:44px;color:var(--red)">对比失败：'+(j.error||r.status)+"</p>"; return; }
+    CMP.data=j; $("#cmpExport").style.display="";
+    cmpRender();
+  }catch(e){ $("#cmpBody").innerHTML='<p style="padding:44px;color:var(--red)">加载失败：'+e.message+"</p>"; }
+}
+function cmpPickPair(){ CMP.ai=+$("#cmpA").value; CMP.bi=+$("#cmpB").value; cmpLoad(); }
+/* --- 渲染工具 --- */
+const cmpFmt=n=>((n===null||n===undefined||isNaN(n))?"—":Number(n).toLocaleString("en-US"));
+const cmpMoney=n=>((n===null||n===undefined||isNaN(n))?"—":"$"+Math.round(n).toLocaleString("en-US"));
+const cmpCls=p=>((p>0)?"cmp-up":((p<0)?"cmp-dn":"cmp-flat"));
+const cmpArrow=d=>{ if(!d||d.delta_pct===null||d.delta_pct===undefined) return '<span class="cmp-flat">—</span>';
+  const p=d.delta_pct, up=p>0;
+  return '<span class="'+cmpCls(p)+'">'+(up?"↑":"↓")+" "+Math.abs(p).toFixed(1)+"%</span>"; };
+const cmpPair=(oldV,newV)=>'<span class="cmp-flat" style="white-space:nowrap">'+cmpFmt(oldV)+' → <b style="color:var(--tx)">'+cmpFmt(newV)+"</b></span>";
+function cmpBarRows(rowsA,rowsB,colorA,colorB){
+  const maxN=Math.max(1,...rowsA.map(x=>x.n),...rowsB.map(x=>x.n));
+  const bar=(n,c)=>{ const w=Math.max(2,Math.round(n/maxN*100)); return '<div class="cmp-bar-track"><i class="'+c+'" style="width:'+w+'%"></i></div>'; };
+  return '<div class="cmp-bars">'+rowsA.map((x,i)=>{
+    const y=rowsB[i]||{n:0,label:x.label};
+    return '<div class="cmp-bar-row"><span title="'+es(x.label)+'">'+es(x.label)+'</span>'+bar(x.n,colorA)
+      +'<span class="num">'+x.n+'</span>'+bar(y.n,colorB)+'<span class="num">'+y.n+'</span></div>';
+  }).join("")+"</div>";
+}
+function cmpTbl(headers,rows,opts){
+  opts=opts||{};
+  const cl=opts.cls||[];   /* 每列附加 class（如 num） */
+  let h="<div style='overflow:auto;max-height:"+(opts.maxH||440)+"px'><table class='cmp-tbl'><thead><tr>"
+    +headers.map((x,i)=>"<th"+(cl[i]==="num"?' class="num"':"")+">"+es(x)+"</th>").join("")+"</tr></thead><tbody>";
+  rows.forEach(r=>{ h+="<tr>"+r.map((c,i)=>{ const cn=cl[i]==="num"?' class="num"':""; return "<td"+cn+">"+c+"</td>"; }).join("")+"</tr>"; });
+  return h+"</tbody></table></div>";
+}
+function cmpRankTxt(d){
+  if(!d) return '<span class="cmp-flat">—</span>';
+  return d>0?'<span class="cmp-up" style="white-space:nowrap">↑ '+d+"</span>":(d<0?'<span class="cmp-dn" style="white-space:nowrap">↓ '+(-d)+"</span>":'<span class="cmp-flat" style="white-space:nowrap">→ 0</span>');
+}
+function cmpDeltaCell(ov,nv,fmt){
+  if(ov===null||ov===undefined||nv===null||nv===undefined) return '<span class="cmp-flat">—</span>';
+  const d=nv-ov;
+  const t=(fmt?fmt(d):cmpFmt(d));
+  return '<span class="'+cmpCls(d)+'" style="white-space:nowrap">'+((d>0?"+":"")+t)+"</span>";
+}
+/* --- 主渲染 --- */
+function cmpRender(){
+  const j=CMP.data, m=j.market;
+  const body=$("#cmpBody");
+  const da=j.a.date, db=j.b.date;
+  const ss=m.sales_same, sa=m.sales_all, rs=m.revenue_same, ra=m.revenue_all, ap=m.avg_price_same, ar=m.avg_rating_same;
+  const rv=m.review_same;
+  /* 指标卡 */
+  const card=(k,v,sub,color)=>'<div class="cmp-card"><div class="k">'+k+'</div><div class="v" style="'+(color?("color:"+color):"")+'">'+v+'</div>'+(sub?'<div class="sub">'+sub+"</div>":"")+"</div>";
+  const sumHtml="<div class='cmp-sum'><ul>"+j.summary.map(s=>"<li>"+es(s)+"</li>").join("")+"</ul></div>";
+  const grid="<div class='cmp-grid'>"
+    +card("大盘月销量(估·同批)",cmpPair(ss&&ss.old,ss&&ss.new),cmpArrow(ss))
+    +card("大盘月销量(估·全榜)",cmpPair(sa&&sa.old,sa&&sa.new),"含榜单换血 · "+cmpArrow(sa))
+    +card("大盘月销售额(估·同批)",cmpPair(rs&&rs.old,rs&&rs.new),cmpArrow(rs))
+    +card("大盘月销售额(估·全榜)",cmpPair(ra&&ra.old,ra&&ra.new),"含榜单换血 · "+cmpArrow(ra))
+    +card("同批均价",cmpPair(ap&&ap.old,ap&&ap.new),cmpArrow(ap))
+    +card("同批评分",cmpPair(ar&&ar.old?Number(ar.old).toFixed(2):null,ar&&ar.new?Number(ar.new).toFixed(2):null),cmpArrow(ar))
+    +card("评论增量(同批)",rv&&rv.per_day!==undefined?((rv.per_day>0?"+":"")+cmpFmt(rv.per_day)+" 条/天"):"—","净增 "+cmpFmt(rv&&rv.inc)+" 条 · "+m.days+" 天")
+    +card("榜单稳定度","Top10 "+m.top10_overlap+"/10 · Top30 "+m.top30_overlap+"/30","掉出 "+m.drop_n+" · 新进 "+m.new_n)
+    +"</div>";
+  const note="<div class='cmp-note'>口径：Amazon 无官方销量绝对值 → 月销量/月销售额为页面档位文本（1K+/500+…）按档中值=下限×1.5 的估算，仅供同口径升降趋势参考。大盘主口径=两期同批在榜 ASIN（"+m.same_n+" 个），全榜口径含榜单换血影响。排名以采集当时榜单名次计（同批 "+j.rankings.same_n+" 个：升 "+j.rankings.up+" · 降 "+j.rankings.down+" · 平 "+j.rankings.flat+"，平均位移 "+(j.rankings.avg_abs_move===null?"—":j.rankings.avg_abs_move)+" 位）。</div>";
+  const overview="<div class='cmp-sect-title'>大盘概览（"+da+" → "+db+"）</div>"
+    +grid+note
+    +"<div class='cmp-sect-title'>价格带分布（商品数）<span class='cmp-note' style='margin-left:8px'>蓝="+da+" · 橙="+db+"</span></div>"
+    +cmpBarRows(m.price_bands_a,m.price_bands_b,"cmp-a","cmp-b")
+    +"<div class='cmp-sect-title'>月销档分布（商品数）</div>"
+    +cmpBarRows(m.sales_bands_a,m.sales_bands_b,"cmp-a","cmp-b")
+    +"<div class='cmp-sect-title'>榜单换血 · 掉出 "+j.churn.dropped.length+" / 新进 "+j.churn.entered.length+"</div>"
+    +"<p style='font-size:12px;color:var(--tx2)'>掉出 = "+da+" 在榜但 "+db+" 已跌出前100；新进 = "+db+" 新进前100（详见「榜单换血」页签）。</p>"
+    +"<div class='cmp-sect-title'>上升最快 Top8</div>"
+    +cmpTbl(["名次变动","ASIN","品牌","标题"],[...(j.rankings.up_top||[]).slice(0,8).map(x=>[cmpRankTxt(x.delta),'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),es(x.title)]),[["","","",""]]],{cls:["","","",""],maxH:330});
+  body.innerHTML=sumHtml+overview+"<div class='cmp-tabs'>"
+    +['overview','churn','rank','brand','detail'].map(t=>'<button class="cmp-tab'+(t==="overview"?" on":"")+'" data-cmptab="'+t+'">'+({overview:"大盘概览",churn:"榜单换血",rank:"排名变动",brand:"品牌变化",detail:"明细全量"})[t]+"</button>").join("")
+    +"</div><div id='cmpSecs'></div>";
+  cmpSec("overview","");
+  cmpSecsBind();
+}
+function cmpSecsBind(){
+  const tabs=document.querySelectorAll("#cmpBody .cmp-tab");
+  tabs.forEach(b=>b.addEventListener("click",()=>{
+    tabs.forEach(x=>x.classList.remove("on")); b.classList.add("on");
+    const t=b.dataset.cmptab;
+    cmpSec(t,"");
+  }));
+}
+function cmpSec(t,html){
+  const j=CMP.data, m=j.market;
+  const da=j.a.date, db=j.b.date;
+  const host=$("#cmpSecs");
+  if(t==="overview"){ host.innerHTML=""; $("#cmpBody").scrollTop=0; return; }
+  if(t==="churn"){
+    const cl=(x,label)=>"<td><span class='"+(label==="掉出"?"cmp-dn":"cmp-up")+"'>"+label+"</span></td>";
+    const rows=[];
+    j.churn.dropped.forEach(x=>rows.push([cl(x,"掉出"),x.rank,'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),es(x.price_raw),es(x.sales_raw),cmpFmt(x.review),x.rating===null?"—":x.rating,x.ac?"✓":"",x.bb?"✓":"",es(x.title)]));
+    j.churn.entered.forEach(x=>rows.push([cl(x,"新进"),x.rank,'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),es(x.price_raw),es(x.sales_raw),cmpFmt(x.review),x.rating===null?"—":x.rating,x.ac?"✓":"",x.bb?"✓":"",es(x.title)]));
+    html=cmpTbl(["状态","名次","ASIN","品牌","价格","月销","评论数","评分","AC","BS","标题"],rows,{cls:["","num","","","","","num","num","","",""],maxH:420})
+      +"<p class='cmp-note'>掉出 "+j.churn.dropped.length+" 个 · 新进 "+j.churn.entered.length+" 个 · 两期同在 "+j.churn.kept+" 个</p>";
+  }
+  if(t==="rank"){
+    const rowOf=x=>[cmpRankTxt(x.delta),x.rank_old+" → "+x.rank_new,'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),
+      x.price_old===null?"—":"$"+x.price_old.toFixed(2),x.price_new===null?"—":"$"+x.price_new.toFixed(2),cmpDeltaCell(x.price_old,x.price_new),
+      x.rev_old===null?"—":cmpFmt(x.rev_old),x.rev_new===null?"—":cmpFmt(x.rev_new),cmpDeltaCell(x.rev_old,x.rev_new,cmpFmt),
+      (x.rating_old===null?"—":x.rating_old),(x.rating_new===null?"—":x.rating_new),x.ac_old?"✓":"" ,x.ac_new?"✓":"",x.bb_old?"✓":"",x.bb_new?"✓":"",es(x.title)];
+    const kept=j.detail.filter(x=>x.status==="kept");
+    html="<div class='cmp-sect-title'>两期均在榜 · 名次变动全表（"+kept.length+" 个，按新名次排序）</div>"
+      +cmpTbl(["变动","名次 A→B","ASIN","品牌","旧价$","新价$","价格变动","旧评论","新评论","评论增量","旧评分","新评分","AC旧","AC新","BS旧","BS新","标题"],kept.map(rowOf),{cls:["num","","","","num","num","num","num","num","num","num","num","","","","",""],maxH:430})
+      +"<div class='cmp-sect-title'>上升最快 Top20</div>"+cmpTbl(["变动","名次 A→B","ASIN","品牌","标题"],(j.rankings.up_top||[]).map(x=>[cmpRankTxt(x.delta),x.rank_old+" → "+x.rank_new,'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),es(x.title)]),{cls:["num","","","",""],maxH:360})
+      +"<div class='cmp-sect-title'>下降最快 Top20</div>"+cmpTbl(["变动","名次 A→B","ASIN","品牌","标题"],(j.rankings.down_top||[]).map(x=>[cmpRankTxt(x.delta),x.rank_old+" → "+x.rank_new,'<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),es(x.title)]),{cls:["num","","","",""],maxH:360});
+  }
+  if(t==="brand"){
+    const moveRows=(j.brands.moves||[]).map(x=>{
+      const d=x.cnt_delta, r1=x.avg_rank_a, r2=x.avg_rank_b;
+      return [bTxt(x.brand),x.cnt_a,x.cnt_b,'<span class="'+cmpCls(d)+'">'+((d>0?"+":"")+d)+"</span>",x.share_a+"%","→ "+x.share_b+"%",x.top_a===null?"—":x.top_a,x.top_b===null?"—":x.top_b,(r1===null?"—":r1.toFixed(1)),(r2===null?"—":r2.toFixed(1))];
+    });
+    const extraRows=(j.brands.new||[]).map(x=>['<span class="cmp-up">★ 新进</span>'+bTxt(x.brand),0,x.cnt,'<span class="cmp-up">+'+x.cnt+"</span>","0%","—","—",x.top===null?"—":x.top,"—","—"]);
+    (j.brands.gone||[]).forEach(x=>extraRows.push(['<span class="cmp-dn">✕ 掉榜</span>'+bTxt(x.brand),x.cnt,0,'<span class="cmp-dn">-'+x.cnt+"</span>","—","0%",x.top===null?"—":x.top,"—","—","—"]));
+    html="<div class='cmp-sect-title'>在榜品牌（"+da+" → "+db+"，按新期上榜数降序）</div>"
+      +cmpTbl(["品牌",da+"上榜",db+"上榜","变动",da+"份额",db+"份额",da+"最佳名次",db+"最佳名次",da+"均名次",db+"均名次"],moveRows.concat(extraRows),{cls:["","num","num","num","num","num","num","num","num","num"],maxH:430})
+      +"<p class='cmp-note'>份额=品牌 ASIN 数/榜单100；均名次=该品牌在榜商品平均名次（越小越靠前）。保留 "+j.brands.kept.length+" · 新进 "+j.brands.new.length+" · 掉榜 "+j.brands.gone.length+"</p>";
+  }
+  if(t==="detail"){
+    const rows=j.detail.map(x=>{
+      const stl={kept:"在榜",dropped:"掉出",entered:"新进"}[x.status]||x.status;
+      const stCls=x.status==="dropped"?"cmp-dn":(x.status==="entered"?"cmp-up":"cmp-flat");
+      return ['<span class="'+stCls+'">'+stl+"</span>",
+        '<a href="https://www.amazon.com/dp/'+es(x.asin)+'" target="_blank" rel="noopener">'+es(x.asin)+"</a>",bTxt(x.brand),
+        x.rank_old===null?"—":x.rank_old,x.rank_new===null?"—":x.rank_new,
+        x.delta===null||x.delta===undefined?"—":cmpRankTxt(x.delta),
+        x.price_old===null?"—":"$"+x.price_old.toFixed(2),x.price_new===null?"—":"$"+x.price_new.toFixed(2),
+        x.rev_old===null?"—":cmpFmt(x.rev_old),x.rev_new===null?"—":cmpFmt(x.rev_new),
+        (x.rev_inc===null||x.rev_inc===undefined)?"—":'<span class="'+cmpCls(x.rev_inc)+'">'+((x.rev_inc>0?"+":"")+cmpFmt(x.rev_inc))+"</span>",
+        (x.status==="dropped"?(es(x.sales_raw)||"—"):(x.sales_old==null||x.sales_old===""?"—":es(x.sales_old))),
+        (x.status==="entered"?(es(x.sales_raw)||"—"):(x.sales_new==null||x.sales_new===""?"—":es(x.sales_new))),
+        x.rating_old===null?"—":x.rating_old,x.rating_new===null?"—":x.rating_new,es(x.title)];
+    });
+    html=cmpTbl(["状态","ASIN","品牌","旧名次","新名次","变动","旧价$","新价$","旧评论","新评论","评论增量","旧月销","新月销","旧评分","新评分","标题"],rows,{cls:["","","","num","num","num","num","num","num","num","num","","","num","num",""],maxH:480});
+  }
+  if(html===undefined) html="";
+  host.innerHTML=html;
+  if(host.scrollIntoView&&t==="overview") {} /* overview 首屏不动 */
+}
+/* 同期对比 视图切换：📖解读报告（默认）/ 📊动态对比 */
+$("#cmpVTabs").querySelectorAll(".cmp-tab").forEach(b=>b.addEventListener("click",async()=>{
+  const v=b.dataset.cmpview; if(v===CMP.view) return;
+  document.querySelectorAll("#cmpVTabs .cmp-tab").forEach(x=>x.classList.toggle("on",x===b));
+  CMP.view=v;
+  if(v==="rep"){
+    if(!CMP.repLoaded){
+      const latest=(CMP.dss[CMP.dss.length-1]||{}).src;
+      $("#cmpBody").innerHTML='<div class="btg-tip" style="text-align:center;padding:70px 0">⏳ 加载解读报告…</div>';
+      CMP.repLoaded=true;
+      if(latest){
+        try{
+          const r=await fetch("/api/report?src="+encodeURIComponent(latest),{cache:"no-store"});
+          const j=await r.json();
+          if(j&&j.found) CMP.repFiles=(j.reports||[]).filter(x=>/解读|对比|vs/i.test(x.file));
+        }catch(e){}
+      }
+    }
+    cmpRenderRep();
+  }else{
+    if(CMP.dss.length<2){
+      $("#cmpBody").innerHTML=cmpNoHistHtml();
+      $("#cmpPickBar").style.display="none"; $("#cmpExport").style.display="none";
+    }else{
+      $("#cmpPickBar").style.display="";
+      if(!$("#cmpA").options.length) cmpFillPicks();
+      if(!CMP.data) await cmpLoad();
+      else cmpRender();
+    }
+  }
+}));
+function btgCloseCmp(){
+  const w=$("#cmpWrap"); if(w) w.classList.remove("on");
+}
+/* 面板控件 */
+function cmpSwapPair(){ const t=CMP.ai; CMP.ai=CMP.bi; CMP.bi=t; cmpFillPicks(); cmpLoad(); }
+$("#cmpClose").addEventListener("click",btgCloseCmp);
+$("#cmpMask").addEventListener("click",btgCloseCmp);
+$("#cmpA").addEventListener("change",cmpPickPair);
+$("#cmpB").addEventListener("change",cmpPickPair);
+$("#cmpNear").addEventListener("click",()=>{ CMP.ai=Math.max(0,CMP.dss.length-2); CMP.bi=CMP.dss.length-1; cmpFillPicks(); cmpLoad(); });
+$("#cmpSpan").addEventListener("click",()=>{ CMP.ai=0; CMP.bi=CMP.dss.length-1; cmpFillPicks(); cmpLoad(); });
+$("#cmpSwap").addEventListener("click",cmpSwapPair);
+async function cmpExportXlsx(){
+  const a=CMP.dss[CMP.ai], b=CMP.dss[CMP.bi], btn=$("#cmpExport");
+  if(!a||!b||CMP.ai===CMP.bi) return;
+  btn.textContent="⏳ 生成中…"; btn.disabled=true;
+  try{
+    const r=await fetch("/api/btg/compare/export",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({src_a:a.src,src_b:b.src})});
+    const j=await r.json();
+    if(!r.ok||j.error){ alert("导出失败："+(j.error||r.status)); }
+    else alert("✅ 对比明细已导出\n\n文件："+j.file+"\n\n路径：\n"+j.path+"\n\n可直接到该目录打开 Excel 归档。");
+  }catch(e){ alert("导出失败："+e.message); }
+  btn.textContent="⭳ 导出 Excel"; btn.disabled=false;
+}
+$("#cmpExport").addEventListener("click",cmpExportXlsx);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ btgCloseReport(); btgCloseCmp(); } });
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>微文收纳 · 工作台 v0806-3</title>
+<title>微文收纳 · 工作台 v0911-5</title>
 <style>
   :root { --blue:#185FA5; --blue-50:#E6F1FB; --teal:#0F6E56; --teal-50:#E1F5EE; --gray:#5F5E5A; --line:#ddd; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,9 +122,23 @@
 <div class="card">
   <h2>③ 添加专辑</h2>
   <div class="row">
-    <input type="url" id="albumLink" placeholder="粘贴专辑页链接（mp/appmsgalbum?…&album_id=…）">
+    <input type="url" id="albumLink" placeholder="粘贴专辑页链接（mp/appmsgalbum?…&album_id=…）" style="flex:1;min-width:240px">
+    <select id="albumScope" title="同步范围" onchange="document.getElementById('albumStartDate').style.display = this.value === 'custom' ? 'inline-block' : 'none'">
+      <option value="all">全部历史</option>
+      <option value="1m">最近 1 个月</option>
+      <option value="3m">最近 3 个月</option>
+      <option value="6m">最近 6 个月</option>
+      <option value="1y">最近 1 年</option>
+      <option value="2y">最近 2 年</option>
+      <option value="custom">自定义起始日期</option>
+    </select>
+    <input type="date" id="albumStartDate" style="display:none" title="起始日期（自定义范围时生效）">
+    <select id="albumMode" title="同步模式">
+      <option value="all">全量</option>
+      <option value="incremental">增量</option>
+    </select>
     <button class="teal" onclick="syncAlbum()">同步专辑</button>
-    <span class="muted">或展开下方公众号，点专辑行的「同步」增量更新</span>
+    <span class="muted">默认全部历史；选时间范围可只拉该区间</span>
   </div>
   <div class="muted" id="albumResult" style="margin-top:8px"></div>
 </div>
@@ -170,6 +184,53 @@
   </div>
   <div id="topicTree"><span class="muted">加载中…</span></div>
   </div>
+</div>
+
+<div class="card" id="bdCard">
+  <h2>批量删除 <span class="muted">按条件删除已收录文章；删除不可恢复，执行前会先打包备份</span></h2>
+  <div class="row" style="flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center">
+    <span class="muted" style="font-size:13px">范围：</span>
+    <select id="bdBiz" onchange="bdTouch()" title="按公众号删除"><option value="">全部公众号</option></select>
+    <select id="bdAlbum" onchange="bdTouch()" title="按专辑删除"><option value="">全部专辑</option></select>
+    <select id="bdPaid" onchange="bdTouch()" title="按付费状态删除">
+      <option value="">全部文章</option>
+      <option value="paid">🔒 付费文章</option>
+      <option value="unlocked">✅ 已付费解锁</option>
+      <option value="locked">🔒 未解锁付费</option>
+      <option value="free">免费文章</option>
+    </select>
+    <select id="bdDate" onchange="bdOnDateChange()" title="按时间删除">
+      <option value="">全部时间</option>
+      <option value="older1y">1 年前及更早</option>
+      <option value="older2y">2 年前及更早</option>
+      <option value="years">指定年份（可多选）</option>
+      <option value="custom">自定义区间</option>
+    </select>
+    <input type="date" id="bdFrom" onchange="bdTouch()" style="display:none">
+    <span class="muted" id="bdSep" style="display:none">—</span>
+    <input type="date" id="bdTo" onchange="bdTouch()" style="display:none">
+  </div>
+  <div id="bdYearBox" style="display:none;margin-bottom:8px">
+    <div class="row" style="flex-wrap:wrap;gap:6px;align-items:center">
+      <span class="muted" style="font-size:13px">年份（可多选）：</span>
+      <span id="bdYearChips"></span>
+      <button class="ghost sm" onclick="bdYearPick('all')">全选</button>
+      <button class="ghost sm" onclick="bdYearPick('none')">清空</button>
+    </div>
+  </div>
+  <div style="margin-bottom:8px">
+    <div class="row" style="flex-wrap:wrap;gap:6px;align-items:center">
+      <span class="muted" style="font-size:13px">主题（可多选，命中任一）：</span>
+      <span id="bdTopicChips"></span>
+      <button class="ghost sm" onclick="bdTopicPick()">清空主题</button>
+    </div>
+  </div>
+  <div class="row" style="align-items:center;gap:10px">
+    <button class="ghost sm" onclick="bdPreview(true)">预览命中</button>
+    <span class="muted" id="bdPreviewInfo" style="font-size:13px">未预览</span>
+    <button class="danger sm" id="bdDeleteBtn" onclick="bdDelete()" disabled>🗑 删除命中文章</button>
+  </div>
+  <div class="muted" style="margin-top:6px;font-size:12px">💡 条件全空 = 整库，会被拦截；至少给一个条件。点「删除」后弹窗会显示命中数与前 10 条样本，可勾选先备份。</div>
 </div>
 
 <div class="card">
@@ -224,7 +285,9 @@
     <button class="ghost sm" onclick="openTopicPicker('batchRemove')" title="从勾选文章中移除所选主题">－ 移除主题</button>
     <button class="ghost sm" onclick="clearBatchTopic()" title="清空勾选文章的全部主题">清空主题</button>
     <button class="ghost sm" onclick="clearSelection()">清除选择</button>
-    <span class="muted">勾选文章后可一次追加多个主题（弹窗勾选，支持多级主题）</span>
+    <span style="width:1px;height:20px;background:#e5e5e5;display:inline-block"></span>
+    <button class="danger sm" onclick="openBatchDelete('selected')" title="删除勾选的文章（DB 记录 + 本地 HTML/图片，不可恢复）">🗑 删除勾选</button>
+    <span class="muted">勾选文章后可一次追加多个主题（弹窗勾选，支持多级主题）；按条件批量删除已移至上方「批量删除」卡片</span>
   </div>
   <table>
     <thead><tr><th style="width:30px"><input type="checkbox" id="selectAllTop" onchange="toggleSelectAll(this)" style="vertical-align:-2px"></th><th>标题</th><th>作者</th><th>发布日期</th><th>来源</th><th>所属专辑</th><th>主题</th></tr></thead>
@@ -239,6 +302,28 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- 批量删除确认弹窗（勾选 / 筛选结果 / 专辑清空 共用） -->
+<div class="modal-mask" id="delModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <span>批量删除确认</span>
+      <button class="sm ghost" onclick="closeDelModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;margin-bottom:6px" id="delModalScope"><span class="muted">统计中…</span></div>
+      <div style="font-size:15px;font-weight:600;color:#A32D2D;margin-bottom:8px" id="delModalCount"></div>
+      <div id="delModalSample" class="muted" style="font-size:12px;max-height:150px;overflow:auto;border:1px solid #eee;border-radius:6px;padding:6px;display:none"></div>
+      <div class="muted" style="font-size:12px;margin-top:8px">⚠️ 删除不可恢复：文章记录与本地 HTML/图片文件一并删除。</div>
+      <label style="font-size:13px;margin-top:10px;display:block"><input type="checkbox" id="delBackup" checked style="vertical-align:-2px"> 删除前先打包备份（zip → DATA/backups/，可人工回滚）</label>
+      <div id="delErr" style="color:#A32D2D;font-size:12px;margin-top:6px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="ghost sm" onclick="closeDelModal()">取消</button>
+      <button class="danger sm" id="delConfirmBtn" onclick="doBatchDelete()">确认删除</button>
+    </div>
+  </div>
+</div>
 
 <!-- 付费文章补录弹窗 -->
 <div class="modal-mask" id="paidModal">
@@ -355,6 +440,7 @@ async function loadAccounts() {
             <option value="3m">最近 3 个月</option>
             <option value="6m">最近 6 个月</option>
             <option value="1y">最近 1 年</option>
+            <option value="2y">最近 2 年</option>
             <option value="custom">自定义起始日期</option>
           </select>
           <input type="date" class="customDate" data-biz="${a.biz}" style="display:none">
@@ -410,7 +496,8 @@ function albumGroup(biz, aid, title, arts) {
       <div class="album-head" onclick="toggleAlbum('${aid}', this)" title="点击展开/收起">
         <span class="album-caret">${open ? "▾" : "▸"}</span> <b>${title}</b>
         <span class="muted">· ${arts.length} 篇</span>
-        ${aid !== "__other__" ? `<button class="sm" onclick="event.stopPropagation(); syncAlbumRow('${biz}', '${aid}', this)" title="检查该专辑是否有更新，有新文章则同步入库">同步</button>` : ""}
+        ${aid !== "__other__" ? `<button class="sm" onclick="event.stopPropagation(); syncAlbumRow('${biz}', '${aid}', this)" title="按卡片上方选择的「同步范围 / 同步模式」同步本专辑（支持时间范围，不必每次全部）">同步</button>` : ""}
+        <button class="sm danger" onclick="event.stopPropagation(); openBatchDelete('album', '${biz}', '${aid}', '${String(title || "").replace(/'/g, "")}')" title="删除该分组已收录的全部文章（DB 记录 + 本地 HTML/图片）">清空</button>
       </div>
       <div class="album-body" data-biz='${biz}' data-aid='${aid}' data-count='${arts.length}' style="display:${open ? "block" : "none"}">
         ${open ? '<div class="muted" style="padding:6px 12px;font-size:12px">加载中…</div>' : ""}
@@ -421,9 +508,10 @@ function albumGroup(biz, aid, title, arts) {
 // 渲染专辑文章行（展开时按 album_id 从接口拉取，避免大 JSON 进 DOM）
 async function albumBodyHTML(biz, aid) {
   try {
+    // limit 显式传大值：否则后端默认 500 截断，大型专辑（如 563 篇）会显示不全
     const arts = aid === "__other__"
-      ? (await j(API + "/articles?biz=" + encodeURIComponent(biz) + "&album_id=")).filter(a => !a.album_id)
-      : await j(API + "/articles?biz=" + encodeURIComponent(biz) + "&album_id=" + encodeURIComponent(aid));
+      ? (await j(API + "/articles?biz=" + encodeURIComponent(biz) + "&album_id=&limit=100000")).filter(a => !a.album_id)
+      : await j(API + "/articles?biz=" + encodeURIComponent(biz) + "&album_id=" + encodeURIComponent(aid) + "&limit=100000");
     return arts.map(albumArticleRow).join("");
   } catch (e) {
     return '<div class="muted" style="padding:6px 12px;font-size:12px">加载失败：' + e.message + '</div>';
@@ -432,17 +520,27 @@ async function albumBodyHTML(biz, aid) {
 
 // 专辑行增量同步：检查已收集专辑页是否有更新，有新文章则入库（mode=incremental，命中已存在即停）
 async function syncAlbumRow(biz, albumId, btn) {
+  // 时间筛选：沿用该公众号卡片顶部的「同步范围 / 自定义起始日期 / 同步模式」控件
+  const scopeEl = document.querySelector(`.scopeSel[data-biz="${biz}"]`);
+  const dateEl = document.querySelector(`.customDate[data-biz="${biz}"]`);
+  const modeEl = document.querySelector(`.modeSel[data-biz="${biz}"]`);
+  const scope = (scopeEl && scopeEl.value) || "all";
+  const startDate = (dateEl && dateEl.value) || "";
+  const mode = (modeEl && modeEl.value) || "incremental";
+  if (scope === "custom" && !startDate) { toast("已选「自定义起始日期」，请先在上方选择日期再同步"); return; }
+  const scopeText = ((scopeEl && scopeEl.selectedOptions[0]) ? scopeEl.selectedOptions[0].textContent : scope)
+    + (scope === "custom" && startDate ? `（${startDate} 起）` : "");
   btn.disabled = true;
   btn.textContent = "同步中…";
   try {
-    const r = await j(API + "/albums/sync", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ biz, album_id: albumId, scope: "all", mode: "incremental" }) });
-    toast(`专辑同步任务 #${r.task_id} 已启动（增量检查更新）`);
+    const r = await j(API + "/albums/sync", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ biz, album_id: albumId, scope, start_date: startDate, mode }) });
+    toast(`专辑同步任务 #${r.task_id} 已启动（${scopeText} · ${mode === "incremental" ? "增量" : "全量"}）`);
     loadTasks();
   } catch (e) {
     toast("同步失败：" + e.message);
-    btn.disabled = false;
-    btn.textContent = "同步";
   }
+  btn.disabled = false;
+  btn.textContent = "同步";
 }
 
 function toggleAlbum(aid, el) {
@@ -466,7 +564,8 @@ function toggleAlbum(aid, el) {
 async function loadAccArticles(biz, box) {
   try {
     const [arts, albs] = await Promise.all([
-      j(API + "/articles?biz=" + encodeURIComponent(biz)),
+      // limit 必须显式传大值：后端默认 limit=500，超出会被静默截断，导致专辑篇数少算
+      j(API + "/articles?biz=" + encodeURIComponent(biz) + "&limit=100000"),
       j(API + "/albums?biz=" + encodeURIComponent(biz)).catch(() => [])
     ]);
     if (!arts.length) { box.innerHTML = '<div class="muted" style="padding:6px 12px">该公众号暂无文章</div>'; return; }
@@ -488,6 +587,323 @@ async function loadAccArticles(biz, box) {
     box.innerHTML = html;
     box.dataset.loaded = "1";
   } catch (e) { box.innerHTML = '<div class="muted" style="padding:6px 12px">加载失败</div>'; }
+}
+
+// ---------- 批量删除（勾选 / 筛选结果 / 专辑清空 共用一套确认弹窗） ----------
+let DEL_TARGET = null; // { mode, payload, label }
+
+function topicNameById(id) {
+  const t = (TOPICS || []).find(x => x.id === id);
+  return t ? t.name : ("#" + id);
+}
+
+// 收集文章库当前筛选条件（口径与 loadArticles 一致）
+function currentArticleFilter() {
+  const dr = document.getElementById("filterDate").value;
+  const dFrom = document.getElementById("dateFrom").value;
+  const dTo = document.getElementById("dateTo").value;
+  const now = new Date();
+  let dateFrom = 0, dateTo = 0;
+  if (dr === "today") dateFrom = dateTo = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+  else if (dr === "7d") dateFrom = Math.floor((now.getTime() - 7 * 86400000) / 1000);
+  else if (dr === "30d") dateFrom = Math.floor((now.getTime() - 30 * 86400000) / 1000);
+  else if (dr === "year") dateFrom = Math.floor(new Date(now.getFullYear(), 0, 1).getTime() / 1000);
+  else if (dr === "custom") {
+    if (dFrom) dateFrom = Math.floor(new Date(dFrom + "T00:00:00").getTime() / 1000);
+    if (dTo) dateTo = Math.floor(new Date(dTo + "T23:59:59").getTime() / 1000);
+  }
+  return {
+    q: document.getElementById("searchQ").value.trim(),
+    topic_ids: [...FILTER_TOPIC_IDS],
+    author: document.getElementById("filterAuthor").value,
+    source: document.getElementById("filterSource").value,
+    album_id: document.getElementById("filterAlbum").value,
+    paid: document.getElementById("filterPaid").value,
+    date_from: dateFrom,
+    date_to: dateTo,
+  };
+}
+
+function isFilterEmpty(f) {
+  return !f.q && !f.topic_ids.length && !f.author && !f.source && !f.album_id && !f.paid && !f.date_from && !f.date_to;
+}
+
+function articleFilterLabel(f, albumText) {
+  const parts = [];
+  if (f.q) parts.push(`搜索「${f.q}」`);
+  if (f.topic_ids.length) parts.push(`主题 ${f.topic_ids.map(topicNameById).join(" / ")}`);
+  if (f.author) parts.push(`作者「${f.author}」`);
+  if (f.source) parts.push(`公众号「${f.source}」`);
+  if (albumText) parts.push(`专辑「${albumText}」`);
+  else if (f.album_id) parts.push(`专辑 ${f.album_id === "__other__" ? "未归入专辑" : f.album_id}`);
+  if (f.paid) parts.push({ paid: "付费文章", unlocked: "已付费解锁", locked: "未解锁付费", free: "免费文章" }[f.paid] || f.paid);
+  if (f.date_from || f.date_to) {
+    const a = f.date_from ? new Date(f.date_from * 1000).toLocaleDateString("zh-CN") : "最早";
+    const b = f.date_to ? new Date(f.date_to * 1000).toLocaleDateString("zh-CN") : "最新";
+    parts.push(`时间 ${a} ~ ${b}`);
+  }
+  return parts.length ? parts.join(" · ") : "无筛选条件（= 全库）";
+}
+
+// ==================== 批量删除面板（独立卡片） ====================
+// 条件维度：公众号 / 专辑 / 付费状态 / 主题（多选）/ 时间（1年前及更早、2年前及更早、年份多选、自定义区间）
+let BD_YEARS = new Set();     // 选中的年份（可多选，OR）
+let BD_TOPICS = new Set();    // 选中的主题 id（可多选，命中任一）
+let BD_PREVIEW = 0;           // 最近一次预览的命中数
+let BD_TIMER = null;
+
+function bdEsc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function bdInit() {
+  try {
+    const acs = await j(API + "/accounts");
+    document.getElementById("bdBiz").innerHTML = '<option value="">全部公众号</option>' +
+      acs.map(a => `<option value="${a.biz}">${bdEsc(a.name || a.biz)}（${a.article_count || 0} 篇）</option>`).join("");
+  } catch (e) { console.error(e); }
+  try {
+    const albs = await j(API + "/albums");
+    document.getElementById("bdAlbum").innerHTML = '<option value="">全部专辑</option>' +
+      albs.map(a => `<option value="${a.album_id}">${bdEsc(a.title || a.album_id)}${a.account_name ? " · " + bdEsc(a.account_name) : ""}</option>`).join("") +
+      '<option value="__other__">（未归入专辑）</option>';
+  } catch (e) { console.error(e); }
+  await bdLoadYears();
+  bdRenderTopics();
+}
+
+async function bdLoadYears() {
+  const box = document.getElementById("bdYearChips");
+  if (!box) return;
+  try {
+    const ys = await j(API + "/articles/years");
+    box.innerHTML = ys.length
+      ? ys.map(y => `<button class="ghost sm bd-year" data-year="${y.year}" onclick="bdYearToggle(${y.year})" title="发布年份 ${y.year}（北京时间）">${y.year}（${y.count}）</button>`).join("")
+      : '<span class="muted">暂无数据</span>';
+    bdSyncChips();
+  } catch (e) { console.error(e); }
+}
+
+function bdRenderTopics() {
+  const box = document.getElementById("bdTopicChips");
+  if (!box) return;
+  if (!TOPICS.length) { box.innerHTML = '<span class="muted">暂无主题</span>'; return; }
+  let html = "";
+  const walk = (pid, depth) => kidsOf(pid).forEach(t => {
+    html += `<button class="ghost sm bd-topic" data-tid="${t.id}" onclick="bdTopicToggle(${t.id})">${"　".repeat(depth)}${bdEsc(t.name)}</button>`;
+    walk(t.id, depth + 1);
+  });
+  walk(0, 0);
+  box.innerHTML = html;
+  bdSyncChips();
+}
+
+function bdSyncChips() {
+  document.querySelectorAll(".bd-year").forEach(b => {
+    const on = BD_YEARS.has(Number(b.dataset.year));
+    b.style.background = on ? "#A32D2D" : ""; b.style.color = on ? "#fff" : ""; b.style.borderColor = on ? "#A32D2D" : "";
+  });
+  document.querySelectorAll(".bd-topic").forEach(b => {
+    const on = BD_TOPICS.has(Number(b.dataset.tid));
+    b.style.background = on ? "#1a56db" : ""; b.style.color = on ? "#fff" : ""; b.style.borderColor = on ? "#1a56db" : "";
+  });
+}
+
+function bdYearToggle(y) {
+  const k = Number(y);
+  if (BD_YEARS.has(k)) BD_YEARS.delete(k); else BD_YEARS.add(k);
+  bdSyncChips(); bdTouch();
+}
+function bdYearPick(what) {
+  if (what === "all") document.querySelectorAll(".bd-year").forEach(b => BD_YEARS.add(Number(b.dataset.year)));
+  else BD_YEARS.clear();
+  bdSyncChips(); bdTouch();
+}
+function bdTopicToggle(id) {
+  const k = Number(id);
+  if (BD_TOPICS.has(k)) BD_TOPICS.delete(k); else BD_TOPICS.add(k);
+  bdSyncChips(); bdTouch();
+}
+function bdTopicPick() { BD_TOPICS.clear(); bdSyncChips(); bdTouch(); }
+
+function bdOnDateChange() {
+  const v = document.getElementById("bdDate").value;
+  const range = v === "custom";
+  ["bdFrom", "bdTo"].forEach(id => { document.getElementById(id).style.display = range ? "inline-block" : "none"; });
+  document.getElementById("bdSep").style.display = range ? "inline-block" : "none";
+  document.getElementById("bdYearBox").style.display = v === "years" ? "block" : "none";
+  bdTouch();
+}
+
+function bdFilter() {
+  const f = {};
+  const biz = document.getElementById("bdBiz").value;
+  const album = document.getElementById("bdAlbum").value;
+  const paid = document.getElementById("bdPaid").value;
+  if (biz) f.biz = biz;
+  if (album) f.album_id = album;
+  if (paid) f.paid = paid;
+  if (BD_TOPICS.size) f.topic_ids = [...BD_TOPICS];
+  const dv = document.getElementById("bdDate").value;
+  const now = Math.floor(Date.now() / 1000);
+  if (dv === "older1y") f.date_to = now - 365 * 86400;
+  else if (dv === "older2y") f.date_to = now - 730 * 86400;
+  else if (dv === "years") { if (BD_YEARS.size) f.years = [...BD_YEARS].sort((a, b) => a - b); }
+  else if (dv === "custom") {
+    const a = document.getElementById("bdFrom").value;
+    const b = document.getElementById("bdTo").value;
+    if (a) f.date_from = Math.floor(new Date(a + "T00:00:00").getTime() / 1000);
+    if (b) f.date_to = Math.floor(new Date(b + "T23:59:59").getTime() / 1000);
+  }
+  return f;
+}
+
+function bdLabel(f) {
+  const parts = [];
+  const sel = id => { const el = document.getElementById(id); return el.selectedOptions[0] ? el.selectedOptions[0].textContent.trim() : ""; };
+  if (f.biz) parts.push("公众号 " + sel("bdBiz"));
+  if (f.album_id) parts.push("专辑 " + sel("bdAlbum"));
+  if (f.paid) parts.push("状态 " + sel("bdPaid"));
+  if (f.topic_ids) parts.push(`主题 ${f.topic_ids.length} 个`);
+  const dv = document.getElementById("bdDate").value;
+  if (dv === "older1y") parts.push("1 年前及更早");
+  else if (dv === "older2y") parts.push("2 年前及更早");
+  else if (dv === "years") parts.push("年份 " + ([...BD_YEARS].sort((a, b) => a - b).join(" / ") || "（未选）"));
+  else if (dv === "custom") {
+    const a = document.getElementById("bdFrom").value;
+    const b = document.getElementById("bdTo").value;
+    if (a || b) parts.push(`区间 ${a || "最早"} ~ ${b || "最新"}`);
+  }
+  return parts.length ? parts.join(" · ") : "无筛选条件（= 全库）";
+}
+
+function bdTouch() {
+  BD_PREVIEW = 0;
+  const btn = document.getElementById("bdDeleteBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "🗑 删除命中文章"; }
+  clearTimeout(BD_TIMER);
+  BD_TIMER = setTimeout(() => bdPreview(false), 350);
+}
+
+async function bdPreview(manual) {
+  const info = document.getElementById("bdPreviewInfo");
+  const btn = document.getElementById("bdDeleteBtn");
+  if (!info || !btn) return;
+  const f = bdFilter();
+  if (!Object.keys(f).length) {
+    info.textContent = "⚠️ 未选任何条件（= 全库），请至少选一项";
+    btn.disabled = true; BD_PREVIEW = 0; btn.textContent = "🗑 删除命中文章";
+    return;
+  }
+  info.textContent = "统计中…";
+  try {
+    const r = await j(API + "/articles/batch-delete", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filter: f, dry_run: true }),
+    });
+    BD_PREVIEW = r.count || 0;
+    info.innerHTML = `命中 <b style="color:#A32D2D">${BD_PREVIEW}</b> 篇 · ${bdEsc(bdLabel(f))}`;
+    btn.disabled = !BD_PREVIEW;
+    btn.textContent = BD_PREVIEW ? `🗑 删除这 ${BD_PREVIEW} 篇` : "🗑 删除命中文章";
+  } catch (e) {
+    info.textContent = "统计失败：" + e.message;
+    btn.disabled = true; BD_PREVIEW = 0;
+  }
+  if (manual) toast(`已预览命中 ${BD_PREVIEW} 篇`);
+}
+
+function bdDelete() {
+  const f = bdFilter();
+  if (!Object.keys(f).length) return toast("请至少选择一个删除条件");
+  if (!BD_PREVIEW) return toast("命中 0 篇，无可删除");
+  openBatchDelete("panel", f, bdLabel(f));
+}
+
+// mode: 'selected' | 'filtered' | 'album'(biz, albumId, albumTitle) | 'panel'(filter, label)
+async function openBatchDelete(mode, biz, albumId, albumTitle) {
+  const errEl = document.getElementById("delErr");
+  errEl.textContent = "";
+  const sampleEl = document.getElementById("delModalSample");
+  sampleEl.style.display = "none"; sampleEl.innerHTML = "";
+  document.getElementById("delModalCount").textContent = "";
+  document.getElementById("delBackup").checked = true;
+  const btn = document.getElementById("delConfirmBtn");
+  btn.disabled = true; btn.textContent = "确认删除";
+
+  let label = "", payload = null;
+  if (mode === "selected") {
+    const ids = [...SELECTED];
+    if (!ids.length) { toast("请先勾选要删除的文章"); return; }
+    label = `勾选的 ${ids.length} 篇（含跨页勾选）`;
+    payload = { ids };
+  } else if (mode === "album") {
+    const f = { biz, album_id: albumId };
+    label = `专辑「${albumTitle || albumId}」全部已收录文章`;
+    payload = { filter: f };
+  } else if (mode === "panel") {
+    // 独立「批量删除」面板：第 2 参传 filter 对象，第 3 参传范围描述文本
+    const f = biz;
+    label = "批量删除面板 · " + (albumId || "已选条件");
+    payload = { filter: f };
+  } else {
+    // 'filtered'：按文章库当前筛选删除（界面入口已移除，保留能力备用）
+    const f = currentArticleFilter();
+    const empty = isFilterEmpty(f);
+    label = "当前筛选结果：" + articleFilterLabel(f);
+    payload = { filter: f, allow_all: empty };
+  }
+  DEL_TARGET = { mode, payload, label };
+  document.getElementById("delModalScope").innerHTML = `<b>范围</b>：${label}`;
+  document.getElementById("delModal").classList.add("show");
+  try {
+    const pre = await j(API + "/articles/batch-delete", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, dry_run: true }),
+    });
+    const n = pre.count || 0;
+    document.getElementById("delModalCount").textContent = n ? `将删除 ${n} 篇` : "没有命中任何文章";
+    if (n) {
+      const rows = (pre.sample || []).map(s => `<div>· ${(s.title || "未命名").slice(0, 50)} <span class="muted">${s.source || ""} ${s.date ? new Date(s.date * 1000).toLocaleDateString("zh-CN") : ""}</span></div>`).join("");
+      sampleEl.innerHTML = rows + (n > (pre.sample || []).length ? `<div class="muted">… 仅预览前 ${(pre.sample || []).length} 篇</div>` : "");
+      sampleEl.style.display = "block";
+    }
+    btn.disabled = !n;
+  } catch (e) {
+    errEl.textContent = "统计失败：" + e.message;
+  }
+}
+
+function closeDelModal() {
+  document.getElementById("delModal").classList.remove("show");
+  DEL_TARGET = null;
+}
+
+async function doBatchDelete() {
+  if (!DEL_TARGET) return;
+  const btn = document.getElementById("delConfirmBtn");
+  const backup = document.getElementById("delBackup").checked;
+  const mode = DEL_TARGET.mode;
+  btn.disabled = true; btn.textContent = "删除中…";
+  try {
+    const r = await j(API + "/articles/batch-delete", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...DEL_TARGET.payload, dry_run: false, backup }),
+    });
+    const n = r.deleted != null ? r.deleted : 0;
+    const bk = String(r.backup || "");
+    toast(bk && !bk.startsWith("备份失败")
+      ? `已删除 ${n} 篇，备份：${bk.split(/[\\/]/).pop()}`
+      : `已删除 ${n} 篇`);
+    if (bk.startsWith("备份失败")) alert("注意：" + bk + "\n文章已删除，但备份未成功生成。");
+    if (mode === "selected") { SELECTED.clear(); updateSelCount(); }
+    closeDelModal();
+    loadArticles(); loadFacets(); loadAccounts();
+    if (mode === "panel") { bdLoadYears(); bdPreview(false); }
+  } catch (e) {
+    document.getElementById("delErr").textContent = "删除失败：" + e.message;
+    btn.disabled = false;
+  }
+  btn.textContent = "确认删除";
 }
 
 async function delArticle(id, btn) {
@@ -543,9 +959,19 @@ async function syncAlbum() {
   if (!album_id) { toast("链接中未找到 album_id（请确认是 mp/appmsgalbum 专辑页链接）"); return; }
   const biz = qparam("__biz");
   if (!biz) { toast("链接中未找到 __biz"); return; }
+  // 时间筛选：读取本卡片的范围 / 起始日期 / 模式控件（不再写死全部历史）
+  const scopeEl = document.getElementById("albumScope");
+  const dateEl = document.getElementById("albumStartDate");
+  const modeEl = document.getElementById("albumMode");
+  const scope = (scopeEl && scopeEl.value) || "all";
+  const start_date = (dateEl && dateEl.value) || "";
+  const mode = (modeEl && modeEl.value) || "all";
+  if (scope === "custom" && !start_date) { toast("已选「自定义起始日期」，请先选择日期再同步"); return; }
+  const scopeText = ((scopeEl && scopeEl.selectedOptions[0]) ? scopeEl.selectedOptions[0].textContent : scope)
+    + (scope === "custom" && start_date ? `（${start_date} 起）` : "");
   try {
-    const r = await j(API + "/albums/sync", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ biz, album_id, scope: "all", mode: "all" }) });
-    document.getElementById("albumResult").textContent = `专辑同步任务 #${r.task_id} 已启动（biz=${biz.slice(0,16)}… album=${album_id}）`;
+    const r = await j(API + "/albums/sync", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ biz, album_id, scope, start_date, mode }) });
+    document.getElementById("albumResult").textContent = `专辑同步任务 #${r.task_id} 已启动（${scopeText} · ${mode === "incremental" ? "增量" : "全量"}｜biz=${biz.slice(0,16)}… album=${album_id}）`;
     loadTasks();
   } catch (e) { document.getElementById("albumResult").textContent = "启动失败：" + e.message; }
 }
@@ -688,6 +1114,8 @@ async function loadTopics() {
   document.getElementById("newTopicParent").innerHTML = popts;
   // 主题筛选 chips 重渲染（主题可能被删除/改名）
   renderFilterTopicChips();
+  // 批量删除面板的主题 chips 同步刷新
+  bdRenderTopics();
   // 主题管理树：递归渲染任意层级；二级及以上默认折叠（点箭头展开）
   const tree = document.getElementById("topicTree");
   if (!TOPICS.length) { tree.innerHTML = '<span class="muted">暂无主题。在上方输入名称、选颜色，即可创建一级主题；任意主题下都能继续「添加下一级主题」。</span>'; return; }
@@ -1268,6 +1696,7 @@ async function openFolder(target) {
   await loadAccounts();
   await loadArticles();
   await loadTasks();
+  await bdInit();
   document.getElementById("filterAuthor").addEventListener("change", () => { PAGE = 0; loadArticles(); loadFacets(); });
   document.getElementById("filterSource").addEventListener("change", () => { PAGE = 0; loadArticles(); loadFacets(); });
   document.getElementById("filterAlbum").addEventListener("change", () => { PAGE = 0; loadArticles(); loadFacets(); });

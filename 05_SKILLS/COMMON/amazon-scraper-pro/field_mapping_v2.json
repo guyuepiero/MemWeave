@@ -1,0 +1,278 @@
+{
+ "version": "v2.2",
+ "description": "Amazon 采集字段映射：27 个字段，含选择器与提取逻辑。v2.2 新增 monthly_sales 扩展语义(千位制K值/New on Amazon/<50兜底)、haul 低价商城标记与专属容器解析、first_available 初次上架日。字段值提取失败时输出 '—'（与主公约定一致）。",
+ "fields": [
+  {
+   "key": "asin",
+   "label": "ASIN",
+   "type": "text",
+   "source": "url",
+   "logic": "从 URL 正则提取 /dp/([A-Z0-9]{10})"
+  },
+  {
+   "key": "title",
+   "label": "标题",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#productTitle",
+    "#title_feature_div h1 span"
+   ],
+   "fallback": "regex|title"
+  },
+  {
+   "key": "brand",
+   "label": "品牌",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#bylineInfo",
+    "#brand"
+   ],
+   "logic": "取文本并去掉 'Visit the ' / ' Store' 前缀后缀"
+  },
+  {
+   "key": "price",
+   "label": "当前售价",
+   "type": "price",
+   "source": "selector",
+   "selectors": [
+    "#corePrice_feature_div .a-offscreen",
+    ".priceToPay .a-offscreen",
+    "span.a-price > span.a-offscreen"
+   ],
+   "logic": "取第一个匹配，去货币符号"
+  },
+  {
+   "key": "list_price",
+   "label": "划线价",
+   "type": "price",
+   "source": "selector",
+   "selectors": [
+    ".basisPrice .a-offscreen",
+    "#corePrice_desktop .aok-offscreen",
+    ".a-text-price .a-offscreen"
+   ],
+   "default": "—"
+  },
+  {
+   "key": "rating",
+   "label": "评分",
+   "type": "float",
+   "source": "selector",
+   "selectors": [
+    "#acrPopover",
+    "span[data-hook='rating-out-of-text']"
+   ],
+   "logic": "从 title 属性或文本提取数字"
+  },
+  {
+   "key": "review_count",
+   "label": "评论数",
+   "type": "int",
+   "source": "selector",
+   "selectors": [
+    "#acrCustomerReviewText",
+    "span[data-hook='total-review-count']"
+   ],
+   "logic": "提取纯数字，去逗号"
+  },
+  {
+   "key": "monthly_sales",
+   "label": "前台月销量",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#social-proofing-faceout-title-tk_bought",
+    "#social-proofing-faceout-title-new_on_amazon"
+   ],
+   "logic": "仅常规详情页：组件一 tk_bought=\"X+ bought in past month\" 千位制(<1000 纯数字如 500+；>=1000 用 K 如 10K+)，保留原文；组件二 new_on_amazon 新品标识存 New on Amazon；常规页面两组件皆无则记 <50(前台月销不足 50 不显示)；Haul 低价商城页记 —(见 haul 字段)"
+  },
+  {
+   "key": "haul",
+   "label": "低价商城(Haul)",
+   "type": "text",
+   "source": "page_flag",
+   "selectors": [],
+   "logic": "Amazon Haul 低价商城页标记：URL 含 s=bazaar 则记 Amazon Haul，否则 —；haul 页无常规销量组件，monthly_sales 记 —(非 <50)；其价格/划线价(Haul Typical Price)/评分/评论数由 haul 专属容器解析(#corePriceDisplay_desktop_feature_div / #haulAverageCustomerReviewDesktop_feature_div)"
+  },
+  {
+   "key": "first_available",
+   "label": "首次上架日",
+   "type": "text",
+   "source": "page_flag",
+   "selectors": [],
+   "logic": "Product information > Additional Information 表中 'Date First Available' 行（定位 th.prodDetSectionEntry 文本匹配 → 同行 td.prodDetAttrValue），提取如 'July 30, 2026'；注意：部分老 listing/特定模板及 Haul 页不渲染该行，返回 —（实测常规热品 B0C7TNXZQS 无此行）"
+  },
+  {
+   "key": "bsr_main",
+   "label": "BSR 大类排名",
+   "type": "int",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Best Sellers Rank' 第一段数字（大类）"
+  },
+  {
+   "key": "bsr_main_category",
+   "label": "BSR 大类名",
+   "type": "text",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Best Sellers Rank' 首个 '#N in 类目名' 的类目名"
+  },
+  {
+   "key": "bsr_sub",
+   "label": "BSR 细分类目排名",
+   "type": "int",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Best Sellers Rank' 最后一个 '#N in 类目名' 的数字"
+  },
+  {
+   "key": "bsr_sub_category",
+   "label": "BSR 细分类目名",
+   "type": "text",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Best Sellers Rank' 最后一段类目名（截断细分子类目）"
+  },
+  {
+   "key": "bestseller_badge",
+   "label": "Best Seller 徽章",
+   "type": "bool",
+   "source": "selector",
+   "selectors": [
+    "#zeitgeistBadge_criticalFeat",
+    ".p13n-best-seller-badge",
+    "div[id*='bestseller']"
+   ],
+   "default": "无"
+  },
+  {
+   "key": "amazon_choice",
+   "label": "Amazon's Choice",
+   "type": "bool",
+   "source": "selector",
+   "selectors": [
+    "#acBadge_feature_div .a-badge-text"
+   ],
+   "default": "无"
+  },
+  {
+   "key": "bullets",
+   "label": "五点卖点",
+   "type": "list",
+   "source": "selector",
+   "selectors": [
+    "#feature-bullets ul li span.a-list-item"
+   ],
+   "logic": "取全部 li 文本"
+  },
+  {
+   "key": "dimensions",
+   "label": "尺寸",
+   "type": "text",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Product Dimensions' 值"
+  },
+  {
+   "key": "weight",
+   "label": "重量",
+   "type": "text",
+   "source": "bullets_table",
+   "logic": "detailBullets 中 'Item Weight' 值"
+  },
+  {
+   "key": "color",
+   "label": "颜色",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#variation_color_name .selection",
+    "#inline-twister-expander-content-color_name .twisterTextDiv"
+   ],
+   "default": "—"
+  },
+  {
+   "key": "availability",
+   "label": "可售状态",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#availability span",
+    "#availability"
+   ],
+   "default": "In Stock"
+  },
+  {
+   "key": "seller",
+   "label": "销售方",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#sellerProfileTriggerId",
+    "#merchant-info"
+   ],
+   "logic": "含 'Amazon.com' 判为自营，否则取卖家名；第三方标注 '(第三方)'"
+  },
+  {
+   "key": "shipped_by",
+   "label": "发货方",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#merchant-info"
+   ],
+   "logic": "'Ships from' 后文本"
+  },
+  {
+   "key": "coupon",
+   "label": "优惠券",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#couponText",
+    ".couponLabelText",
+    "span[id*='coupon']"
+   ],
+   "default": "无"
+  },
+  {
+   "key": "image_url",
+   "label": "主图URL",
+   "type": "text",
+   "source": "selector",
+   "selectors": [
+    "#landingImage"
+   ],
+   "logic": "取 src 属性"
+  },
+  {
+   "key": "url",
+   "label": "产品链接",
+   "type": "text",
+   "source": "page",
+   "logic": "当前页面 URL（去追踪参数）"
+  },
+  {
+   "key": "scraped_at",
+   "label": "抓取时间",
+   "type": "datetime",
+   "source": "system",
+   "logic": "抓取完成时本地时间 ISO"
+  }
+ ],
+ "categories": {
+  "tools_home_improvement": {
+   "name": "Tools & Home Improvement",
+   "node_id": "228013",
+   "url_template": "https://www.amazon.com/gp/bestsellers/{node_id}"
+  },
+  "kitchen": {
+   "name": "Kitchen & Dining",
+   "node_id": "284507",
+   "url_template": "https://www.amazon.com/gp/bestsellers/{node_id}"
+  },
+  "electrical_cable_staples": {
+   "name": "Electrical Cable Staples (Home Improvement)",
+   "node_id": "6396128011",
+   "url_template": "https://www.amazon.com/gp/bestsellers/hi/6396128011"
+  }
+ }
+}

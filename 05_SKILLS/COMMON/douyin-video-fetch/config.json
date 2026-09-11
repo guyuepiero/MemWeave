@@ -1,6 +1,6 @@
 {
   "output_dir": "",
-  "ffmpeg_path": "",
+  "ffmpeg_path": "C:\\Users\\guyuepiero\\.workbuddy\\binaries\\python\\envs\\default\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe",
 
   "filter": {
     "rules": {

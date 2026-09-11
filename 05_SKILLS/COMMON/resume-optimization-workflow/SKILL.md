@@ -6,14 +6,14 @@ description: 简历评分+优化全流程（PDF提取→百分制评分→40项�
 # 简历优化全流程
 
 > **环境已就绪声明（零配置）**：本技能依赖的 Python 包已全部预装于共享环境，Agent 直接执行以下流程，**无需任何安装步骤**。
-> - 共享 Python：`$HOME/.workbuddy/binaries/python/envs/default/Scripts/python.exe`
+> - 共享 Python：`C:/Users/guyuepiero/.workbuddy/binaries/python/envs/default/Scripts/python.exe`
 > - 已预装：pdfplumber / PyMuPDF / requests / playwright / openpyxl
 
 ## 工作流（7 步）
 
 1. **提取 PDF 文本**：优先用 Read 工具直接读 PDF（原生支持逐页文本+视觉解析）。仅当 Read 失败（二进制/加密）时，用已预装的 pdfplumber 兜底提取：
    ```bash
-   VENVPY="$HOME/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
+   VENVPY="C:/Users/guyuepiero/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
    "$VENVPY" -c "import pdfplumber; ..."  # 逐页 extract_text()
    ```
 
